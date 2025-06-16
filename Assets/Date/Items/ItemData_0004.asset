@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115ad6b10b522d648b4f18b6a072e10b, type: 3}
+  m_Name: ItemData_0004
+  m_EditorClassIdentifier: 
+  itemId: 4
+  itemName: "\u30ED\u30F3\u30B0\u30BD\u30FC\u30C9"
+  itemDesc: "\u653B\u6483\u529B\u304C\u5C11\u3057\u9AD8\u3044\u5263"
+  itemCategory: 2
+  hp: 0
+  bt: 0
+  numberOfUse: 0
+  atk: 6
+  def: 0
+  dex: 0
+  price: 50

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115ad6b10b522d648b4f18b6a072e10b, type: 3}
+  m_Name: ItemData_0002
+  m_EditorClassIdentifier: 
+  itemId: 2
+  itemName: "BT\u56DE\u5FA9"
+  itemDesc: "\u30D0\u30C3\u30C6\u30EA\u30FC\u3092\u56DE\u5FA9\u3057\u3066\u304F\u308C\u308B"
+  itemCategory: 1
+  hp: 0
+  bt: 30
+  numberOfUse: 3
+  atk: 0
+  def: 0
+  dex: 0
+  price: 5
