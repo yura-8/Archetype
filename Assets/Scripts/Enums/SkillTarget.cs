@@ -1,14 +1,14 @@
-namespace SimpleRpg
+ï»¿namespace SimpleRpg
 {
     /// <summary>
-    /// –‚–@‚ÌŒø‰Ê”ÍˆÍ‚ğ’è‹`‚·‚é—ñ‹“Œ^‚Å‚·B
+    /// é­”æ³•ã®åŠ¹æœç¯„å›²ã‚’å®šç¾©ã™ã‚‹åˆ—æŒ™å‹ã§ã™ã€‚
     /// </summary>
     public enum SkillTarget
     {
-        Own, //©•ª©g
-        FriendSolo, //–¡•û’P‘Ì
-        FriendAll, //–¡•û‘S‘Ì
-        EnemySolo, //“G’P‘Ì
-        EnemyAll, //“G‘S‘Ì
+        Own, //è‡ªåˆ†è‡ªèº«
+        FriendSolo, //å‘³æ–¹å˜ä½“
+        FriendAll, //å‘³æ–¹å…¨ä½“
+        EnemySolo, //æ•µå˜ä½“
+        EnemyAll, //æ•µå…¨ä½“
     }
 }

@@ -1,16 +1,16 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// ŒoŒ±’l‚ÆƒŒƒxƒ‹‚Ì‘Î‰‚ğ’è‹`‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// çµŒé¨“å€¤ã¨ãƒ¬ãƒ™ãƒ«ã®å¯¾å¿œã‚’å®šç¾©ã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [CreateAssetMenu(fileName = "ExpTable", menuName = "Scriptable Objects/SimpleRpg/ExpTable")]
     public class ExpTable : ScriptableObject
     {
         /// <summary>
-        /// ŒoŒ±’l‚ÆƒŒƒxƒ‹‚Ì‘Î‰ƒŒƒR[ƒh‚ÌƒŠƒXƒg‚Å‚·B
+        /// çµŒé¨“å€¤ã¨ãƒ¬ãƒ™ãƒ«ã®å¯¾å¿œãƒ¬ã‚³ãƒ¼ãƒ‰ã®ãƒªã‚¹ãƒˆã§ã™ã€‚
         /// </summary>
         public List<ExpRecord> expRecords;
     }

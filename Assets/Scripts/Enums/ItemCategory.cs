@@ -1,13 +1,13 @@
-namespace SimpleRpg
+ï»¿namespace SimpleRpg
 {
     /// <summary>
-    /// ƒAƒCƒeƒ€‚Ìí•Ê‚ğ’è‹`‚·‚é—ñ‹“Œ^‚Å‚·B
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®ç¨®åˆ¥ã‚’å®šç¾©ã™ã‚‹åˆ—æŒ™å‹ã§ã™ã€‚
     /// </summary>
     public enum ItemCategory
     {
-        None, // ƒJƒeƒSƒŠ‚È‚µ
-        ConsumableItem, // Á”ïƒAƒCƒeƒ€
-        Weapon, // •Ší
-        Armor, // –h‹ï
+        None, // ã‚«ãƒ†ã‚´ãƒªãªã—
+        ConsumableItem, // æ¶ˆè²»ã‚¢ã‚¤ãƒ†ãƒ 
+        Weapon, // æ­¦å™¨
+        Armor, // é˜²å…·
     }
 }

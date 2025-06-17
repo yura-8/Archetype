@@ -1,36 +1,36 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// –‚–@‚Ìî•ñ‚ğ’è‹`‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// é­”æ³•ã®æƒ…å ±ã‚’å®šç¾©ã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [CreateAssetMenu(fileName = "SkillData", menuName = "Scriptable Objects/SimpleRpg/SkillData")]
-    public class SkillDate : ScriptableObject
+    public class SkillData : ScriptableObject
     {
         /// <summary>
-        /// ƒXƒLƒ‹‚ÌID‚Å‚·B
+        /// ã‚¹ã‚­ãƒ«ã®IDã§ã™ã€‚
         /// </summary>
         public int skillId;
 
         /// <summary>
-        /// ƒXƒLƒ‹‚Ì–¼‘O‚Å‚·B
+        /// ã‚¹ã‚­ãƒ«ã®åå‰ã§ã™ã€‚
         /// </summary>
         public string skillName;
 
         /// <summary>
-        /// ƒXƒLƒ‹‚Ìà–¾‚Å‚·B
+        /// ã‚¹ã‚­ãƒ«ã®èª¬æ˜ã§ã™ã€‚
         /// </summary>
         public string skillDesc;
 
         /// <summary>
-        /// ƒXƒLƒ‹‚ÌÁ”ïBT‚Å‚·B
+        /// ã‚¹ã‚­ãƒ«ã®æ¶ˆè²»BTã§ã™ã€‚
         /// </summary>
         public int cost;
 
         /// <summary>
-        /// ƒXƒLƒ‹‚ÌŒø‰ÊƒŠƒXƒg‚Å‚·B
+        /// ã‚¹ã‚­ãƒ«ã®åŠ¹æœãƒªã‚¹ãƒˆã§ã™ã€‚
         /// </summary>
         //public List<SkillEffect> skillEffects;
     }

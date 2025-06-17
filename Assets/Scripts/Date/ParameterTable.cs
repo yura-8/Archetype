@@ -1,17 +1,17 @@
-
+ï»¿
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// ƒŒƒxƒ‹‚Æƒpƒ‰ƒ[ƒ^‚Ì‘Î‰‚ğ’è‹`‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// ãƒ¬ãƒ™ãƒ«ã¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å¯¾å¿œã‚’å®šç¾©ã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [CreateAssetMenu(fileName = "ParameterTable", menuName = "Scriptable Objects/SimpleRpg/ParameterTable")]
     public class ParameterTable : ScriptableObject
     {
         /// <summary>
-        /// ƒŒƒxƒ‹‚Æƒpƒ‰ƒ[ƒ^‚Ì‘Î‰ƒŒƒR[ƒh‚ÌƒŠƒXƒg‚Å‚·B
+        /// ãƒ¬ãƒ™ãƒ«ã¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å¯¾å¿œãƒ¬ã‚³ãƒ¼ãƒ‰ã®ãƒªã‚¹ãƒˆã§ã™ã€‚
         /// </summary>
         public List<ParameterRecord> parameterRecords;
     }

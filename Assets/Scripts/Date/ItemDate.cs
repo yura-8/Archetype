@@ -1,65 +1,65 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// ƒAƒCƒeƒ€‚Ìî•ñ‚ğ’è‹`‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®æƒ…å ±ã‚’å®šç¾©ã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [CreateAssetMenu(fileName = "ItemData", menuName = "Scriptable Objects/SimpleRpg/ItemData")]
     public class ItemData : ScriptableObject
     {
         /// <summary>
-        /// ƒAƒCƒeƒ€‚ÌID‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®IDã§ã™ã€‚
         /// </summary>
         public int itemId;
 
         /// <summary>
-        /// ƒAƒCƒeƒ€‚Ì–¼‘O‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®åå‰ã§ã™ã€‚
         /// </summary>
         public string itemName;
 
         /// <summary>
-        /// ƒAƒCƒeƒ€‚Ìà–¾‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®èª¬æ˜ã§ã™ã€‚
         /// </summary>
         public string itemDesc;
 
         /// <summary>
-        /// ƒAƒCƒeƒ€‚ÌƒJƒeƒSƒŠ‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚«ãƒ†ã‚´ãƒªã§ã™ã€‚
         /// </summary>
         public ItemCategory itemCategory;
 
         /// <summary>
-        /// HP‰ñ•œ—ÊB
+        /// HPå›å¾©é‡ã€‚
         /// </summary>
         public int hp;
 
         /// <summary>
-        /// ƒoƒbƒeƒŠ[‰ñ•œ—ÊB
+        /// ãƒãƒƒãƒ†ãƒªãƒ¼å›å¾©é‡ã€‚
         /// </summary>
         public int bt;
 
         /// <summary>
-        /// g—p‰Â”\‰ñ”‚Å‚·B
+        /// ä½¿ç”¨å¯èƒ½å›æ•°ã§ã™ã€‚
         /// </summary>
         public int numberOfUse;
 
         /// <summary>
-        /// UŒ‚—Í‚Ì•â³’l‚Å‚·B
+        /// æ”»æ’ƒåŠ›ã®è£œæ­£å€¤ã§ã™ã€‚
         /// </summary>
         public int atk;
 
         /// <summary>
-        /// –hŒä—Í‚Ì•â³’l‚Å‚·B
+        /// é˜²å¾¡åŠ›ã®è£œæ­£å€¤ã§ã™ã€‚
         /// </summary>
         public int def;
 
         /// <summary>
-        /// ‘f‘‚³‚Ì•â³’l‚Å‚·B
+        /// ç´ æ—©ã•ã®è£œæ­£å€¤ã§ã™ã€‚
         /// </summary>
         public int dex;
 
         /// <summary>
-        /// ƒAƒCƒeƒ€‚Ì‰¿Ši‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®ä¾¡æ ¼ã§ã™ã€‚
         /// </summary>
         public int price;
     }

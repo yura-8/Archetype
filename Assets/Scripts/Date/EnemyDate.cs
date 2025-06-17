@@ -1,61 +1,67 @@
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// “GƒLƒƒƒ‰ƒNƒ^[‚Ìî•ñ‚ğ’è‹`‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®æƒ…å ±ã‚’å®šç¾©ã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [CreateAssetMenu(fileName = "EnemyData", menuName = "Scriptable Objects/SimpleRpg/EnemyData")]
     public class EnemyData : ScriptableObject
     {
         /// <summary>
-        /// “GƒLƒƒƒ‰ƒNƒ^[‚ÌID‚Å‚·B
+        /// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®IDã§ã™ã€‚
         /// </summary>
         public int enemyId;
 
         /// <summary>
-        /// “GƒLƒƒƒ‰ƒNƒ^[‚Ì–¼‘O‚Å‚·B
+        /// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åå‰ã§ã™ã€‚
         /// </summary>
         public string enemyName;
 
         /// <summary>
-        /// “GƒLƒƒƒ‰ƒNƒ^[‚Ì‰æ‘œ‚Å‚·B
+        /// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç”»åƒã§ã™ã€‚
         /// </summary>
         public Sprite sprite;
 
         /// <summary>
-        /// HP‚Ì’l‚Å‚·B
+        /// HPã®å€¤ã§ã™ã€‚
         /// </summary>
         public int hp;
 
         /// <summary>
-        /// MP‚Ì’l‚Å‚·B
+        /// MPã®å€¤ã§ã™ã€‚
         /// </summary>
         public int mp;
 
         /// <summary>
-        /// —Í‚Ì’l‚Å‚·B
+        /// åŠ›ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int strength;
 
         /// <summary>
-        /// g‚Ì‚Ü‚à‚è‚Ì’l‚Å‚·B
+        /// èº«ã®ã¾ã‚‚ã‚Šã®å€¤ã§ã™ã€‚
         /// </summary>
         public int guard;
 
         /// <summary>
-        /// ‘f‘‚³‚Ì’l‚Å‚·B
+        /// ç´ æ—©ã•ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int speed;
 
         /// <summary>
-        /// ŒoŒ±’l‚Ì’l‚Å‚·B
+        /// çµŒé¨“å€¤ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int exp;
 
         /// <summary>
-        /// ƒS[ƒ‹ƒh‚Ì’l‚Å‚·B
+        /// ã‚´ãƒ¼ãƒ«ãƒ‰ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int gold;
+
+        /// <summary>
+        /// è¡Œå‹•ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒªã‚¹ãƒˆã§ã™ã€‚
+        /// </summary>
+        public List<EnemyActionRecord> enemyActionRecords;
     }
 }
