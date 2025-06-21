@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67cced5e9cdf66b4db494403e8f341c8, type: 3}
   m_Name: ParameterTable
   m_EditorClassIdentifier: 
+  characterId: 2
   parameterRecords:
   - level: 1
     hp: 20

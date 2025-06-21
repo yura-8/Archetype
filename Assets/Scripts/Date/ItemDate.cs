@@ -29,6 +29,16 @@ namespace SimpleRpg
         public ItemCategory itemCategory;
 
         /// <summary>
+        /// アイテムの効果です。
+        /// </summary>
+        public ItemEffect itemEffect;
+
+        /// <summary>
+        /// 使用可能回数です。
+        /// </summary>
+        public int numberOfUse;
+
+        /// <summary>
         /// HP回復量。
         /// </summary>
         public int hp;
@@ -37,11 +47,6 @@ namespace SimpleRpg
         /// バッテリー回復量。
         /// </summary>
         public int bt;
-
-        /// <summary>
-        /// 使用可能回数です。
-        /// </summary>
-        public int numberOfUse;
 
         /// <summary>
         /// 攻撃力の補正値です。

@@ -9,6 +9,6 @@
         Recovery, //回復系
         Damage, //ダメージ
         Support, //補助
-        Skill, //必殺技
+        Movement,　//移動
     }
 }

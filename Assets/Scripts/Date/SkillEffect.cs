@@ -22,10 +22,5 @@ namespace SimpleRpg
         /// 効果量です。
         /// </summary>
         public int value;
-
-        /// <summary>
-        /// ステイタス指定
-        /// </summary>
-        //public ParameterRecord parameter;
     }
 }
