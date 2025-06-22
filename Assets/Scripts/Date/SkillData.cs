@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SimpleRpg
 {
     /// <summary>
-    /// 魔法の情報を定義するクラスです。
+    /// スキルの情報を定義するクラスです。
     /// </summary>
     [CreateAssetMenu(fileName = "SkillData", menuName = "Scriptable Objects/SimpleRpg/SkillData")]
     public class SkillData : ScriptableObject
