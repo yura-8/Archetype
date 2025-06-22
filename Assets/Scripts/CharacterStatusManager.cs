@@ -29,6 +29,34 @@ namespace SimpleRpg
         public static List<PartyItemInfo> partyItemInfoList;
 
         /// <summary>
+        /// 現在パーティにいるメンバー全員のステータス情報（CharacterStatus）をリストで返します。
+        /// </summary>
+        public static List<CharacterStatus> GetPartyMemberStatuses()
+        {
+            // もしパーティメンバーのリストが未設定（null）なら、空のリストを返してエラーを防ぐ
+            if (partyCharacter == null)
+            {
+                return new List<CharacterStatus>();
+            }
+
+            List<CharacterStatus> partyStatuses = new();
+            foreach (int id in partyCharacter)
+            {
+                // partyCharacterリストに入っているIDを元に、
+                // characterStatusesリストから該当するキャラクターの情報を探します。
+                CharacterStatus status = GetCharacterStatusById(id);
+                if (status != null)
+                {
+                    // 見つかったステータス情報を、返す用の新しいリストに追加します。
+                    partyStatuses.Add(status);
+                }
+            }
+
+            // 完成した「パーティメンバーだけのステータスリスト」を返します。
+            return partyStatuses;
+        }
+
+        /// <summary>
         /// パーティ内のキャラクターのステータスをIDで取得します。
         /// </summary>
         /// <param name="characterId">キャラクターのID</param>

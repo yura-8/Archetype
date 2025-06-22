@@ -103,7 +103,7 @@ namespace SimpleRpg
         /// キャラクターのIDから覚えるスキルデータを取得します。
         /// </summary>
         /// <param name="characterId">キャラクターID</param>
-        public static List<CharacterSkillRecord> GetCharacterMagicList(int characterId)
+        public static List<CharacterSkillRecord> GetCharacterSkillList(int characterId)
         {
             var characterData = _characterDataList.Find(character => character.characterId == characterId);
             return characterData.characterSkillRecords;
@@ -114,17 +114,17 @@ namespace SimpleRpg
         /// </summary>
         /// <param name="characterId">キャラクターID</param>
         /// <param name="level">キャラクターのレベル</param>
-        public static List<SkillData> GetLearnableMagic(int characterId, int level)
+        public static List<SkillData> GetLearnableSkill(int characterId, int level)
         {
-            var magicList = GetCharacterMagicList(characterId);
-            var records = magicList.Where(x => x.level <= level);
-            List<SkillData> magicDataList = new();
+            var skillList = GetCharacterSkillList(characterId);
+            var records = skillList.Where(x => x.level <= level);
+            List<SkillData> skillDataList = new();
             foreach (var record in records)
             {
-                var magicData = SkillDataManager.GetSkillDataById(record.skillId);
-                magicDataList.Add(magicData);
+                var skillData = SkillDataManager.GetSkillDataById(record.skillId);
+                skillDataList.Add(skillData);
             }
-            return magicDataList;
+            return skillDataList;
         }
     }
 }
