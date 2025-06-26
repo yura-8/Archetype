@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SimpleRpg
 {
@@ -12,8 +13,13 @@ namespace SimpleRpg
         /// </summary>
         public static bool ConfirmButton()
         {
-            return Input.GetKeyDown(KeyCode.Space)
-                || Input.GetKeyDown(KeyCode.Z);
+            if (Keyboard.current == null)
+            {
+                return false;
+            }
+
+            return Keyboard.current.spaceKey.wasPressedThisFrame
+                || Keyboard.current.zKey.wasPressedThisFrame;
         }
 
         /// <summary>
@@ -21,7 +27,12 @@ namespace SimpleRpg
         /// </summary>
         public static bool CancelButton()
         {
-            return Input.GetKeyDown(KeyCode.X);
+            if (Keyboard.current == null)
+            {
+                return false;
+            }
+
+            return Keyboard.current.xKey.wasPressedThisFrame;
         }
     }
 }

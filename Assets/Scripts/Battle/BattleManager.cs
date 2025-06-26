@@ -38,6 +38,11 @@ namespace SimpleRpg
         public BattleCommand SelectedCommand { get; private set; }
 
         /// <summary>
+        /// 選択されたコマンドです。
+        /// </summary>
+        public AttackCommand SelectedAttackCommand { get; private set; }
+
+        /// <summary>
         /// エンカウントした敵キャラクターのIDです。
         /// </summary>
         public List<int> EnemyId { get; private set; } = new List<int>();
@@ -92,6 +97,70 @@ namespace SimpleRpg
         public BattleSpriteController GetBattleSpriteController()
         {
             return _battleSpriteController;
+        }
+
+        /// <summary>
+        /// コマンド入力を開始します。
+        /// </summary>
+        public void StartInputCommandPhase()
+        {
+            SimpleLogger.Instance.Log($"コマンド入力のフェーズを開始します。現在のターン数: {TurnCount}");
+            BattlePhase = BattlePhase.InputCommand_Main;
+
+            var commandWindow = GetWindowManager().GetCommandWindowController();
+            commandWindow.InitializeCommand();
+            commandWindow.ShowWindow();
+        }
+
+        /// <summary>
+        /// コマンドが選択された時のコールバックです。
+        /// </summary>
+        public void OnCommandSelected(BattleCommand selectedCommand)
+        {
+            //SimpleLogger.Instance.Log($"コマンドが選択されました: {selectedCommand}");
+            //SelectedCommand = selectedCommand;
+            //HandleCommand();
+
+            switch (selectedCommand)
+            {
+                case BattleCommand.Attack: // 「たたかう」が選ばれたら…
+                                          
+                    // 1. メインコマンドウィンドウを隠す
+                    //_mainCommandWindowController.HideWindow();
+
+                    // 2. 攻撃コマンドウィンドウを表示する
+                    //_attackCommandWindowController.InitializeCommand();
+                    //_attackCommandWindowController.ShowWindow();
+
+                    // 3. 戦闘フェーズを「攻撃コマンド入力」に切り替える
+                    BattlePhase = BattlePhase.InputCommand_Attack;
+                    break;
+
+                    // ...他のコマンドが選ばれた場合の処理...
+            }
+        }
+
+        /// <summary>
+        /// コマンドが選択された時のコールバックです。
+        /// </summary>
+        public void OnCommandAttackSelected(AttackCommand selectedAttackCommand)
+        {
+            SimpleLogger.Instance.Log($"コマンドが選択されました: {selectedAttackCommand}");
+            //SelectedAttackCommand = selectedAttackCommand;
+            //HandleAttackCommand();
+
+            // 次のフェーズ（ターゲット選択など）に進む処理
+            BattlePhase = BattlePhase.SelectEnemy;
+        }
+
+        /// <summary>
+        /// コマンド入力に応じた処理を行います。
+        /// 行動中にステータスを変更
+        /// </summary>
+        void HandleCommand()
+        {
+            SimpleLogger.Instance.Log($"入力されたコマンドに応じた処理を行います。選択されたコマンド: {SelectedCommand}");
+            BattlePhase = BattlePhase.Action;
         }
     }
 }

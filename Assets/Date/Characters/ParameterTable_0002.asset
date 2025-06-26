@@ -15,8 +15,8 @@ MonoBehaviour:
   characterId: 2
   parameterRecords:
   - level: 1
-    hp: 20
-    bt: 3
+    hp: 3000
+    bt: 100
     atk: 8
     def: 4
     dex: 6

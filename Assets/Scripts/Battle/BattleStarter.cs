@@ -17,7 +17,7 @@ namespace SimpleRpg
         /// </summary>
         public void StartBattle(BattleManager battleManager)
         {
-            SimpleLogger.Instance.Log("BattleStarterのStartBattleが呼ばれました。");
+            // SimpleLogger.Instance.Log("BattleStarterのStartBattleが呼ばれました。");
             _battleManager = battleManager;
 
             // 戦闘関連のUIを非表示にします。
@@ -30,13 +30,16 @@ namespace SimpleRpg
             ShowStatus();
 
             // コマンドウィンドウを表示します。
-            ShowCommand();
+            //ShowCommand();
 
             // 敵の名前ウィンドウを表示します。
             ShowEnemyNameWindow();
 
             // 敵出現のメッセージを表示します。
             ShowEnemyAppearMessage();
+
+            // テスト用機能
+            _battleManager.StartInputCommandPhase();
         }
 
         /// <summary>
@@ -109,7 +112,9 @@ namespace SimpleRpg
         /// </summary>
         void ShowCommand()
         {
-
+            var controller = _battleManager.GetWindowManager().GetCommandWindowController();
+            controller.ShowWindow();
+            controller.InitializeCommand();
         }
 
         /// <summary>
@@ -117,6 +122,35 @@ namespace SimpleRpg
         /// </summary>
         void ShowEnemyNameWindow()
         {
+            //var controller = _battleManager.GetWindowManager().GetEnemyNameWindowController();
+            //controller.ShowWindow();
+            //int enemyId = _battleManager.EnemyId;
+            //var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
+            //controller.SetEnemyName(enemyData.enemyName);
+
+
+            var nameWindowControllers = _battleManager.GetWindowManager().GetEnemyNameWindowController();
+
+            var enemyIdList = _battleManager.EnemyId;
+
+            for (int i = 0; i < nameWindowControllers.Count; i++)
+            {
+                if (i < enemyIdList.Count)
+                {
+                    int enemyId = enemyIdList[i];
+                    var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
+
+                    if (enemyData != null)
+                    {
+                        nameWindowControllers[i].SetEnemyName(enemyData.enemyName);
+                        nameWindowControllers[i].ShowWindow();
+                    }
+                }
+                else
+                {
+                    nameWindowControllers[i].HideWindow();
+                }
+            }
 
         }
 

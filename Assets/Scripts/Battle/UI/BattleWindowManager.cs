@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace SimpleRpg
@@ -15,6 +16,24 @@ namespace SimpleRpg
         List<StatusWindowController> _statusWindowController;
 
         /// <summary>
+        /// 敵キャラクターの名前を表示するウィンドウを制御するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        List<EnemyNameWindowController> _enemyNameWindowController;
+
+        /// <summary>
+        /// コマンドウィンドウを制御するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        MainCommandWindowController _mainCommandWindowController;
+
+        /// <summary>
+        /// コマンドウィンドウを制御するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        AttackCommandWindowController _attackCommandWindowController;
+
+        /// <summary>
         /// ウィンドウのコントローラのリストです。
         /// </summary>
         List<IBattleWindowController> _battleWindowControllers = new();
@@ -29,11 +48,20 @@ namespace SimpleRpg
         /// </summary>
         public void SetControllerList()
         {
+            _battleWindowControllers = new List<IBattleWindowController>();
+
+
             _battleWindowControllers.AddRange(_statusWindowController);
+            _battleWindowControllers.AddRange(_enemyNameWindowController);
+            _battleWindowControllers.Add(_mainCommandWindowController);
+            _battleWindowControllers.Add(_attackCommandWindowController);
 
             //_battleWindowControllers = new()
             //{
             //    _statusWindowController,
+            //    _enemyNameWindowController,
+            //    _mainCommandWindowController,
+            //    _attackCommandWindowController,
             //};
         }
 
@@ -66,6 +94,30 @@ namespace SimpleRpg
         public List<StatusWindowController> GetStatusWindowController()
         {
             return _statusWindowController;
+        }
+
+        /// <summary>
+        /// 敵キャラクターの名前を表示するウィンドウを制御するクラスへの参照を取得します。
+        /// </summary>
+        public List<EnemyNameWindowController> GetEnemyNameWindowController()
+        {
+            return _enemyNameWindowController;
+        }
+
+        /// <summary>
+        /// コマンドウィンドウを制御するクラスへの参照を取得します。
+        /// </summary>
+        public MainCommandWindowController GetCommandWindowController()
+        {
+            return _mainCommandWindowController;
+        }
+
+        /// <summary>
+        /// 攻撃コマンドウィンドウを制御するクラスへの参照を取得します。
+        /// </summary>
+        public AttackCommandWindowController GetAttackCommandWindowController()
+        {
+            return _attackCommandWindowController;
         }
     }
 }

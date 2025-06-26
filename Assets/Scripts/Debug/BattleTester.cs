@@ -138,6 +138,31 @@ namespace SimpleRpg
                 charcterId
             };
 
+
+
+            charcterId = 2;
+            parameterTable = CharacterDataManager.GetParameterTable(charcterId);
+            parameterRecord = parameterTable.parameterRecords.Find(record => record.level == _playerLevel);
+
+            // 指定したレベルまでに覚えているスキルのIDをリスト化します。
+            skillList = GetSkillIdList(charcterId, _playerLevel);
+
+            // キャラクターのステータスを設定します。
+            status = new()
+            {
+                characterId = charcterId,
+                level = _playerLevel,
+                exp = exp,
+                currentHp = parameterRecord.hp,
+                currentBt = parameterRecord.bt,
+                equipWeaponId = _weaponId,
+                equipArmorId = _armorId,
+                SkillList = skillList,
+            };
+
+            CharacterStatusManager.characterStatuses.Add(status);
+            CharacterStatusManager.partyCharacter.Add(charcterId);
+
             // 所持アイテムをセットします。
             CharacterStatusManager.partyItemInfoList = _partyItemInfoList;
         }

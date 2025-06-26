@@ -21,7 +21,7 @@ namespace SimpleRpg
         public List<EnemyConditionRecord> enemyConditionRecords;
 
         /// <summary>
-        /// 行動が魔法の場合の対象魔法データです。
+        /// 行動がスキルの場合の対象魔法データです。
         /// </summary>
         [Header("行動がスキルの場合の対象スキルデータを指定します。")]
         public SkillData　skillData;

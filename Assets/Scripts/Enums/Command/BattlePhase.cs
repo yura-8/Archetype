@@ -7,8 +7,11 @@
     {
         NotInBattle, //非戦闘
         ShowEnemy, //敵の表示
-        InputCommand, //コマンド入力
-        SelectItem, //スキル・アイテム選択
+        InputCommand_Main, //行動選択コマンド入力
+        InputCommand_Attack, //攻撃コマンド入力
+        SelectEnemy, //ターゲット選択
+        SelectAlly, //味方選択
+        SelectItem, //アイテム選択
         Action, //行動
         Result, //戦闘結果
     }
