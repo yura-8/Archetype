@@ -10,28 +10,38 @@ namespace SimpleRpg
     public class SkillData : ScriptableObject
     {
         /// <summary>
-        /// スキルのIDです。
+        /// スキルのID
         /// </summary>
         public int skillId;
 
         /// <summary>
-        /// スキルの名前です。
+        /// スキルの名前
         /// </summary>
         public string skillName;
 
         /// <summary>
-        /// スキルの説明です。
+        /// スキルの説明
         /// </summary>
         public string skillDesc;
 
         /// <summary>
-        /// スキルの消費BTです。
+        /// スキルの消費BT
         /// </summary>
         public int cost;
 
         /// <summary>
-        /// スキルの効果リストです。
+        /// スキルの使用制限
         /// </summary>
-        //public List<SkillEffect> skillEffects;
+        public int maxCount;
+
+        /// <summary>
+        /// スキルの残り使用回数
+        /// </summary>
+        public int currentCount;
+
+        /// <summary>
+        /// スキルの効果リスト
+        /// </summary>
+        public SkillEffect skillEffect;
     }
 }

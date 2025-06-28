@@ -3,18 +3,18 @@
 namespace SimpleRpg
 {
     /// <summary>
-    /// キャラクターが魔法を覚えるレベルを定義するクラスです。
+    /// キャラクターがスキルを覚えるレベルを定義するクラスです。
     /// </summary>
     [Serializable]
     public class CharacterSkillRecord
     {
         /// <summary>
-        /// 魔法を覚えるレベルの値です。
+        /// スキルを覚えるレベルの値です。
         /// </summary>
         public int level;
 
         /// <summary>
-        /// 覚える魔法のIDです。
+        /// 覚えるスキルのIDです。
         /// </summary>
         public int skillId;
     }

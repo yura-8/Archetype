@@ -20,7 +20,7 @@ namespace SimpleRpg
         public string characterName;
 
         /// <summary>
-        /// レベルと覚える魔法の対応レコードのリストです。
+        /// レベルと覚えるスキルの対応レコードのリストです。
         /// </summary>
         public List<CharacterSkillRecord> characterSkillRecords;
     }

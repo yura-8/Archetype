@@ -34,6 +34,12 @@ namespace SimpleRpg
         AttackCommandWindowController _attackCommandWindowController;
 
         /// <summary>
+        /// 選択ウィンドウを制御するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        SelectionWindowController _selectItemWindowController;
+
+        /// <summary>
         /// ウィンドウのコントローラのリストです。
         /// </summary>
         List<IBattleWindowController> _battleWindowControllers = new();
@@ -55,6 +61,7 @@ namespace SimpleRpg
             _battleWindowControllers.AddRange(_enemyNameWindowController);
             _battleWindowControllers.Add(_mainCommandWindowController);
             _battleWindowControllers.Add(_attackCommandWindowController);
+            _battleWindowControllers.Add(_selectItemWindowController);
 
             //_battleWindowControllers = new()
             //{
@@ -73,7 +80,16 @@ namespace SimpleRpg
         {
             foreach (var controller in _battleWindowControllers)
             {
-                controller.SetUpController(battleManager);
+                // controller が null でないことを確認してから呼び出す
+                if (controller != null)
+                {
+                    controller.SetUpController(battleManager);
+                }
+                else
+                {
+                    // もしnullが見つかったら、コンソールにエラーメッセージを出す
+                    Debug.LogError("BattleWindowManagerのリストに null のコントローラが含まれています！インスペクターの設定を確認してください。");
+                }
             }
         }
 
@@ -118,6 +134,14 @@ namespace SimpleRpg
         public AttackCommandWindowController GetAttackCommandWindowController()
         {
             return _attackCommandWindowController;
+        }
+
+        /// <summary>
+        /// 選択ウィンドウを制御するクラスへの参照を取得します。
+        /// </summary>
+        public SelectionWindowController GetSelectionWindowController()
+        {
+            return _selectItemWindowController;
         }
     }
 }

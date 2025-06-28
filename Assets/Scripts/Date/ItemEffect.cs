@@ -22,5 +22,10 @@ namespace SimpleRpg
         /// 効果量です。
         /// </summary>
         public int value;
+
+        /// <summary>
+        /// 効果の対象
+        /// </summary>
+        public SkillParameter skillParameter;
     }
 }
