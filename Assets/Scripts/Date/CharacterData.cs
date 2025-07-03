@@ -20,6 +20,11 @@ namespace SimpleRpg
         public string characterName;
 
         /// <summary>
+        /// キャラクターの名前です。
+        /// </summary>
+        public string firstName;
+
+        /// <summary>
         /// レベルと覚えるスキルの対応レコードのリストです。
         /// </summary>
         public List<CharacterSkillRecord> characterSkillRecords;

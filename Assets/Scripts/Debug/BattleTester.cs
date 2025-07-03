@@ -18,8 +18,8 @@ namespace SimpleRpg
         /// <summary>
         /// 戦う対象の敵キャラクターのIDです。
         /// </summary>
-        [SerializeField]
-        List<int> _enemyId;
+        //[SerializeField]
+        List<int> _enemyId = new List<int> { 1, 2, 1, 1 };
 
         /// <summary>
         /// 味方キャラクターのレベルです。

@@ -90,13 +90,23 @@ namespace SimpleRpg
         }
 
         /// <summary>
-        /// キャラクターのIDからキャラクターの名前を取得します。
+        /// キャラクターのIDからキャラクターのフル名前を取得します。
         /// </summary>
         /// <param name="characterId">キャラクターID</param>
         public static string GetCharacterName(int characterId)
         {
             var characterData = GetCharacterData(characterId);
             return characterData.characterName;
+        }
+
+        /// <summary>
+        /// キャラクターのIDからキャラクターの名前を取得します。
+        /// </summary>
+        /// <param name="characterId">キャラクターID</param>
+        public static string GetFirstName(int characterId)
+        {
+            var characterData = GetCharacterData(characterId);
+            return characterData.firstName;
         }
 
         /// <summary>

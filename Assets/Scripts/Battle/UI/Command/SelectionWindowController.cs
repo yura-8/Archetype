@@ -68,6 +68,11 @@ namespace SimpleRpg
 
         void Update()
         {
+            if (_battleManager == null || (_battleManager.BattlePhase != BattlePhase.SelectItem && _battleManager.BattlePhase != BattlePhase.SelectSkill))
+            {
+                return;
+            }
+            Debug.Log("[ItemCmd] 入力受付中");
             SelectItem();
         }
 
@@ -81,7 +86,7 @@ namespace SimpleRpg
                 return;
             }
 
-            if (_battleManager.BattlePhase != BattlePhase.SelectItem)
+            if (_battleManager.BattlePhase != BattlePhase.SelectItem && _battleManager.BattlePhase != BattlePhase.SelectSkill)
             {
                 return;
             }
@@ -146,25 +151,6 @@ namespace SimpleRpg
                 // ページが変わったか確認し、必要ならページ表示を更新
                 UpdatePageAndCursor();
             }
-
-            //if (IsUpperRow())
-            //{
-            //    if (_page > 0)
-            //    {
-            //        _page -= 1;
-            //        SetPageElement();
-            //        _selectedIndex = _page * 4;
-            //    }
-            //}
-            //else
-            //{
-            //    if (IsValidIndex(_selectedIndex - 2))
-            //    {
-            //        _selectedIndex -= 2;
-            //    }
-            //}
-
-            //ShowSelectionCursor();
         }
 
         /// <summary>
@@ -182,25 +168,6 @@ namespace SimpleRpg
                 // ページが変わったか確認し、必要ならページ表示を更新
                 UpdatePageAndCursor();
             }
-
-            //if (IsUpperRow())
-            //{
-            //    if (IsValidIndex(_selectedIndex + 2))
-            //    {
-            //        _selectedIndex += 2;
-            //    }
-            //}
-            //else
-            //{
-            //    if (_page < GetMaxPageNum() - 1)
-            //    {
-            //        _page += 1;
-            //        SetPageElement();
-            //        _selectedIndex = _page * 4;
-            //    }
-            //}
-
-            //ShowSelectionCursor();
         }
 
         /// <summary>
@@ -361,7 +328,7 @@ namespace SimpleRpg
         /// </summary>
         void OnPressedCancelButton()
         {
-            _battleManager.OnItemCanceled();
+            _battleManager.OnSelectionCanceled();
             HideWindow();
             SetCanSelectState(false);
         }

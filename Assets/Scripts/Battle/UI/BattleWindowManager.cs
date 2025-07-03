@@ -19,7 +19,13 @@ namespace SimpleRpg
         /// 敵キャラクターの名前を表示するウィンドウを制御するクラスへの参照です。
         /// </summary>
         [SerializeField]
-        List<EnemyNameWindowController> _enemyNameWindowController;
+        SelectionEnemyWindowController _selectionEnemyWindowController;
+
+        /// <summary>
+        /// パーティーメンバーの名前を表示するウィンドウを制御するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        SelectionPartyWindowController _selectionPartyWindowController;
 
         /// <summary>
         /// コマンドウィンドウを制御するクラスへの参照です。
@@ -58,10 +64,11 @@ namespace SimpleRpg
 
 
             _battleWindowControllers.AddRange(_statusWindowController);
-            _battleWindowControllers.AddRange(_enemyNameWindowController);
             _battleWindowControllers.Add(_mainCommandWindowController);
             _battleWindowControllers.Add(_attackCommandWindowController);
             _battleWindowControllers.Add(_selectItemWindowController);
+            _battleWindowControllers.Add(_selectionEnemyWindowController);
+            _battleWindowControllers.Add(_selectionPartyWindowController);
 
             //_battleWindowControllers = new()
             //{
@@ -83,12 +90,14 @@ namespace SimpleRpg
                 // controller が null でないことを確認してから呼び出す
                 if (controller != null)
                 {
+                    var monoBehaviour = controller as MonoBehaviour;
+                    Debug.Log($"  -> {monoBehaviour.GetType().Name} (ID:{monoBehaviour.GetInstanceID()}) に SetUpController を呼び出します。");
                     controller.SetUpController(battleManager);
                 }
                 else
                 {
                     // もしnullが見つかったら、コンソールにエラーメッセージを出す
-                    Debug.LogError("BattleWindowManagerのリストに null のコントローラが含まれています！インスペクターの設定を確認してください。");
+                    Debug.LogError("BattleWindowManagerのリストに null のコントローラが検出されました。インスペクターの設定を確認してください。");
                 }
             }
         }
@@ -98,10 +107,17 @@ namespace SimpleRpg
         /// </summary>
         public void HideAllWindow()
         {
-            foreach (var controller in _battleWindowControllers)
-            {
-                controller.HideWindow();
-            }
+            //foreach (var controller in _battleWindowControllers)
+            //{
+            //    if (controller != null)
+            //    {
+            //        controller.HideWindow();
+            //    }
+            //    else
+            //    {
+            //        Debug.LogError("HideAllWindow: null のコントローラが検出されました。インスペクターの設定を確認してください。");
+            //    }
+            //}
         }
 
         /// <summary>
@@ -115,9 +131,17 @@ namespace SimpleRpg
         /// <summary>
         /// 敵キャラクターの名前を表示するウィンドウを制御するクラスへの参照を取得します。
         /// </summary>
-        public List<EnemyNameWindowController> GetEnemyNameWindowController()
+        public SelectionEnemyWindowController GetSelectionEnemyWindowController()
         {
-            return _enemyNameWindowController;
+            return _selectionEnemyWindowController;
+        }
+
+        /// <summary>
+        /// パーティーメンバーの名前を表示するウィンドウを制御するクラスへの参照を取得します。
+        /// </summary>
+        public SelectionPartyWindowController GetSelectionPartyWindowController()
+        {
+            return _selectionPartyWindowController;
         }
 
         /// <summary>
@@ -144,4 +168,6 @@ namespace SimpleRpg
             return _selectItemWindowController;
         }
     }
+
 }
+

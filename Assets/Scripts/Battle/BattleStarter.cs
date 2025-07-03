@@ -33,7 +33,7 @@ namespace SimpleRpg
             //ShowCommand();
 
             // 敵の名前ウィンドウを表示します。
-            ShowEnemyNameWindow();
+            //ShowEnemyNameWindow();
 
             // 敵出現のメッセージを表示します。
             ShowEnemyAppearMessage();
@@ -47,7 +47,7 @@ namespace SimpleRpg
         /// </summary>
         void HideAllUI()
         {
-
+            _battleManager.GetWindowManager().HideAllWindow();
         }
 
         /// <summary>
@@ -66,42 +66,19 @@ namespace SimpleRpg
         /// </summary>
         void ShowStatus()
         {
-            //int characterId = 1;
-            //var characterStatus = CharacterStatusManager.GetCharacterStatusById(characterId);
-            //if (characterStatus == null)
-            //{
-            //    SimpleLogger.Instance.LogWarning($"キャラクターステータスが取得できませんでした。 ID : {characterId}");
-            //    return;
-            //}
-
-            //var controller = _battleManager.GetWindowManager().GetStatusWindowController();
-            //controller.SetCharacterStatus(characterStatus);
-            //controller.ShowWindow();
-
-            // 1. 全てのステータスウィンドウのコントローラーを「リスト」として取得します。
             var statusControllers = _battleManager.GetWindowManager().GetStatusWindowController();
-
-            // 2. 表示すべきパーティメンバー全員のステータスを「リスト」として取得します。
-            //    (CharacterStatusManagerに、パーティメンバー全員の情報をリストで返すメソッドがあると仮定します)
             var partyStatuses = CharacterStatusManager.GetPartyMemberStatuses();
 
-            // 3. ループ処理で、各コントローラーに各メンバーの情報をセットします。
-            //    ウィンドウの数だけループを回します。
             for (int i = 0; i < statusControllers.Count; i++)
             {
                 if (i < partyStatuses.Count)
                 {
-                    // i番目のパーティメンバーが存在する場合...
-
-                    // i番目のコントローラーに、i番目のメンバーのステータスをセットして表示します。
                     var currentStatus = partyStatuses[i];
-                    statusControllers[i].SetCharacterStatus(currentStatus); // controller[i] に対して呼び出す
-                    statusControllers[i].ShowWindow();                   // controller[i] に対して呼び出す
+                    statusControllers[i].SetCharacterStatus(currentStatus);
+                    statusControllers[i].ShowWindow();
                 }
                 else
                 {
-                    // 対応するパーティメンバーがいない（例：パーティが3人しかいない時の4番目のウィンドウ）
-                    // そのコントローラーは非表示にしておきます。
                     statusControllers[i].HideWindow();
                 }
             }
@@ -117,42 +94,42 @@ namespace SimpleRpg
             controller.InitializeCommand();
         }
 
-        /// <summary>
-        /// 敵キャラクターの名前表示ウィンドウを表示します。
-        /// </summary>
-        void ShowEnemyNameWindow()
-        {
-            //var controller = _battleManager.GetWindowManager().GetEnemyNameWindowController();
-            //controller.ShowWindow();
-            //int enemyId = _battleManager.EnemyId;
-            //var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
-            //controller.SetEnemyName(enemyData.enemyName);
+        ///// <summary>
+        ///// 敵キャラクターの名前表示ウィンドウを表示します。
+        ///// </summary>
+        //void ShowEnemyNameWindow()
+        //{
+        //    //var controller = _battleManager.GetWindowManager().GetEnemyNameWindowController();
+        //    //controller.ShowWindow();
+        //    //int enemyId = _battleManager.EnemyId;
+        //    //var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
+        //    //controller.SetEnemyName(enemyData.enemyName);
 
 
-            var nameWindowControllers = _battleManager.GetWindowManager().GetEnemyNameWindowController();
+        //    var nameWindowControllers = _battleManager.GetWindowManager().GetEnemyNameWindowController();
 
-            var enemyIdList = _battleManager.EnemyId;
+        //    var enemyIdList = _battleManager.EnemyId;
 
-            for (int i = 0; i < nameWindowControllers.Count; i++)
-            {
-                if (i < enemyIdList.Count)
-                {
-                    int enemyId = enemyIdList[i];
-                    var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
+        //    for (int i = 0; i < nameWindowControllers.Count; i++)
+        //    {
+        //        if (i < enemyIdList.Count)
+        //        {
+        //            int enemyId = enemyIdList[i];
+        //            var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
 
-                    if (enemyData != null)
-                    {
-                        nameWindowControllers[i].SetEnemyName(enemyData.enemyName);
-                        nameWindowControllers[i].ShowWindow();
-                    }
-                }
-                else
-                {
-                    nameWindowControllers[i].HideWindow();
-                }
-            }
+        //            if (enemyData != null)
+        //            {
+        //                nameWindowControllers[i].SetEnemyName(enemyData.enemyName);
+        //                nameWindowControllers[i].ShowWindow();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            nameWindowControllers[i].HideWindow();
+        //        }
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// 敵キャラクターが出現したメッセージを表示します。

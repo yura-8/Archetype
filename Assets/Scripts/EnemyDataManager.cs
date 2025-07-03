@@ -10,9 +10,40 @@ namespace SimpleRpg
     public static class EnemyDataManager
     {
         /// <summary>
+        /// パーティ内にいるキャラクターのIDのリストです。
+        /// </summary>
+        public static List<int> enemies;
+
+        /// <summary>
         /// 読み込んだ敵キャラクターのデータの一覧です。
         /// </summary>
         static List<EnemyData> _enemyData = new();
+
+        /// <summary>
+        /// 現在の敵全員ののステータス情報（EnemyData）をリストで返します。
+        /// </summary>
+        public static List<EnemyData> GetenemySatuses()
+        {
+            // もしパーティメンバーのリストが未設定（null）なら、空のリストを返してエラーを防ぐ
+            if (enemies == null)
+            {
+                return new List<EnemyData>();
+            }
+
+            List<EnemyData> enemyStatuses = new();
+            foreach (int id in enemies)
+            {
+                EnemyData status = GetEnemyDataById(id);
+                if (status != null)
+                {
+                    // 見つかったステータス情報を、返す用の新しいリストに追加します。
+                    enemyStatuses.Add(status);
+                }
+            }
+
+            // 完成した「相手の敵だけのステータスリスト」を返します。
+            return enemyStatuses;
+        }
 
         /// <summary>
         /// 敵キャラクターのデータをロードします。

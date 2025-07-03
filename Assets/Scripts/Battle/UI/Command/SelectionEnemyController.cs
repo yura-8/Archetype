@@ -6,8 +6,14 @@ namespace SimpleRpg
     /// <summary>
     /// 敵キャラクターの名前を表示するUIを制御するクラスです。
     /// </summary>
-    public class EnemyNameUIController : MonoBehaviour, IBattleUIController
+    public class SelectionEnemyController : MonoBehaviour
     {
+        /// <summary>
+        /// コマンドのカーソルオブジェクトです。
+        /// </summary>
+        [SerializeField]
+        GameObject _cursorObj;
+
         /// <summary>
         /// 敵キャラクターの名前を表示するテキストです。
         /// </summary>
@@ -29,6 +35,22 @@ namespace SimpleRpg
         public void ClearEnemyName()
         {
             _enemyNameText.text = "";
+        }
+
+        /// <summary>
+        /// 選択項目のカーソルを表示します。
+        /// </summary>
+        public void ShowCursor()
+        {
+            _cursorObj.SetActive(true);
+        }
+
+        /// <summary>
+        /// 選択項目のカーソルを非表示にします。
+        /// </summary>
+        public void HideCursor()
+        {
+            _cursorObj.SetActive(false);
         }
 
         /// <summary>

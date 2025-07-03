@@ -34,6 +34,11 @@ namespace SimpleRpg
 
         void Update()
         {
+            if (_battleManager == null || _battleManager.BattlePhase != BattlePhase.InputCommand_Attack)
+            {
+                return;
+            }
+            Debug.Log("[AttackCmd] 入力受付中");
             SelectCommand();
         }
 
@@ -65,6 +70,10 @@ namespace SimpleRpg
             else if (InputGameKey.ConfirmButton())
             {
                 _battleManager.OnCommandAttackSelected(_selectedAttackCommand);
+            }
+            else if (InputGameKey.CancelButton())
+            {
+                _battleManager.OnAttackCanceled();
             }
         }
 

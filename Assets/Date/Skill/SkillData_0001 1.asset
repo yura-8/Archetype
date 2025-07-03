@@ -16,8 +16,8 @@ MonoBehaviour:
   skillName: "HP\u30D2\u30FC\u30EB"
   skillDesc: "HP\u306E\u56DE\u5FA9"
   cost: 3
-  maxCount: -1
-  currentCount: 0
+  maxCount: 2
+  currentCount: 2
   skillEffect:
     skillCategory: 0
     effectTarget: 0
