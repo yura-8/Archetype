@@ -142,6 +142,7 @@ namespace SimpleRpg
                     var itemCommandWindow = GetWindowManager().GetSelectionWindowController();
                     itemCommandWindow.InitializeSelect();
                     itemCommandWindow.ShowWindow();
+                    GetWindowManager().GetDescriptionWindowController().ShowWindow();
                     ShowSelectionWindow();
                     break;
                 case BattleCommand.Guard:
@@ -159,6 +160,7 @@ namespace SimpleRpg
             SimpleLogger.Instance.Log($"攻撃コマンド選択: {selectedAttackCommand}");
             SelectedAttackCommand = selectedAttackCommand;
             var windowManager = GetWindowManager();
+            //windowManager.GetAttackCommandWindowController().HideWindow();
 
             switch (SelectedAttackCommand)
             {
@@ -166,10 +168,13 @@ namespace SimpleRpg
                     Debug.Log("攻撃対象を選択してください。");
                     SetBattlePhase(BattlePhase.SelectEnemy);
                     windowManager.GetSelectionEnemyWindowController().InitializeSelect();
+                    StartCoroutine(ShowEnemySelectProcess());
+                    windowManager.GetDescriptionWindowController().HideWindow();
                     break;
 
                 case AttackCommand.Skill:
                     SetBattlePhase(BattlePhase.SelectSkill);
+                    windowManager.GetDescriptionWindowController().ShowWindow();
                     ShowSelectionWindow();
                     break;
             }
@@ -244,14 +249,14 @@ namespace SimpleRpg
                     // 敵単体がターゲットなら、敵選択フェーズへ
                     Debug.Log("対象の敵を選択してください。");
                     SetBattlePhase(BattlePhase.SelectEnemy);
-                    GetWindowManager().GetSelectionEnemyWindowController().InitializeSelect();
+                    StartCoroutine(ShowEnemySelectProcess());
                     break;
 
                 case EffectTarget.FriendSolo:
                     // 味方単体がターゲットなら、味方選択フェーズへ
                     Debug.Log("対象のパーティーメンバーを選択してください。");
                     SetBattlePhase(BattlePhase.SelectParty);
-                    GetWindowManager().GetSelectionPartyWindowController().InitializeSelect();
+                    StartCoroutine(ShowPartySelectProcess());
                     break;
 
                 // ここに EnemyAll（敵全体）や FriendAll（味方全体）などのケースも追加していく
@@ -259,6 +264,7 @@ namespace SimpleRpg
                 default:
                     Debug.Log("ターゲット選択不要。行動を実行します。");
                     SetBattlePhase(BattlePhase.Action);
+                    GetWindowManager().GetDescriptionWindowController().HideWindow();
                     // 行動実行処理へ
                     break;
             }
@@ -272,6 +278,7 @@ namespace SimpleRpg
         {
             Debug.Log($"{target.enemyName} がターゲットに選択されました。");
             SetBattlePhase(BattlePhase.Action);
+            GetWindowManager().GetDescriptionWindowController().HideWindow();
             // ここから、実際にダメージを与えるなどの行動実行処理を呼び出すことになります。
             // StartCoroutine(ExecutePlayerAction());
         }
@@ -283,6 +290,7 @@ namespace SimpleRpg
         {
             Debug.Log($"{CharacterDataManager.GetCharacterName(target.characterId)} がターゲットに選択されました。");
             SetBattlePhase(BattlePhase.Action);
+            GetWindowManager().GetDescriptionWindowController().HideWindow();
         }
 
         /// <summary>
@@ -293,6 +301,7 @@ namespace SimpleRpg
             var windowManager = GetWindowManager();
             Debug.Log("攻撃コマンド選択のキャンセル処理が実行されました！");
             windowManager.GetAttackCommandWindowController().HideWindow();
+            windowManager.GetCommandWindowController().ShowWindow();
             SetBattlePhase(BattlePhase.InputCommand_Main);
         }
 
@@ -300,7 +309,6 @@ namespace SimpleRpg
         {
             var windowManager = GetWindowManager();
             Debug.Log("選択コマンド選択のキャンセル処理が実行されました！");
-            windowManager.GetAttackCommandWindowController().ShowWindow();
 
             switch (BattlePhase)
             {
@@ -308,6 +316,8 @@ namespace SimpleRpg
                 case BattlePhase.SelectItem:
                     Debug.Log("アイテムコマンド選択のキャンセル処理が実行されました！");
                     windowManager.GetSelectionWindowController().HideWindow();
+                    GetWindowManager().GetDescriptionWindowController().HideWindow();
+                    windowManager.GetCommandWindowController().ShowWindow();
                     // メインコマンド選択に戻る
                     SetBattlePhase(BattlePhase.InputCommand_Main);
                     break;
@@ -316,7 +326,9 @@ namespace SimpleRpg
                 case BattlePhase.SelectSkill:
                     Debug.Log("スキルコマンド選択のキャンセル処理が実行されました！");
                     windowManager.GetSelectionWindowController().HideWindow();
-                     // 「通常攻撃/スキル」選択に戻る
+                    GetWindowManager().GetDescriptionWindowController().HideWindow();
+                    // 「通常攻撃/スキル」選択に戻る
+                    windowManager.GetAttackCommandWindowController().ShowWindow();
                     SetBattlePhase(BattlePhase.InputCommand_Attack);
                     break;
 
@@ -330,26 +342,29 @@ namespace SimpleRpg
         {
             var windowManager = GetWindowManager();
             Debug.Log("対象コマンド選択のキャンセル処理が実行されました！");
-            windowManager.GetAttackCommandWindowController().ShowWindow();
+            GetWindowManager().GetDescriptionWindowController().HideWindow();
 
             switch (BattlePhase)
             {
                 // 敵選択中にキャンセル
                 case BattlePhase.SelectEnemy:
                      windowManager.GetSelectionEnemyWindowController().HideWindow();
+                    windowManager.GetAttackCommandWindowController().ShowWindow();
 
                     Debug.Log("敵選択のキャンセル処理が実行されました！");
                     // どこから来たかに応じて戻り先を変更
                     if (SelectedAttackCommand == AttackCommand.Normal)
                     {
                         Debug.Log("通常攻撃のキャンセル");
-                        // 「通常攻撃/スキル」選択に戻る
+                        // 「通常攻撃/スキル」選択に戻る;
                         SetBattlePhase(BattlePhase.InputCommand_Attack);
                     }
                     else if (SelectedAttackCommand == AttackCommand.Skill)
                     {
                         Debug.Log("スキルのキャンセル");
                         // スキルのリスト選択に戻る
+                        //windowManager.GetAttackCommandWindowController().ShowWindow();
+                        GetWindowManager().GetDescriptionWindowController().ShowWindow();
                         SetBattlePhase(BattlePhase.SelectSkill);
                         ShowSelectionWindow();
                     }
@@ -363,17 +378,22 @@ namespace SimpleRpg
                 case BattlePhase.SelectParty:
                     // 味方選択カーソルを非表示にする処理
                     windowManager.GetSelectionPartyWindowController().HideWindow();
+                    windowManager.GetAttackCommandWindowController().ShowWindow();
                     Debug.Log("パーティー選択のキャンセル処理が実行されました！");
 
                     if (SelectedAttackCommand == AttackCommand.Skill)
                     {
                         // スキルのリスト選択に戻る
+                        GetWindowManager().GetDescriptionWindowController().ShowWindow();
                         SetBattlePhase(BattlePhase.SelectSkill);
+                        ShowSelectionWindow();
                     }
-                    else
+                    else if(SelectedCommand == BattleCommand.Item)
                     {
                         // アイテムのリスト選択に戻る
+                        GetWindowManager().GetDescriptionWindowController().ShowWindow();
                         SetBattlePhase(BattlePhase.SelectItem);
+                        ShowSelectionWindow();
                     }
                     break;
 
@@ -383,84 +403,26 @@ namespace SimpleRpg
             }
         }
 
+        // 敵選択ウィンドウを 1 フレーム遅らせて開く
+        IEnumerator ShowEnemySelectProcess()
+        {
+            yield return null;                         // ―― 1 フレーム待つ
+            var enemySel = GetWindowManager().GetSelectionEnemyWindowController();
+            enemySel.InitializeSelect();               // ← 再初期化安全
+            enemySel.ShowWindow();
+            enemySel.SetCanSelectState(true);
+            //GetWindowManager().GetDescriptionWindowController().ShowWindow();
+        }
 
-        //public void OnAttackCanceled()
-        //{
-        //    Debug.Log($"キャンセルが要求されました。現在のフェーズ: {BattlePhase}");
-
-        //    var windowManager = GetWindowManager();
-
-        //    // 現在のフェーズに応じて処理を分岐
-        //    switch (BattlePhase)
-        //    {
-        //        // 「通常攻撃/スキル」選択中にキャンセル → メインコマンド選択に戻る
-        //        case BattlePhase.InputCommand_Attack:
-        //            Debug.Log("攻撃コマンド選択のキャンセル処理が実行されました！");
-        //            windowManager.GetAttackCommandWindowController().HideWindow();
-        //            SetBattlePhase(BattlePhase.InputCommand_Main);
-        //            break;
-
-        //        // スキル/アイテムリスト選択中にキャンセル
-        //        case BattlePhase.SelectItem:
-        //            windowManager.GetSelectionWindowController().HideWindow();
-        //            // アイテム選択から来たなら → メインコマンド選択に戻る
-        //            SetBattlePhase(BattlePhase.InputCommand_Main);
-        //            break;
-
-        //        // スキル/アイテムリスト選択中にキャンセル
-        //        case BattlePhase.SelectSkill:
-        //            windowManager.GetSelectionWindowController().HideWindow();
-        //            // スキル選択から来たなら → 「通常攻撃/スキル」選択に戻る
-        //            SetBattlePhase(BattlePhase.InputCommand_Attack);
-        //            break;
-        //        // 敵選択中にキャンセル
-        //        case BattlePhase.SelectEnemy:
-        //            // 敵選択カーソルを非表示にする処理
-        //            windowManager.GetSelectionEnemyWindowController().HideWindow();
-
-        //            // どこから来たかに応じて戻り先を変更
-        //            if (SelectedAttackCommand == AttackCommand.Normal)
-        //            {
-        //                // 通常攻撃から来たなら → 「通常攻撃/スキル」選択に戻る
-        //                SetBattlePhase(BattlePhase.InputCommand_Attack);
-        //            }
-        //            else if (SelectedAttackCommand == AttackCommand.Skill)
-        //            {
-        //                // スキルのリスト選択に戻る
-        //                SetBattlePhase(BattlePhase.SelectSkill);
-        //                ShowSelectionWindow();
-        //            }
-        //            else
-        //            {
-        //                // アイテムのリスト選択に戻る
-        //                SetBattlePhase(BattlePhase.SelectItem);
-        //                ShowSelectionWindow();
-        //            }
-        //            break;
-
-        //        // 味方選択中にキャンセル
-        //        case BattlePhase.SelectFriend:
-        //            // 味方選択カーソルを非表示にする処理
-        //            // windowManager.GetTargetSelectionController().HideCursor();
-
-        //            if (SelectedAttackCommand == AttackCommand.Skill)
-        //            {
-        //                // スキルのリスト選択に戻る
-        //                SetBattlePhase(BattlePhase.SelectSkill);
-        //            }
-        //            else
-        //            {
-        //                // アイテムのリスト選択に戻る
-        //                SetBattlePhase(BattlePhase.SelectItem);
-        //            }
-        //            break;
-
-        //        // これ以上戻れないメインコマンド選択画面では、キャンセルは効かない（何もしない）
-        //        case BattlePhase.InputCommand_Main:
-        //        default:
-        //            Debug.Log("このフェーズではキャンセルできません。");
-        //            break;
-        //    }
-        //}
+        // 味方選択ウィンドウ版
+        IEnumerator ShowPartySelectProcess()
+        {
+            yield return null;
+            var partySel = GetWindowManager().GetSelectionPartyWindowController();
+            partySel.InitializeSelect();
+            partySel.ShowWindow();
+            partySel.SetCanSelectState(true);
+            //GetWindowManager().GetDescriptionWindowController().ShowWindow();
+        }
     }
 }

@@ -74,6 +74,14 @@ namespace SimpleRpg
                 var skillData = SkillDataManager.GetSkillDataById(skillId);
                 _characterSkillList.Add(skillData);
             }
+
+            Debug.Log($"[SkillController] SetCharacterSkill completed. Skill count: {_characterSkillList.Count}");
+            foreach (var skill in _characterSkillList)
+            {
+                // skill が null でないかも確認
+                string skillName = skill != null ? skill.skillName : "NULL SkillData";
+                Debug.Log($"[SkillController] Loaded skill: {skillName}");
+            }
         }
 
         /// <summary>

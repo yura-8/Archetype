@@ -45,12 +45,16 @@ namespace SimpleRpg
         [SerializeField]
         SelectionWindowController _selectItemWindowController;
 
+        // 説明文ウィンドウのコントローラへの参照
+        [SerializeField]
+        DescriptionWindowController _descriptionWindowController;
+
         /// <summary>
         /// ウィンドウのコントローラのリストです。
         /// </summary>
         List<IBattleWindowController> _battleWindowControllers = new();
 
-        void Start()
+        void Awake()
         {
             SetControllerList();
         }
@@ -61,7 +65,7 @@ namespace SimpleRpg
         public void SetControllerList()
         {
             _battleWindowControllers = new List<IBattleWindowController>();
-
+            _battleWindowControllers.Clear();
 
             _battleWindowControllers.AddRange(_statusWindowController);
             _battleWindowControllers.Add(_mainCommandWindowController);
@@ -69,6 +73,7 @@ namespace SimpleRpg
             _battleWindowControllers.Add(_selectItemWindowController);
             _battleWindowControllers.Add(_selectionEnemyWindowController);
             _battleWindowControllers.Add(_selectionPartyWindowController);
+            _battleWindowControllers.Add(_descriptionWindowController);
 
             //_battleWindowControllers = new()
             //{
@@ -107,17 +112,6 @@ namespace SimpleRpg
         /// </summary>
         public void HideAllWindow()
         {
-            //foreach (var controller in _battleWindowControllers)
-            //{
-            //    if (controller != null)
-            //    {
-            //        controller.HideWindow();
-            //    }
-            //    else
-            //    {
-            //        Debug.LogError("HideAllWindow: null のコントローラが検出されました。インスペクターの設定を確認してください。");
-            //    }
-            //}
         }
 
         /// <summary>
@@ -166,6 +160,12 @@ namespace SimpleRpg
         public SelectionWindowController GetSelectionWindowController()
         {
             return _selectItemWindowController;
+        }
+
+        // 説明文ウィンドウのコントローラを取得するメソッド
+        public DescriptionWindowController GetDescriptionWindowController()
+        {
+            return _descriptionWindowController;
         }
     }
 

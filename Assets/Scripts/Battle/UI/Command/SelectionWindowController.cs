@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
 
 namespace SimpleRpg
 {
@@ -187,6 +188,9 @@ namespace SimpleRpg
 
             // カーソルを表示
             ShowSelectionCursor();
+
+            // 説明文を更新する
+            UpdateDescription();
         }
 
         /// <summary>
@@ -220,9 +224,50 @@ namespace SimpleRpg
         }
 
         /// <summary>
-        /// ウィンドウの状態をセットアップします。
+        /// 現在カーソルが合っている項目の説明文をUIに表示します。
         /// </summary>
-        public void SetUpWindow()
+        private void UpdateDescription()
+        {
+            Debug.Log("--- [UpdateDescription] Method START ---"); // ★追加
+
+            // BattleManager がなければ何もしない
+            if (_battleManager == null)
+            {
+                Debug.LogError("UpdateDescription: _battleManager is null");
+                return;
+            }
+            string description = "";
+            if (IsSkillMode)
+            {
+                var skillData = _skillController.GetSkillData(_selectedIndex);
+                Debug.Log($"[UpdateDescription] IsSkillMode: _selectedIndex={_selectedIndex}, skillData name is '{(skillData != null ? skillData.skillName : "null")}'");
+                if (skillData != null)
+                {
+                    description = skillData.skillDesc;
+                    Debug.Log($"[UpdateDescription] Skill Description to set: '{description}'");
+                }
+            }
+            if (IsItemMode)
+            {
+                var itemData = _itemController.GetItemData(_selectedIndex); // ※アイテム側のデータ取得メソッドを想定
+                if (itemData != null)
+                {
+                    description = itemData.itemDesc; // アイテムデータから説明文を取得
+                }
+            }
+
+            // 取得した説明文を、説明ウィンドウに表示するよう命令する
+            if (IsSkillMode) _skillUiController.SetDescriptionText(description);
+            else if (IsItemMode) _itemUiController.SetDescriptionText(description);
+
+            _battleManager.GetWindowManager().GetDescriptionWindowController().UpdateText(description);
+            _battleManager.GetWindowManager().GetDescriptionWindowController().ShowWindow();
+        }
+
+            /// <summary>
+            /// ウィンドウの状態をセットアップします。
+            /// </summary>
+            public void SetUpWindow()
         {
             if (IsSkillMode)
             {
@@ -257,6 +302,9 @@ namespace SimpleRpg
             {
                 _itemUiController.ShowSelectedCursor(_selectedIndex);
             }
+
+            UpdateDescription();
+            _battleManager.GetWindowManager().GetDescriptionWindowController().ShowWindow();
         }
 
         /// <summary>
@@ -264,6 +312,7 @@ namespace SimpleRpg
         /// </summary>
         public void SetPageElement()
         {
+            Debug.Log("--- [SetPageElement] Method START ---"); // ★追加
             if (_battleManager.SelectedCommand == BattleCommand.Attack && _battleManager.SelectedAttackCommand == AttackCommand.Skill)
             {
                 _skillController.SetPageSkill(_page, _skillUiController);
@@ -289,6 +338,9 @@ namespace SimpleRpg
                 _itemUiController.SetPrevCursorVisibility(isVisiblePrevCursor);
                 _itemUiController.SetNextCursorVisibility(isVisibleNextCursor);
             }
+            // ページの初期表示と同時に、最初の項目の説明文も更新する
+            UpdateDescription();
+            Debug.Log("--- [SetPageElement] Method END ---"); // ★追加
         }
 
         /// <summary>

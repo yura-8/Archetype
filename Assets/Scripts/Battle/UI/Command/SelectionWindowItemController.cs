@@ -147,5 +147,25 @@ namespace SimpleRpg
             }
             return null;
         }
+
+        /// <summary>
+        /// 項目が選択された時の処理です。
+        /// </summary>
+        /// <param name="selectedIndex">選択されたインデックス</param>
+        public ItemData GetItemData(int selectedIndex)
+        {
+            // 1. まずは、選択中のインデックスが有効か確認
+            if (!IsValidIndex(selectedIndex))
+            {
+                // 無効なら、null（データなし）を返す
+                return null;
+            }
+
+            // 2. 表示用リストから、選択中の「所持情報(PartyItemInfo)」を取得
+            PartyItemInfo partyItemInfo = _displayItemList[selectedIndex];
+
+            // 3. その所持情報に含まれるIDを使って、ItemDataManagerから「基本データ(ItemData)」を取得して返す
+            return ItemDataManager.GetItemDataById(partyItemInfo.itemId);
+        }
     }
 }

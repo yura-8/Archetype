@@ -74,7 +74,7 @@ namespace SimpleRpg
                 // Inspectorで設定したSpriteRendererの数を超えないように安全チェック
                 if (i >= _enemyRenderers.Count)
                 {
-                    Debug.LogWarning("表示したい敵の数に対して、設定されているSpriteRendererの数が足りません。");
+                    //Debug.LogWarning("表示したい敵の数に対して、設定されているSpriteRendererの数が足りません。");
                     break; // ループを抜ける
                 }
 

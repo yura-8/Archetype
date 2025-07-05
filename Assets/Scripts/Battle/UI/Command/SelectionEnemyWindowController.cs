@@ -22,6 +22,9 @@ namespace SimpleRpg
         BattleManager _battleManager;
         private List<EnemyData> _activeEnemies; // 現在選択対象の敵リスト
         private int _selectedIndex;
+        private bool _canSelect;
+        private bool _pendingEnable;
+        private float _timer;
 
         /// <summary>
         /// コントローラの状態をセットアップします。
@@ -39,10 +42,28 @@ namespace SimpleRpg
         void Update()
         {
             // 敵選択フェーズでなければ何もしない
+            // 敵選択フェーズ かつ 入力許可時のみ処理
             if (_battleManager == null || _battleManager.BattlePhase != BattlePhase.SelectEnemy)
             {
                 return;
             }
+            if (_pendingEnable)
+            {
+                _timer -= Time.unscaledDeltaTime;
+                if (_timer > 0) return;
+
+                if (!InputGameKey.ConfirmButton() && !InputGameKey.CancelButton())
+                {
+                    _canSelect = true;
+                    _pendingEnable = false;
+                }
+                else
+                {
+                    return; // まだ押しっぱなし
+                }
+            }
+            if (!_canSelect) return;
+
             Debug.Log("[EnemyCmd] 入力受付中");
             SelectItem();
         }
@@ -111,8 +132,28 @@ namespace SimpleRpg
             _uiController.UpdateEnemyList(_activeEnemies);
             _uiController.ShowSelectedCursor(_selectedIndex);
             ShowWindow();
+            _canSelect = false;
         }
-        private bool IsValidIndex(int index)
+
+        /// <summary>外部から選択可否を切り替える</summary>
+        public void SetCanSelectState(bool state)
+        {
+            _canSelect = state;
+            if (state)
+            {
+                _pendingEnable = true;  // Confirm を離すのを待つ
+                _canSelect = false;
+                _timer = 0.1f;
+            }
+            else
+            {
+                _pendingEnable = false;
+                _canSelect = false;
+                _timer = 0.1f;
+            }
+        }
+
+    private bool IsValidIndex(int index)
         {
             return index >= 0 && index < _activeEnemies.Count;
         }
@@ -143,6 +184,8 @@ namespace SimpleRpg
         public void HideWindow()
         {
             _uiController.Hide();
+            _canSelect = false;
+            _pendingEnable = false;
         }
     }
 }

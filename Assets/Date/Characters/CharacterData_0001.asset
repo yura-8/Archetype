@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: 1
   characterName: KUROGANE LEN
+  firstName: LEN
   characterSkillRecords:
   - level: 1
     skillId: 1
+  - level: 1
+    skillId: 2

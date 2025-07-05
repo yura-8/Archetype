@@ -109,7 +109,19 @@ namespace SimpleRpg
             // レベルに対応するパラメータデータを取得します。
             int charcterId = 1;
             var parameterTable = CharacterDataManager.GetParameterTable(charcterId);
+            if (expRecord == null)
+            {
+                Debug.LogError($"ExpTable にレベル {_playerLevel} がありません"); 
+                return;
+            }
+
             var parameterRecord = parameterTable.parameterRecords.Find(record => record.level == _playerLevel);
+            if (parameterRecord == null)
+            {
+                Debug.LogError($"ParameterTable にレベル {_playerLevel} がありません");
+                return;
+            }
+
 
             // 指定したレベルまでに覚えているスキルのIDをリスト化します。
             var skillList = GetSkillIdList(charcterId, _playerLevel);
