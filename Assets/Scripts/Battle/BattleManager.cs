@@ -147,7 +147,8 @@ namespace SimpleRpg
                     break;
                 case BattleCommand.Guard:
                 case BattleCommand.Escape:
-                    SetBattlePhase(BattlePhase.Action);
+                    SetBattlePhase(BattlePhase.InputCommand_confirm);
+                    StartCoroutine(ShowConfirmationProcess());
                     break;
             }
         }
@@ -423,6 +424,73 @@ namespace SimpleRpg
             partySel.ShowWindow();
             partySel.SetCanSelectState(true);
             //GetWindowManager().GetDescriptionWindowController().ShowWindow();
+        }
+
+        /// <summary>
+        /// 確認ウィンドウを表示するコルーチンです。
+        /// </summary>
+        private IEnumerator ShowConfirmationProcess()
+        {
+            GetWindowManager().GetConfirmationWindowController().ShowWindow();
+            string question = "";
+
+            if (SelectedCommand == BattleCommand.Guard)
+            {
+                question = "GUARDしますか？";
+            }
+            else if (SelectedCommand == BattleCommand.Escape)
+            {
+                question = "ESCAPEしますか？";
+            }
+
+            // ★ 修正点: ShowWindow(question) から Activate(question) に変更
+            GetWindowManager().GetConfirmationWindowController().Activate(question);
+
+            yield return null;
+
+            GetWindowManager().GetConfirmationWindowController().SetCanSelect(true);
+        }
+
+        /// <summary>
+        /// 確認ウィンドウで「はい」が選択されたときの処理です。
+        /// </summary>
+        public void OnConfirmationAccepted()
+        {
+            GetWindowManager().GetConfirmationWindowController().HideWindow();
+
+            // ★★★ 以下に処理を書き足す ★★★
+
+            // どのコマンドが選択されていたかに応じて処理を分岐
+            switch (SelectedCommand)
+            {
+                case BattleCommand.Guard:
+                    Debug.Log("「ぼうぎょ」の準備をします。");
+                    // ここで、キャラクターが防御状態になる、などの実際のゲームロジックを将来的に追加します。
+                    break;
+
+                case BattleCommand.Escape:
+                    Debug.Log("「にげる」を試みます！");
+                    // ここで、逃走が成功するかどうかの確率計算などのゲームロジックを将来的に追加します。
+                    // 成功したら戦闘終了、失敗したらメッセージ表示、などの処理に繋げます。
+                    break;
+            }
+
+            // プレイヤーの行動をセットしたので、行動実行フェーズに進む
+            SetBattlePhase(BattlePhase.Action);
+        }
+
+        // BattleManager.cs
+
+        /// <summary>
+        /// 確認ウィンドウで「いいえ」またはキャンセルが選択されたときの処理です。
+        /// </summary>
+        public void OnConfirmationCanceled()
+        {
+            // 1. 「はい／いいえ」のウィンドウを非表示にする
+            GetWindowManager().GetConfirmationWindowController().HideWindow();
+
+            // 3. ゲームの状態を「メインコマンド入力待ち」に戻す
+            SetBattlePhase(BattlePhase.InputCommand_Main);
         }
     }
 }

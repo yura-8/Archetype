@@ -13,6 +13,7 @@
         SelectParty, //味方選択
         SelectItem, //アイテム選択
         SelectSkill, //スキル選択
+        InputCommand_confirm, //確認コマンド入力
         Action, //行動
         Result, //戦闘結果
     }

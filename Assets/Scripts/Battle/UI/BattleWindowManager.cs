@@ -49,6 +49,10 @@ namespace SimpleRpg
         [SerializeField]
         DescriptionWindowController _descriptionWindowController;
 
+        // 説明文ウィンドウのコントローラへの参照
+        [SerializeField]
+        ConfirmationWindowController _confirmationWindowController;
+
         /// <summary>
         /// ウィンドウのコントローラのリストです。
         /// </summary>
@@ -65,15 +69,19 @@ namespace SimpleRpg
         public void SetControllerList()
         {
             _battleWindowControllers = new List<IBattleWindowController>();
-            _battleWindowControllers.Clear();
+            //_battleWindowControllers.Clear();
 
-            _battleWindowControllers.AddRange(_statusWindowController);
+            if (_statusWindowController != null)
+            {
+                _battleWindowControllers.AddRange(_statusWindowController);
+            }
             _battleWindowControllers.Add(_mainCommandWindowController);
             _battleWindowControllers.Add(_attackCommandWindowController);
             _battleWindowControllers.Add(_selectItemWindowController);
             _battleWindowControllers.Add(_selectionEnemyWindowController);
             _battleWindowControllers.Add(_selectionPartyWindowController);
             _battleWindowControllers.Add(_descriptionWindowController);
+            _battleWindowControllers.Add(_confirmationWindowController);
 
             //_battleWindowControllers = new()
             //{
@@ -112,6 +120,8 @@ namespace SimpleRpg
         /// </summary>
         public void HideAllWindow()
         {
+            foreach (var c in _battleWindowControllers)
+                if (c != null) c.HideWindow();
         }
 
         /// <summary>
@@ -166,6 +176,12 @@ namespace SimpleRpg
         public DescriptionWindowController GetDescriptionWindowController()
         {
             return _descriptionWindowController;
+        }
+
+        // 説明文ウィンドウのコントローラを取得するメソッド
+        public ConfirmationWindowController GetConfirmationWindowController()
+        {
+            return _confirmationWindowController;
         }
     }
 
