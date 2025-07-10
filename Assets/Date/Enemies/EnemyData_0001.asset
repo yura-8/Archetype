@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: EnemyData_0001
   m_EditorClassIdentifier: 
   enemyId: 1
-  enemyName: "\u304A\u6383\u9664\u304F\u3093"
+  enemyName: "\u30AF\u30A2\u30C9\u30A6\u30A9\u30FC\u30AB\u30FC"
   sprite: {fileID: -4723188824610832630, guid: 65059a39d5d309d4e8dddbe087558977, type: 3}
-  hp: 5
-  bt: 0
-  atk: 0
-  def: 0
-  dex: 0
-  exp: 2
-  gold: 3
+  hp: 500
+  bt: 1200
+  atk: 20
+  def: 10
+  dex: 7
+  exp: 20
+  gold: 500
   enemyActionRecords:
   - enemyActionCategory: 0
     enemyConditionRecords:
@@ -29,13 +29,5 @@ MonoBehaviour:
       comparisonOperator: 4
       turnCriteria: 0
       hpRateCriteria: 30
-    skillData: {fileID: 11400000, guid: 886c6809856b0564cb3c8ad8f3d2983e, type: 2}
-    priority: 50
-  - enemyActionCategory: 0
-    enemyConditionRecords:
-    - conditionCategory: 0
-      comparisonOperator: 2
-      turnCriteria: 0
-      hpRateCriteria: 0
     skillData: {fileID: 0}
-    priority: 30
+    priority: 50

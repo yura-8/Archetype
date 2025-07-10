@@ -88,6 +88,8 @@ namespace SimpleRpg
 
             // 2.「〇〇は XX のダメージを受けた！」メッセージが終わるのを待つ
             _battleManager.OnUpdateStatus(); // メッセージ表示の前にステータスUIを更新
+            _battleManager.UpdateEnemyStatusUI(); // ★ 敵ステータスUI更新を追加
+
             yield return _messageWindowController.StartCoroutine(
                 _messageWindowController.GenerateDamageMessage(targetName, damage)
             );

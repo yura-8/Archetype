@@ -15,32 +15,14 @@ MonoBehaviour:
   characterId: 1
   parameterRecords:
   - level: 1
-    hp: 2000
-    bt: 150
-    atk: 8
-    def: 4
-    dex: 6
+    hp: 100
+    bt: 1000
+    atk: 600
+    def: 30
+    dex: 10
   - level: 2
-    hp: 25
-    bt: 6
-    atk: 10
-    def: 6
-    dex: 7
-  - level: 3
-    hp: 30
-    bt: 9
-    atk: 12
-    def: 8
-    dex: 8
-  - level: 4
-    hp: 35
-    bt: 12
-    atk: 14
-    def: 10
-    dex: 9
-  - level: 5
-    hp: 40
-    bt: 15
-    atk: 16
-    def: 12
+    hp: 150
+    bt: 1200
+    atk: 1000
+    def: 30
     dex: 10

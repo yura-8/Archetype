@@ -96,6 +96,9 @@ namespace SimpleRpg
         [SerializeField]
         BattleActionProcessor _battleActionProcessor;
 
+        [SerializeField]
+        private EnemyStatusUIManager _enemyStatusUIManager;
+
         /// <summary>
         /// 現在コマンドを入力しているパーティメンバーのインデックスです。
         /// </summary>
@@ -888,6 +891,25 @@ namespace SimpleRpg
             SimpleLogger.Instance.Log("ターン内の行動が完了しました。");
             TurnCount++;
             StartInputCommandPhase();
+        }
+
+        /// <summary>
+        /// 敵のステータスUI全体を更新します。
+        /// </summary>
+        public void UpdateEnemyStatusUI()
+        {
+            if (_enemyStatusUIManager != null)
+            {
+                _enemyStatusUIManager.UpdateAllEnemyStatuses(_enemyStatusManager.GetEnemyStatusList());
+            }
+        }
+
+        /// <summary>
+        /// 敵ステータスUIの管理クラスへの参照を取得します。
+        /// </summary>
+        public EnemyStatusUIManager GetEnemyStatusUIManager()
+        {
+            return _enemyStatusUIManager;
         }
     }
 }

@@ -44,6 +44,9 @@ namespace SimpleRpg
             // 敵出現のメッセージを表示します。
             ShowEnemyAppearMessage();
 
+            // 敵のステータスUIを初期化・表示します。
+            InitializeEnemyStatusUI();
+
             // テスト用機能
             //_battleManager.StartInputCommandPhase();
         }
@@ -175,6 +178,22 @@ namespace SimpleRpg
             controller.ShowWindow();
             // GenerateEnemyAppearMessageの引数を、連結した文字列に変更
             controller.GenerateEnemyAppearMessage(combinedEnemyNames, _startMessageTime);
+        }
+
+        /// <summary>
+        /// 敵のステータスUIを初期化します。
+        /// </summary>
+        void InitializeEnemyStatusUI()
+        {
+            // BattleManager経由で必要な情報を取得
+            var uiManager = _battleManager.GetEnemyStatusUIManager();
+            var enemies = _battleManager.GetEnemyStatusManager().GetEnemyStatusList();
+
+            // マネージャーに、現在の敵リストを渡してUIの更新を依頼
+            if (uiManager != null && enemies != null)
+            {
+                uiManager.UpdateAllEnemyStatuses(enemies);
+            }
         }
 
     }
