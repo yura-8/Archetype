@@ -14,6 +14,9 @@ namespace SimpleRpg
         [SerializeField]
         GameObject _cursorObj;
 
+        [SerializeField]
+        GameObject _targetObj;
+
         /// <summary>
         /// 敵キャラクターの名前を表示するテキストです。
         /// </summary>
@@ -43,6 +46,7 @@ namespace SimpleRpg
         public void ShowCursor()
         {
             _cursorObj.SetActive(true);
+            _targetObj.SetActive(true);
         }
 
         /// <summary>
@@ -51,6 +55,7 @@ namespace SimpleRpg
         public void HideCursor()
         {
             _cursorObj.SetActive(false);
+            _targetObj.SetActive(false);
         }
 
         /// <summary>

@@ -12,25 +12,22 @@ namespace SimpleRpg
         /// 背景の表示用Spriteです。
         /// </summary>
         [SerializeField]
-        SpriteRenderer _backgroundRenderer;
+        private SpriteRenderer _backgroundRenderer;
 
         /// <summary>
         /// 敵キャラクターの表示用Spriteです。
+        /// Inspectorで表示したい数だけ（例：4つ）設定します。
         /// </summary>
         [SerializeField]
-        List<SpriteRenderer> _enemyRenderers = new List<SpriteRenderer>();
-
-        /// <summary>
-        /// カメラへの参照です。
-        /// </summary>
-        Camera _mainCamera;
+        private List<SpriteRenderer> _enemyRenderers = new List<SpriteRenderer>();
 
         /// <summary>
         /// 背景を表示します。
         /// </summary>
         public void ShowBackground()
         {
-            _backgroundRenderer.gameObject.SetActive(true);
+            if (_backgroundRenderer != null)
+                _backgroundRenderer.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -38,75 +35,63 @@ namespace SimpleRpg
         /// </summary>
         public void HideBackground()
         {
-            _backgroundRenderer.gameObject.SetActive(false);
-        }
-
-        /// <summary>
-        /// 背景と敵キャラクターの位置をカメラに合わせて設定します。
-        /// </summary>
-        public void SetSpritePosition()
-        {
-            if (_mainCamera == null)
-            {
-                _mainCamera = Camera.main;
-            }
-
-            var cameraPos = _mainCamera.transform.position;
-            var newPosition = new Vector3(cameraPos.x, cameraPos.y, 0);
-
-            //var backgroundPosOffset = new Vector3(0, 0, 0);
-            //_backgroundRenderer.transform.position = newPosition + backgroundPosOffset;
-
-            //var enemyPosOffset = new Vector3(0, -0.5f, 0);
-            //_backgroundRenderer.transform.position = newPosition + enemyPosOffset;
+            if (_backgroundRenderer != null)
+                _backgroundRenderer.gameObject.SetActive(false);
         }
 
         /// <summary>
         /// 敵キャラクターを表示します。
         /// </summary>
-        /// <param name="enemyId">敵キャラクターのID</param>
+        /// <param name="enemyIdList">表示したい敵のIDリスト</param>
         public void ShowEnemy(List<int> enemyIdList)
         {
-            Sprite enemySprite = null;
-            // 表示したい敵の数だけループ処理を行う
+            // まず、すべての敵表示スロットを非表示にしてリセットします。
+            foreach (var renderer in _enemyRenderers)
+            {
+                if (renderer != null)
+                {
+                    renderer.gameObject.SetActive(false);
+                }
+            }
+
+            // 表示したい敵の数だけループ処理を行います。
             for (int i = 0; i < enemyIdList.Count; i++)
             {
-                // Inspectorで設定したSpriteRendererの数を超えないように安全チェック
+                // Inspectorで設定したスロットの数を超えないように安全チェック
                 if (i >= _enemyRenderers.Count)
                 {
-                    //Debug.LogWarning("表示したい敵の数に対して、設定されているSpriteRendererの数が足りません。");
+                    Debug.LogWarning("表示したい敵の数に対して、設定されているSpriteRendererの数が足りません。");
                     break; // ループを抜ける
                 }
 
-                // i番目の敵IDと、i番目のSpriteRendererを取得
+                // 必要なデータを取得
                 int enemyId = enemyIdList[i];
                 SpriteRenderer currentRenderer = _enemyRenderers[i];
+                EnemyData enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
 
-
-                var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
-                if (enemyData == null)
+                // データが正しく取得できた場合のみ、スプライトを設定して表示する
+                if (currentRenderer != null && enemyData != null && enemyData.sprite != null)
                 {
-                    SimpleLogger.Instance.LogWarning($"敵キャラクターの画像が取得できませんでした。 ID: {enemyId}");
+                    currentRenderer.sprite = enemyData.sprite;
+                    currentRenderer.gameObject.SetActive(true);
                 }
                 else
                 {
-                    enemySprite = enemyData.sprite;
+                    SimpleLogger.Instance.LogWarning($"敵キャラクターのデータまたはスプライトが取得できませんでした。 ID: {enemyId}");
                 }
-                //currentRenderer.sprite = enemySprite;
-                currentRenderer.gameObject.SetActive(true);
             }
         }
 
         /// <summary>
-        /// 敵キャラクターを非表示にします。
+        /// 指定されたインデックスの敵キャラクターを非表示にします。
         /// </summary>
-        public void HideEnemyByIndex(int index) // メソッド名も分かりやすく変更
+        /// <param name="index">非表示にしたい敵のインデックス（0から始まる）</param>
+        public void HideEnemyByIndex(int index)
         {
             // 不正なインデックスが渡された場合にエラーにならないよう、安全チェック
-            if (index >= 0 && index < _enemyRenderers.Count)
+            if (index >= 0 && index < _enemyRenderers.Count && _enemyRenderers[index] != null)
             {
-                SpriteRenderer currentRenderer = _enemyRenderers[index];
-                currentRenderer.gameObject.SetActive(false);
+                _enemyRenderers[index].gameObject.SetActive(false);
             }
             else
             {

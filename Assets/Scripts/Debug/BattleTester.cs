@@ -200,7 +200,29 @@ namespace SimpleRpg
         /// </summary>
         void SetEnemyId()
         {
-            _battleManager.SetUpEnemyStatus(_enemyId);
+            //_battleManager.SetUpEnemyStatus(_enemyId);
+
+
+            // 1. 出現する敵のIDを格納するための、新しい空のリストを作成します。
+            List<int> randomEnemyList = new List<int>();
+
+            // 2. 出現させる敵の数を、1～4体の間でランダムに決定します。
+            int enemyCount = Random.Range(1, 5); // 1, 2, 3, 4 のいずれかの数がランダムで選ばれます。
+
+            // 3. 決まった数だけループ処理を行います。
+            for (int i = 0; i < enemyCount; i++)
+            {
+                // 4. 敵の種類（ID）を、1～5の中からランダムに選びます。
+                int randomEnemyId = Random.Range(1, 3); // 1, 2, 3, 4, 5 のいずれかの数がランダムで選ばれます。
+                
+                // 5. 選ばれた敵IDをリストに追加します。
+                randomEnemyList.Add(randomEnemyId);
+            }
+
+            // --- ここまでが修正部分 ---
+
+            // 6. 完成したランダムな敵リストを使って、戦闘のセットアップを依頼します。
+            _battleManager.SetUpEnemyStatus(randomEnemyList);
         }
 
         /// <summary>
