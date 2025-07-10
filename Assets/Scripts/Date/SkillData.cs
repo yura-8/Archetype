@@ -42,6 +42,6 @@ namespace SimpleRpg
         /// <summary>
         /// スキルの効果リスト
         /// </summary>
-        public SkillEffect skillEffect;
+        public List<SkillEffect> skillEffect;
     }
 }

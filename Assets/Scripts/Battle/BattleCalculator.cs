@@ -12,13 +12,18 @@ namespace SimpleRpg
         /// </summary>
         /// <param name="attack">攻撃をする側の攻撃力</param>
         /// <param name="defense">攻撃を受ける側の防御力</param>
-        public static int CalculateDamage(int attack, int defense)
+        public static int CalculateDamage(int attack, int defense, bool isTargetGuarding)
         {
             float atk = attack / 2.0f;
             float def = defense / 4.0f;
             // float rand = Random.Range(0.8f, 1.2f);
             // int damage = Mathf.Max(Mathf.CeilToInt((atk - def) * rand), 1);
             int damage = Mathf.Max(Mathf.CeilToInt((atk - def)), 1);
+            if (isTargetGuarding)
+            {
+                damage /= 2;
+            }
+
             return damage;
         }
 
@@ -39,14 +44,14 @@ namespace SimpleRpg
         /// </summary>
         /// <param name="friendSpeed">逃走を試みる側の素早さ</param>
         /// <param name="enemySpeed">逃走を試みられる側の素早さ</param>
-        //public static bool CalculateCanRun(int friendSpeed, int enemySpeed)
-        //{
-        //    float baseProbability = 50.0f;
-        //    float speedDifference = friendSpeed - enemySpeed;
-        //    float escapeRate = baseProbability + Mathf.Max(speedDifference, 0);
-        //    float rand = Random.Range(0.0f, 1.0f) * 100f;
-        //    return rand < escapeRate;
-        //}
+        public static bool CalculateCanEscape(int friendSpeed, int enemySpeed)
+        {
+            float baseProbability = 50.0f;
+            float speedDifference = friendSpeed - enemySpeed;
+            float escapeRate = baseProbability + Mathf.Max(speedDifference, 0);
+            float rand = Random.Range(0.0f, 1.0f) * 100f;
+            return rand < escapeRate;
+        }
 
         /// <summary>
         /// 行動順決定のための優先度を計算します。

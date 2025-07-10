@@ -19,7 +19,7 @@ MonoBehaviour:
   maxCount: -1
   currentCount: 0
   skillEffect:
-    skillCategory: 2
-    effectTarget: 3
-    value: 20
-    skillParameter: 2
+  - skillCategory: 0
+    effectTarget: 0
+    value: 0
+    skillParameter: 0

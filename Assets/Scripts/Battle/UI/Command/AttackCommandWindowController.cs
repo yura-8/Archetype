@@ -24,6 +24,8 @@ namespace SimpleRpg
         /// </summary>
         AttackCommand _selectedAttackCommand;
 
+        private bool _canSelect = false;
+
         /// <summary>
         /// コントローラの状態をセットアップします。
         /// </summary>
@@ -34,7 +36,7 @@ namespace SimpleRpg
 
         void Update()
         {
-            if (_battleManager == null || _battleManager.BattlePhase != BattlePhase.InputCommand_Attack)
+            if (_battleManager == null || _battleManager.BattlePhase != BattlePhase.InputCommand_Attack || !_canSelect)
             {
                 return;
             }
@@ -69,10 +71,12 @@ namespace SimpleRpg
             }
             else if (InputGameKey.ConfirmButton())
             {
+                _canSelect = false;
                 _battleManager.OnCommandAttackSelected(_selectedAttackCommand);
             }
             else if (InputGameKey.CancelButton())
             {
+                _canSelect = false;
                 _battleManager.OnAttackCanceled();
             }
         }
@@ -120,6 +124,7 @@ namespace SimpleRpg
         public void ShowWindow()
         {
             uiController.Show();
+            _canSelect = true;
         }
 
         /// <summary>
@@ -127,6 +132,7 @@ namespace SimpleRpg
         /// </summary>
         public void HideWindow()
         {
+            _canSelect = false;
             uiController.Hide();
         }
     }

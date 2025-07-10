@@ -53,5 +53,7 @@ namespace SimpleRpg
         /// キャラクターが倒されたフラグです。
         /// </summary>
         public bool isDefeated;
+
+        public bool isGuarding; // trueなら防御中
     }
 }

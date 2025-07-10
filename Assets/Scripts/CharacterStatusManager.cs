@@ -241,5 +241,29 @@ namespace SimpleRpg
 
             return false;
         }
+
+        /// <summary>
+        /// キャラクターの防御状態を設定します。
+        /// </summary>
+        public static void SetGuardingState(int characterId, bool isGuarding)
+        {
+            var status = GetCharacterStatusById(characterId);
+            if (status != null)
+            {
+                status.isGuarding = isGuarding;
+            }
+        }
+
+        /// <summary>
+        /// ターン開始時に全キャラクターの防御状態を解除します。
+        /// </summary>
+        public static void ResetAllGuardingStates()
+        {
+            var partyStatuses = GetPartyMemberStatuses();
+            foreach (var status in partyStatuses)
+            {
+                status.isGuarding = false;
+            }
+        }
     }
 }

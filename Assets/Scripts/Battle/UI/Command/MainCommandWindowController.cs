@@ -120,5 +120,14 @@ namespace SimpleRpg
         {
             uiController.Hide();
         }
+
+        /// <summary>
+        /// コマンド選択をリセットします。（初期化前の状態に戻す）
+        /// </summary>
+        public void ResetSelection()
+        {
+            _selectedCommand = BattleCommand.Attack; // または選択なし状態を表す値（必要なら Enum に None を追加）
+        }
+
     }
 }

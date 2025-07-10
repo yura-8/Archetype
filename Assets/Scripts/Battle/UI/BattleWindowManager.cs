@@ -54,6 +54,12 @@ namespace SimpleRpg
         ConfirmationWindowController _confirmationWindowController;
 
         /// <summary>
+        /// メッセージウィンドウの動作を制御するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        MessageWindowController _messageWindowController;
+
+        /// <summary>
         /// ウィンドウのコントローラのリストです。
         /// </summary>
         List<IBattleWindowController> _battleWindowControllers = new();
@@ -82,14 +88,7 @@ namespace SimpleRpg
             _battleWindowControllers.Add(_selectionPartyWindowController);
             _battleWindowControllers.Add(_descriptionWindowController);
             _battleWindowControllers.Add(_confirmationWindowController);
-
-            //_battleWindowControllers = new()
-            //{
-            //    _statusWindowController,
-            //    _enemyNameWindowController,
-            //    _mainCommandWindowController,
-            //    _attackCommandWindowController,
-            //};
+            _battleWindowControllers.Add(_messageWindowController);
         }
 
         /// <summary>
@@ -182,6 +181,14 @@ namespace SimpleRpg
         public ConfirmationWindowController GetConfirmationWindowController()
         {
             return _confirmationWindowController;
+        }
+
+        /// <summary>
+        /// メッセージウィンドウの動作を制御するクラスへの参照を取得します。
+        /// </summary>
+        public MessageWindowController GetMessageWindowController()
+        {
+            return _messageWindowController;
         }
     }
 

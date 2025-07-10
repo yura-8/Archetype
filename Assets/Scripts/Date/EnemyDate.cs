@@ -32,22 +32,22 @@ namespace SimpleRpg
         /// <summary>
         /// MPの値です。
         /// </summary>
-        public int mp;
+        public int bt;
 
         /// <summary>
         /// 力の値です。
         /// </summary>
-        public int strength;
+        public int atk;
 
         /// <summary>
         /// 身のまもりの値です。
         /// </summary>
-        public int guard;
+        public int def;
 
         /// <summary>
         /// 素早さの値です。
         /// </summary>
-        public int speed;
+        public int dex;
 
         /// <summary>
         /// 経験値の値です。

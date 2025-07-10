@@ -8,6 +8,12 @@ namespace SimpleRpg
     public class BattleStarter : MonoBehaviour
     {
         /// <summary>
+        /// 戦闘開始メッセージを表示する時間です。
+        /// </summary>
+        [SerializeField]
+        float _startMessageTime = 1.5f;
+
+        /// <summary>
         /// 戦闘の管理を行うクラスへの参照です。
         /// </summary>
         BattleManager _battleManager;
@@ -30,7 +36,7 @@ namespace SimpleRpg
             ShowStatus();
 
             // コマンドウィンドウを表示します。
-            //ShowCommand();
+            ShowCommand();
 
             // 敵の名前ウィンドウを表示します。
             //ShowEnemyNameWindow();
@@ -39,7 +45,7 @@ namespace SimpleRpg
             ShowEnemyAppearMessage();
 
             // テスト用機能
-            _battleManager.StartInputCommandPhase();
+            //_battleManager.StartInputCommandPhase();
         }
 
         /// <summary>
@@ -136,7 +142,40 @@ namespace SimpleRpg
         /// </summary>
         void ShowEnemyAppearMessage()
         {
+            // 1. 敵の名前を格納するためのリストを作成
+            var enemyNames = new System.Collections.Generic.List<string>();
 
+            // 2. 敵IDのリストをループ処理
+            foreach (int enemyId in _battleManager.EnemyId)
+            {
+                // 3. IDを使って敵データを取得し、名前をリストに追加
+                var enemyData = EnemyDataManager.GetEnemyDataById(enemyId);
+                if (enemyData != null)
+                {
+                    enemyNames.Add(enemyData.enemyName);
+                }
+                else
+                {
+                    SimpleLogger.Instance.LogWarning($"敵データが取得できませんでした。 ID : {enemyId}");
+                }
+            }
+
+            // 4. 万が一、名前が一つも取得できなかった場合は処理を中断
+            if (enemyNames.Count == 0)
+            {
+                SimpleLogger.Instance.LogError("表示する敵の名前が一体もありません。");
+                return;
+            }
+
+            // 5. 取得した名前を「、」で連結して一つの文字列にする
+            string combinedEnemyNames = string.Join("、", enemyNames);
+
+            // 6. メッセージウィンドウに表示する
+            var controller = _battleManager.GetWindowManager().GetMessageWindowController();
+            controller.ShowWindow();
+            // GenerateEnemyAppearMessageの引数を、連結した文字列に変更
+            controller.GenerateEnemyAppearMessage(combinedEnemyNames, _startMessageTime);
         }
+
     }
 }

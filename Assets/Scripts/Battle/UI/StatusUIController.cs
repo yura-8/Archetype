@@ -1,99 +1,70 @@
-﻿using UnityEngine;
+﻿// StatusUIController.cs
+
+using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 namespace SimpleRpg
 {
-    /// <summary>
-    /// ステータス表示のUIを制御するクラスです。
-    /// </summary>
     public class StatusUIController : MonoBehaviour, IBattleUIController
     {
-        /// <summary>
-        /// キャラクターの名前を表示するテキストです。
-        /// </summary>
-        [SerializeField]
-        TextMeshProUGUI _characterNameText;
+        // --- 既存の変数は変更なし ---
+        [SerializeField] TextMeshProUGUI _characterNameText;
+        [SerializeField] TextMeshProUGUI _currentHpText;
+        [SerializeField] TextMeshProUGUI _maxHpText;
+        [SerializeField] TextMeshProUGUI _currentBtText;
+        [SerializeField] TextMeshProUGUI _maxBtText;
+        [SerializeField] private Image _highlightImage;
 
         /// <summary>
-        /// 現在のHPを表示するテキストです。
+        /// ハイライトカーソルの表示・非表示を切り替えます。
         /// </summary>
-        [SerializeField]
-        TextMeshProUGUI _currentHpText;
+        /// <param name="isActive">表示する場合はtrue</param>
+        public void SetHighlightActive(bool isActive)
+        {
+            if (_highlightImage != null)
+            {
+                _highlightImage.gameObject.SetActive(isActive);
+            }
+            else
+            {
+                // もしハイライト画像が設定されていなかったら、警告を出す
+                Debug.LogWarning("StatusUIControllerにハイライト用のImageが設定されていません。");
+            }
+        }
+        // ★★★★★ ここまで追加 ★★★★★
 
-        /// <summary>
-        /// 最大HPを表示するテキストです。
-        /// </summary>
-        [SerializeField]
-        TextMeshProUGUI _maxHpText;
-
-        /// <summary>
-        /// 現在のBTを表示するテキストです。
-        /// </summary>
-        [SerializeField]
-        TextMeshProUGUI _currentBtText;
-
-        /// <summary>
-        /// 最大BTを表示するテキストです。
-        /// </summary>
-        [SerializeField]
-        TextMeshProUGUI _maxBtText;
-
-        /// <summary>
-        /// キャラクターの名前をセットします。
-        /// </summary>
-        /// <param name="characterName">キャラクターの名前</param>
+        // --- SetCharacterName などの他のメソッドは変更ありません ---
         public void SetCharacterName(string characterName)
         {
             _characterNameText.text = characterName;
         }
 
-        /// <summary>
-        /// 現在のHPをセットします。
-        /// </summary>
-        /// <param name="currentHp">現在のHP</param>
         public void SetCurrentHp(int currentHp)
         {
             _currentHpText.text = currentHp.ToString();
         }
 
-        /// <summary>
-        /// 最大HPをセットします。
-        /// </summary>
-        /// <param name="maxHp">最大HP</param>
         public void SetMaxHp(int maxHp)
         {
             _maxHpText.text = maxHp.ToString();
         }
 
-        /// <summary>
-        /// 現在のBTをセットします。
-        /// </summary>
-        /// <param name="currentBt">現在のBT</param>
         public void SetCurrentBt(int currentBt)
         {
             _currentBtText.text = currentBt.ToString();
         }
 
-        /// <summary>
-        /// 最大MPをセットします。
-        /// </summary>
-        /// <param name="maxBt">最大BT</param>
         public void SetMaxBt(int maxBt)
         {
             _maxBtText.text = maxBt.ToString();
         }
 
-        /// <summary>
-        /// UIを表示します。
-        /// </summary>
         public void Show()
         {
             gameObject.SetActive(true);
         }
 
-        /// <summary>
-        /// UIを非表示にします。
-        /// </summary>
         public void Hide()
         {
             gameObject.SetActive(false);

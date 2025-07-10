@@ -19,5 +19,7 @@
         /// 計算に使用する素早さです。
         /// </summary>
         public int dex;
+
+        public bool isGuarding;
     }
 }

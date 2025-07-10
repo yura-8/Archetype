@@ -1,31 +1,23 @@
-﻿using UnityEngine;
+﻿// StatusWindowController.cs
+
+using UnityEngine;
 
 namespace SimpleRpg
 {
-    /// <summary>
-    /// ステータス表示のウィンドウを制御するクラスです。
-    /// </summary>
     public class StatusWindowController : MonoBehaviour, IBattleWindowController
     {
-        /// <summary>
-        /// ステータス表示のUIを制御するクラスへの参照です。
-        /// </summary>
+        // --- 既存の変数は変更なし ---
         [SerializeField]
         StatusUIController _uiController;
 
-        /// <summary>
-        /// コントローラの状態をセットアップします。
-        /// </summary>
-        /// <param name="battleManager">戦闘に関する機能を管理するクラス</param>
+        // ★ 修正点：このクラスはもう_highlightImageを直接持たないため、以下の変数を削除します
+        // [SerializeField] private Image _highlightImage;
+
+        // --- SetUpController, SetCharacterStatus, UpdateStatus, UpdateAllCharacterStatus は変更なし ---
         public void SetUpController(BattleManager battleManager)
         {
-
         }
 
-        /// <summary>
-        /// キャラクターのステータスを全てセットします。
-        /// </summary>
-        /// <param name="characterStatus">キャラクターのステータス</param>
         public void SetCharacterStatus(CharacterStatus characterStatus)
         {
             if (characterStatus == null)
@@ -47,9 +39,6 @@ namespace SimpleRpg
             _uiController.SetMaxBt(record.bt);
         }
 
-        /// <summary>
-        /// 全キャラクターのステータスを更新します。
-        /// </summary>
         public void UpdateAllCharacterStatus()
         {
             foreach (var characterId in CharacterStatusManager.partyCharacter)
@@ -59,17 +48,30 @@ namespace SimpleRpg
             }
         }
 
+        public void UpdateStatus(CharacterStatus characterStatus)
+        {
+            SetCharacterStatus(characterStatus);
+        }
+
         /// <summary>
-        /// ステータス表示のウィンドウを表示します。
+        /// このステータスウィンドウのハイライト表示を切り替えます。
         /// </summary>
+        /// <param name="isActive">ハイライトを有効にする場合はtrue</param>
+        public void SetHighlight(bool isActive)
+        {
+            // ★ 修正点：自分自身で表示を切り替えるのではなく、UIControllerに指示を出す
+            if (_uiController != null)
+            {
+                _uiController.SetHighlightActive(isActive);
+            }
+        }
+
+        // --- ShowWindow, HideWindow は変更なし ---
         public void ShowWindow()
         {
             _uiController.Show();
         }
 
-        /// <summary>
-        /// ステータス表示のウィンドウを非表示にします。
-        /// </summary>
         public void HideWindow()
         {
             _uiController.Hide();
