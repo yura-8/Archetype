@@ -7,5 +7,6 @@
     {
         Turn, // ターン数
         HpRate, // HP残量
+        BtRate, // BT残量
     }
 }

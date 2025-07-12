@@ -40,24 +40,20 @@ namespace SimpleRpg
         /// </summary>
         public void SelectEnemyCommand()
         {
+            // このメソッドは変更ありません
             foreach (var enemyStatus in _enemyStatusManager.GetEnemyStatusList())
             {
                 if (enemyStatus.isDefeated || enemyStatus.isRunaway)
                 {
                     continue;
                 }
-
-                // 先頭のパーティキャラクターをターゲットにします。
                 int targetId = CharacterStatusManager.partyCharacter[0];
-
-                // 行動パターンに応じて敵キャラクターのコマンドを選択します。
                 EnemyActionRecord record = SelectActionFromRecords(enemyStatus.enemyData, enemyStatus.enemyBattleId);
                 if (record == null)
                 {
                     _battleActionRegister.SetEnemyAttackAction(enemyStatus.enemyBattleId, targetId, enemyStatus.enemyData);
                     continue;
                 }
-
                 switch (record.enemyActionCategory)
                 {
                     case EnemyActionCategory.Attack:
@@ -73,50 +69,49 @@ namespace SimpleRpg
                             _battleActionRegister.SetEnemyAttackAction(enemyStatus.enemyBattleId, targetId, enemyStatus.enemyData);
                         }
                         break;
+                    case EnemyActionCategory.Guard:
+                        _battleActionRegister.SetEnemyGuardAction(enemyStatus.enemyBattleId, enemyStatus.enemyData);
+                        break;
                     default:
                         _battleActionRegister.SetEnemyAttackAction(enemyStatus.enemyBattleId, targetId, enemyStatus.enemyData);
                         break;
                 }
             }
-
-            // 敵キャラクターのコマンド選択が完了したことを通知します。
             _battleManager.OnEnemyCommandSelected();
         }
 
         /// <summary>
         /// 行動パターンを選択します。
         /// </summary>
-        /// <param name="enemyData">敵キャラクターのデータ</param>
-        /// <param name="enemyBattleId">敵キャラクターの戦闘中ID</param>
         EnemyActionRecord SelectActionFromRecords(EnemyData enemyData, int enemyBattleId)
         {
+            // このメソッドは変更ありません
             EnemyActionRecord record = null;
-
-            // 優先度の高い順に並び替えます。
             var query = enemyData.enemyActionRecords.OrderByDescending(r => r.priority);
             foreach (var actionRecord in query)
             {
-                // 条件を確認し、合致している場合に行動パターンを選択します。
                 if (CheckCondition(actionRecord, enemyBattleId))
                 {
                     record = actionRecord;
                     break;
                 }
             }
-
             return record;
         }
 
         /// <summary>
         /// 行動パターンの条件に合致しているか確認します。
-        /// Trueで合致しています。
         /// </summary>
-        /// <param name="conditionRecords">条件のデータ</param>
-        /// <param name="enemyBattleId">敵キャラクターの戦闘中ID</param>
         bool CheckCondition(EnemyActionRecord record, int enemyBattleId)
         {
-            SimpleLogger.Instance.Log($"CheckConditionが呼ばれました。");
+            SimpleLogger.Instance.Log("CheckConditionが呼ばれました。");
             bool match = false;
+            // 条件が一つも設定されていない場合は、無条件で実行すると判断
+            if (record.enemyConditionRecords == null || record.enemyConditionRecords.Count == 0)
+            {
+                return true;
+            }
+
             foreach (var conditionRecord in record.enemyConditionRecords)
             {
                 switch (conditionRecord.conditionCategory)
@@ -129,14 +124,20 @@ namespace SimpleRpg
                         match = CheckHpRateCondition(conditionRecord, enemyBattleId);
                         SimpleLogger.Instance.Log($"CheckHpRateConditionの結果 : {match}");
                         break;
+                    case ConditionCategory.BtRate:
+                        match = CheckBtRateCondition(conditionRecord, enemyBattleId);
+                        SimpleLogger.Instance.Log($"CheckBtRateConditionの結果 : {match}");
+                        break;
                 }
+                // 一つでも条件に合致しなかったら、この行動パターンは実行しない
+                if (!match) return false;
             }
-            return match;
+            // 全ての条件に合致した場合のみ true を返す
+            return true;
         }
 
         /// <summary>
-        /// 行動パターンの条件に合致しているか確認します。
-        /// Trueで合致しています。
+        /// ターン数の条件に合致しているか確認します。
         /// </summary>
         /// <param name="conditionRecords">条件のデータ</param>
         bool CheckTurnCondition(EnemyConditionRecord record)
@@ -158,6 +159,24 @@ namespace SimpleRpg
             float hpRate = currentHp * 100f / maxHp;
             SimpleLogger.Instance.Log($"HP残量の条件を確認します。 currentHp : {currentHp} || maxHp : {maxHp} || HP残量 : {hpRate}");
             return CompareValues(hpRate, record.comparisonOperator, record.hpRateCriteria);
+        }
+
+        /// <summary>
+        /// BT残量の条件に合致しているか確認します。
+        /// Trueで合致しています。
+        /// </summary>
+        bool CheckBtRateCondition(EnemyConditionRecord record, int enemyBattleId)
+        {
+            var enemyStatus = _enemyStatusManager.GetEnemyStatusByBattleId(enemyBattleId);
+            int currentBt = enemyStatus.currentBt;
+            int maxBt = enemyStatus.enemyData.bt;
+
+            // 最大BTが0の場合、0除算を避ける
+            if (maxBt == 0) return false;
+
+            float btRate = (float)currentBt * 100f / maxBt;
+            SimpleLogger.Instance.Log($"BT残量の条件を確認します。 currentBt : {currentBt} || maxBt : {maxBt} || BT残量 : {btRate}");
+            return CompareValues(btRate, record.comparisonOperator, record.btRateCriteria);
         }
 
         /// <summary>

@@ -1169,6 +1169,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1840136841918153097, guid: 2a5d88f05de7bce4eaa31120291ef4eb, type: 3}
+      propertyPath: m_Volume
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2379291879008285992, guid: 2a5d88f05de7bce4eaa31120291ef4eb, type: 3}
+      propertyPath: _battleBgm
+      value: 
+      objectReference: {fileID: 8300000, guid: fdb8a158768e608459d05ddb154efc5f, type: 3}
     - target: {fileID: 2379291879008285992, guid: 2a5d88f05de7bce4eaa31120291ef4eb, type: 3}
       propertyPath: _enemyStatusManager
       value: 

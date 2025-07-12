@@ -115,23 +115,38 @@ namespace SimpleRpg
             // アクションコマンドの素早さの値に20%の乱数を乗じます。
             foreach (var action in _actions)
             {
+                // 防御の場合は素早さ計算をスキップします
+                if (action.battleCommand == BattleCommand.Guard) continue;
                 action.actorSpeed = (int)(action.actorSpeed * (1 + Random.Range(-0.2f, 0.2f)));
             }
 
-            // 遅い順に並べ替え、優先度を1から順に設定します。
-            // 優先度が大きい方を先に処理します。
-            var query = _actions.OrderBy(a => a.actorSpeed);
+            // 防御、逃走、その他のアクションにリストを分割します
+            var guardActions = _actions.Where(a => a.battleCommand == BattleCommand.Guard).ToList();
+            var escapeActions = _actions.Where(a => a.battleCommand == BattleCommand.Escape).ToList();
+            var otherActions = _actions.Where(a => a.battleCommand != BattleCommand.Guard && a.battleCommand != BattleCommand.Escape).ToList();
+
+            // 優先度を割り振るためのカウンター
             int priority = 1;
-            int runPriority = 100;
-            foreach (var action in query)
+
+            // 1. 通常アクションの優先度を設定 (素早さが遅い順に低い優先度を割り当てる)
+            foreach (var action in otherActions.OrderBy(a => a.actorSpeed))
             {
-                if (action.battleCommand == BattleCommand.Escape)
-                {
-                    action.priority = runPriority;
-                    continue;
-                }
                 action.priority = priority;
                 priority++;
+            }
+
+            // 2. 逃走アクションに高い優先度を設定 (通常アクションよりは必ず先)
+            int escapePriority = 1000;
+            foreach (var action in escapeActions)
+            {
+                action.priority = escapePriority;
+            }
+
+            // 3. 防御アクションに最高の優先度を設定 (他のどの行動よりも必ず先)
+            int guardPriority = 9999;
+            foreach (var action in guardActions)
+            {
+                action.priority = guardPriority;
             }
         }
 

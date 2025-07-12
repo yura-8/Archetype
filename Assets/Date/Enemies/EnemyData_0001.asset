@@ -19,7 +19,7 @@ MonoBehaviour:
   bt: 1200
   atk: 20
   def: 10
-  dex: 7
+  dex: 200
   exp: 20
   gold: 500
   enemyActionRecords:

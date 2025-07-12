@@ -31,5 +31,12 @@ namespace SimpleRpg
         [Header("HP残量の割合を%で0から100の間で指定します。")]
         [Range(0, 100)]
         public float hpRateCriteria;
+
+        /// <summary>
+        /// BT残量の条件の値です。
+        /// </summary>
+        [Header("BT残量の割合を%で0から100の間で指定します。")]
+        [Range(0, 100)]
+        public float btRateCriteria;
     }
 }

@@ -213,5 +213,25 @@ namespace SimpleRpg
 
             _actionProcessor.RegisterAction(action);
         }
+
+        /// <summary>
+        /// 敵キャラクターの防御コマンドのアクションをセットします。
+        /// </summary>
+        /// <param name="actorId">アクションを行う敵キャラクターの戦闘中ID</param>
+        /// <param name="enemyData">敵キャラクターのデータ</param>
+        public void SetEnemyGuardAction(int actorId, EnemyData enemyData)
+        {
+            BattleAction action = new()
+            {
+                actorId = actorId,
+                isActorFriend = false,
+                targetId = -1, // 防御はターゲット不要
+                isTargetFriend = false,
+                battleCommand = BattleCommand.Guard,
+                actorSpeed = enemyData.dex, // 速度は設定するが、優先度決定ロジックで上書きされる
+            };
+
+            _actionProcessor.RegisterAction(action);
+        }
     }
 }
