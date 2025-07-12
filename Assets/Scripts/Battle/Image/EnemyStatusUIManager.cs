@@ -1,15 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleRpg
 {
-    /// <summary>
-    /// 戦闘中の全ての敵ステータスUIを管理します。
-    /// </summary>
     public class EnemyStatusUIManager : MonoBehaviour
     {
-        // Inspectorで、シーンに配置した敵ステータスUIのスロットを全て設定する
         [SerializeField] private List<EnemyStatusUIController> _uiSlots;
 
         /// <summary>
@@ -17,20 +12,31 @@ namespace SimpleRpg
         /// </summary>
         public void UpdateAllEnemyStatuses(List<EnemyStatus> allEnemies)
         {
-            // 生きている敵だけをリストアップ
-            var aliveEnemies = allEnemies.Where(e => !e.isDefeated && !e.isRunaway).ToList();
+            // var aliveEnemies = allEnemies.Where(e => !e.isDefeated && !e.isRunaway).ToList();
 
             for (int i = 0; i < _uiSlots.Count; i++)
             {
-                // このUIスロットに表示すべき生きている敵がいるか？
-                if (i < aliveEnemies.Count)
+                // このUIスロットに対応する敵がリスト内に存在するか？
+                if (i < allEnemies.Count)
                 {
-                    _uiSlots[i].UpdateDisplay(aliveEnemies[i]);
-                    _uiSlots[i].Show();
+                    var enemyStatus = allEnemies[i];
+
+                    // その敵は生きているか？
+                    if (!enemyStatus.isDefeated && !enemyStatus.isRunaway)
+                    {
+                        // 生きていれば、表示を更新してUIを有効化
+                        _uiSlots[i].UpdateDisplay(enemyStatus);
+                        _uiSlots[i].Show();
+                    }
+                    else
+                    {
+                        // 倒されている、または逃げた場合はUIを非表示
+                        _uiSlots[i].Hide();
+                    }
                 }
                 else
                 {
-                    // 対応する敵がいない、または倒されたスロットは非表示
+                    // 戦闘開始時から敵が割り当てられていないスロットは非表示
                     _uiSlots[i].Hide();
                 }
             }

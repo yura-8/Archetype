@@ -511,20 +511,16 @@ namespace SimpleRpg
         /// <summary>
         /// ターゲットの選択後
         /// </summary>
-        public void OnTargetSelected(EnemyData target)
+        public void OnTargetSelected(EnemyStatus target)
         {
-            Debug.Log($"{target.enemyName} がターゲットに選択されました。");
+            Debug.Log($"{target.enemyData.enemyName} (BattleID: {target.enemyBattleId}) がターゲットに選択されました。");
             GetWindowManager().GetDescriptionWindowController().HideWindow();
             GetWindowManager().GetSelectionEnemyWindowController().HideWindow();
 
-            // ターゲット情報を保存してアクションを登録
-            var enemyStatus = _enemyStatusManager.GetEnemyStatusList().Find(s => s.enemyData.enemyId == target.enemyId);
-            if (enemyStatus != null)
-            {
-                _selectedTargetId = enemyStatus.enemyBattleId;
-                _isTargetFriend = false;
-                RegisterCurrentAction();
-            }
+            // ★★★ 変更点: 一意な enemyBattleId を使用する
+            _selectedTargetId = target.enemyBattleId;
+            _isTargetFriend = false;
+            RegisterCurrentAction();
         }
 
         /// <summary>
@@ -941,6 +937,20 @@ namespace SimpleRpg
                         status.buffs.RemoveAt(i);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// 敵の表示（スプライトとステータスUI）をまとめて更新します。
+        /// このメソッドはダメージ計算後など、敵の状態が変化した際に呼び出してください。
+        /// </summary>
+        public void UpdateEnemyVisuals()
+        {
+            if (_enemyStatusUIManager != null && _battleSpriteController != null)
+            {
+                var enemies = _enemyStatusManager.GetEnemyStatusList();
+                _enemyStatusUIManager.UpdateAllEnemyStatuses(enemies);
+                _battleSpriteController.UpdateAllEnemySprites(enemies);
             }
         }
 

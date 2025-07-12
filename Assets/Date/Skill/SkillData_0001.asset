@@ -22,4 +22,5 @@ MonoBehaviour:
   - skillCategory: 1
     effectTarget: 0
     value: 10
-    skillParameter: 0
+    skillParameter: 3
+    duration: 0

@@ -159,7 +159,6 @@ namespace SimpleRpg
                         var currentEnemyStatus = allEnemies[i];
                         SetEnemyName(i, currentEnemyStatus.enemyData.enemyName);
 
-                        // ★★★★★ ここからが修正点 ★★★★★
                         // 倒されているかどうかで文字色を変える
                         if (currentEnemyStatus.isDefeated)
                         {
@@ -169,7 +168,6 @@ namespace SimpleRpg
                         {
                             controller.SetTextColor(Color.white); // 生きていたら白（または元の色）
                         }
-                        // ★★★★★ ここまで ★★★★★
 
                         controller.Show();
                     }

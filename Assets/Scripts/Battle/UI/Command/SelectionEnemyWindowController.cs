@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
+using System.Linq; // ★Linqを使用するため追加
 
 namespace SimpleRpg
 {
@@ -10,48 +10,31 @@ namespace SimpleRpg
     /// </summary>
     public class SelectionEnemyWindowController : MonoBehaviour, IBattleWindowController
     {
-        /// <summary>
-        /// 敵キャラクターの名前を表示するUIを制御するクラスへの参照です。
-        /// </summary>
         [SerializeField]
         SelectionEnemyUIController _uiController;
-
-        /// <summary>
-        /// 戦闘に関する機能を管理するクラスへの参照です。
-        /// </summary>
         BattleManager _battleManager;
-        private List<EnemyData> _activeEnemies; // 現在選択対象の敵リスト
-        private int _selectedIndex;
+
+        // ★★★ 変更点: EnemyDataからEnemyStatusのリストに変更
+        private List<EnemyStatus> _displayEnemies; // UIに表示されている順の敵リスト
+        private List<EnemyStatus> _selectableEnemies; // 操作対象となる「生きている」敵のリスト
+
+        private int _currentUIIndex; // UI上でのカーソル位置
         private bool _canSelect;
         private bool _pendingEnable;
         private float _timer;
 
-        /// <summary>
-        /// コントローラの状態をセットアップします。
-        /// </summary>
-        /// <param name="battleManager">戦闘に関する機能を管理するクラス</param>
         public void SetUpController(BattleManager battleManager)
         {
             _battleManager = battleManager;
-            if (_battleManager == null)
-            {
-                Debug.LogError("しかし、渡された battleManager は null でした！");
-            }
         }
 
         void Update()
         {
-            // 敵選択フェーズでなければ何もしない
-            // 敵選択フェーズ かつ 入力許可時のみ処理
-            if (_battleManager == null || _battleManager.BattlePhase != BattlePhase.SelectEnemy)
-            {
-                return;
-            }
+            if (_battleManager == null || _battleManager.BattlePhase != BattlePhase.SelectEnemy) return;
             if (_pendingEnable)
             {
                 _timer -= Time.unscaledDeltaTime;
                 if (_timer > 0) return;
-
                 if (!InputGameKey.ConfirmButton() && !InputGameKey.CancelButton())
                 {
                     _canSelect = true;
@@ -59,63 +42,59 @@ namespace SimpleRpg
                 }
                 else
                 {
-                    return; // まだ押しっぱなし
+                    return;
                 }
             }
             if (!_canSelect) return;
 
-            Debug.Log("[EnemyCmd] 入力受付中");
             SelectItem();
         }
 
-        /// <summary>
-        /// コマンドを選択します。
-        /// </summary>
         void SelectItem()
         {
-            if (_battleManager == null || _activeEnemies == null)
+            if (Keyboard.current.downArrowKey.wasPressedThisFrame)
             {
-                return;
+                MoveCursor(1); // 下へ
             }
-
-            if (Keyboard.current.upArrowKey.wasPressedThisFrame)
+            else if (Keyboard.current.upArrowKey.wasPressedThisFrame)
             {
-                _selectedIndex--;
-                // カーソルが一番上を通り越したら、一番下にループ
-                if (_selectedIndex < 0)
-                {
-                    _selectedIndex = _activeEnemies.Count - 1;
-                }
-                _uiController.ShowSelectedCursor(_selectedIndex);
-            }
-            else if (Keyboard.current.downArrowKey.wasPressedThisFrame)
-            {
-                _selectedIndex++;
-                // カーソルが一番下を通り越したら、一番上にループ
-                if (_selectedIndex >= _activeEnemies.Count)
-                {
-                    _selectedIndex = 0;
-                }
-                _uiController.ShowSelectedCursor(_selectedIndex);
+                MoveCursor(-1); // 上へ
             }
             else if (InputGameKey.ConfirmButton())
             {
-                // BattleManagerに「この敵が選ばれました」と通知
-                if (_activeEnemies != null && _activeEnemies.Count > 0)
+                if (_displayEnemies != null && _displayEnemies.Count > _currentUIIndex)
                 {
-                    _battleManager.OnTargetSelected(_activeEnemies[_selectedIndex]);
+                    // ★★★ 変更点: OnTargetSelectedにEnemyStatusを渡す
+                    _battleManager.OnTargetSelected(_displayEnemies[_currentUIIndex]);
                 }
             }
             else if (InputGameKey.CancelButton())
             {
-                // BattleManagerに「キャンセルされました」と通知
                 _battleManager.OnTargetCanceled();
             }
         }
 
-        /// <summary>
-        /// 敵選択を開始するための起動メソッドです。
-        /// </summary>
+        /// ★★★ 新規追加: カーソル移動と defeated スキップ処理
+        private void MoveCursor(int direction)
+        {
+            if (_selectableEnemies == null || _selectableEnemies.Count == 0) return;
+
+            // 現在選択されている敵が、生きている敵リストの中で何番目かを探す
+            var currentSelectableEnemy = _displayEnemies[_currentUIIndex];
+            int currentSelectableIndex = _selectableEnemies.IndexOf(currentSelectableEnemy);
+
+            // 次のインデックスを計算
+            int nextSelectableIndex = (currentSelectableIndex + direction + _selectableEnemies.Count) % _selectableEnemies.Count;
+
+            // 次に選択すべき敵を取得
+            var nextEnemyToSelect = _selectableEnemies[nextSelectableIndex];
+
+            // UI全体リストの中で、その敵が何番目かを探してカーソルを合わせる
+            _currentUIIndex = _displayEnemies.IndexOf(nextEnemyToSelect);
+
+            _uiController.ShowSelectedCursor(_currentUIIndex);
+        }
+
         public void InitializeSelect()
         {
             if (_uiController == null)
@@ -124,34 +103,38 @@ namespace SimpleRpg
                 return;
             }
 
-            // 1. EnemyStatusManagerから、現在戦闘中の全ての敵ステータスリストを取得
-            var allEnemies = _battleManager.GetEnemyStatusManager().GetEnemyStatusList();
+            // ★★★ 変更点: 内部ロジックを全面的に修正
+            // 戦闘中の全ての敵ステータスリストを取得
+            _displayEnemies = _battleManager.GetEnemyStatusManager().GetEnemyStatusList();
 
-            // 2. その中から「isDefeated」がfalse、つまり「生きている敵」だけを絞り込む
-            _activeEnemies = new List<EnemyData>();
-            foreach (var enemyStatus in allEnemies)
+            // その中から「生きている敵」だけを絞り込む
+            _selectableEnemies = _displayEnemies.Where(e => !e.isDefeated).ToList();
+
+            // もし生きている敵がいないなら、処理を中断
+            if (_selectableEnemies.Count == 0)
             {
-                if (!enemyStatus.isDefeated)
-                {
-                    _activeEnemies.Add(enemyStatus.enemyData);
-                }
+                Debug.LogWarning("選択可能な敵がいません。");
+                // 必要であればキャンセル処理などを呼び出す
+                _battleManager.OnTargetCanceled();
+                return;
             }
-            _selectedIndex = 0;
+
+            // 最初の選択肢を、生きている敵の先頭に設定
+            _currentUIIndex = _displayEnemies.IndexOf(_selectableEnemies[0]);
 
             // UIの表示を更新
-            _uiController.UpdateEnemyList(allEnemies);
-            _uiController.ShowSelectedCursor(_selectedIndex);
+            _uiController.UpdateEnemyList(_displayEnemies);
+            _uiController.ShowSelectedCursor(_currentUIIndex);
             ShowWindow();
             _canSelect = false;
         }
 
-        /// <summary>外部から選択可否を切り替える</summary>
         public void SetCanSelectState(bool state)
         {
             _canSelect = state;
             if (state)
             {
-                _pendingEnable = true;  // Confirm を離すのを待つ
+                _pendingEnable = true;
                 _canSelect = false;
                 _timer = 0.1f;
             }
@@ -163,34 +146,11 @@ namespace SimpleRpg
             }
         }
 
-    private bool IsValidIndex(int index)
-        {
-            return index >= 0 && index < _activeEnemies.Count;
-        }
-
-        /// <summary>
-        /// 現在選択中の敵が有効なターゲットか確認します。
-        /// </summary>
-        private bool IsValidSelection()
-        {
-            // 生きている敵だけを選択可能にする、などのロジックをここに追加できる
-            if (!IsValidIndex(_selectedIndex)) return false;
-
-            var targetEnemy = _activeEnemies[_selectedIndex];
-            return targetEnemy.hp > 0;
-        }
-
-        /// <summary>
-        /// コマンドウィンドウを表示します。
-        /// </summary>
         public void ShowWindow()
         {
             _uiController.Show();
         }
 
-        /// <summary>
-        /// コマンドウィンドウを非表示にします。
-        /// </summary>
         public void HideWindow()
         {
             _uiController.Hide();

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// BattleSpriteController.cs
+
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleRpg
@@ -96,6 +98,35 @@ namespace SimpleRpg
             else
             {
                 Debug.LogWarning($"不正なインデックスが指定されました: {index}");
+            }
+        }
+
+        /// <summary>
+        /// 敵リストの状態に基づいて、全ての敵スプライトの表示/非表示を更新します。
+        /// </summary>
+        /// <param name="allEnemies">現在の戦闘における全ての敵ステータスのリスト</param>
+        public void UpdateAllEnemySprites(List<EnemyStatus> allEnemies)
+        {
+            // Inspectorで設定したスロットの数だけループ
+            for (int i = 0; i < _enemyRenderers.Count; i++)
+            {
+                // このスロットに対応する敵がリストに存在し、かつ倒されていないか？
+                if (i < allEnemies.Count && !allEnemies[i].isDefeated && !allEnemies[i].isRunaway)
+                {
+                    // 生きていれば表示
+                    if (_enemyRenderers[i] != null)
+                    {
+                        _enemyRenderers[i].gameObject.SetActive(true);
+                    }
+                }
+                else
+                {
+                    // 対応する敵がいない、または倒されている場合は非表示
+                    if (_enemyRenderers[i] != null)
+                    {
+                        _enemyRenderers[i].gameObject.SetActive(false);
+                    }
+                }
             }
         }
     }

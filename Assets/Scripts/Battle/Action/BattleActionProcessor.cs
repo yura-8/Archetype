@@ -161,6 +161,34 @@ namespace SimpleRpg
                     yield break;
                 }
 
+                // 行動実行前に、行動者が生存しているかチェック
+                bool actorIsAlive = true;
+                if (action.isActorFriend)
+                {
+                    var friendStatus = CharacterStatusManager.GetCharacterStatusById(action.actorId);
+                    if (friendStatus == null || friendStatus.currentHp <= 0)
+                    {
+                        actorIsAlive = false;
+                    }
+                }
+                else // 敵の場合
+                {
+                    var enemyStatus = _enemyStatusManager.GetEnemyStatusByBattleId(action.actorId);
+                    // 敵がすでに倒されているか(isDefeated) or 逃げているか(isRunaway)をチェック
+                    if (enemyStatus == null || enemyStatus.isDefeated || enemyStatus.isRunaway)
+                    {
+                        actorIsAlive = false;
+                    }
+                }
+
+                // 生きていなければ、このアクションをスキップして次のアクションへ
+                if (!actorIsAlive)
+                {
+                    string actorName = GetCharacterName(action.actorId, action.isActorFriend);
+                    SimpleLogger.Instance.Log($"{actorName} は行動前に倒されたため、アクションをスキップします。");
+                    continue; // foreachループの次のイテレーションに進む
+                }
+
                 SimpleLogger.Instance.Log($"コマンドに応じた行動を行います。 コマンド : {action.battleCommand}");
                 switch (action.battleCommand)
                 {
