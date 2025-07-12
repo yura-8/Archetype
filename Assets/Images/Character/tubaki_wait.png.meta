@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 65059a39d5d309d4e8dddbe087558977
+guid: e833769795ee40e4eac95081e4266b47
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4723188824610832630
-    second: yotuasi_0
+      213: 7245717575251908838
+    second: tubaki_wait_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,23 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: yotuasi_0
+      name: tubaki_wait_0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 0
-        width: 58
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 84
+        y: 4
+        width: 197
+        height: 316
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a0ff9fdd9ccd37eb0800000000000000
-      internalID: -4723188824610832630
+      spriteID: 6e8d1b7ceb5fd8460800000000000000
+      internalID: 7245717575251908838
       vertices: []
       indices: 
       edges: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b15aba7d66ceaf54fb8a351dacd66287
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      yotuasi_0: -4723188824610832630
+      tubaki_wait_0: 7245717575251908838
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

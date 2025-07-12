@@ -274,7 +274,14 @@ namespace SimpleRpg
                 _skillUiController.SetUpControllerDictionary();
                 _skillUiController.ClearAllSkillText();
                 _skillUiController.ClearDescriptionText();
-                _skillController.SetCharacterSkill();
+
+                // BattleManagerから現在行動中のキャラクターIDを取得
+                int currentActorId = _battleManager.GetCurrentActorCharacterId();
+                if (currentActorId != -1)
+                {
+                    // 取得したIDを使ってスキルリストをセットするよう命令
+                    _skillController.SetCharacterSkill(currentActorId);
+                }
             }
             else if (IsItemMode)
             {

@@ -60,27 +60,27 @@ namespace SimpleRpg
         }
 
         /// <summary>
-        /// キャラクターが覚えているスキルをリストにセットします。
+        /// 指定されたキャラクターが覚えているスキルをリストにセットします。
         /// </summary>
-        public void SetCharacterSkill()
+        /// <param name="currentActorId">スキルを読み込む対象のキャラクターID</param>
+        public void SetCharacterSkill(int currentActorId)
         {
             _characterSkillList.Clear();
 
-            // 指定したキャラクターのステータスを取得します。
-            var currentSelectingCharacter = CharacterStatusManager.partyCharacter[0];
-            var characterStatus = CharacterStatusManager.GetCharacterStatusById(currentSelectingCharacter);
+            // 引数で受け取ったキャラクターIDのステータスを取得します。
+            var characterStatus = CharacterStatusManager.GetCharacterStatusById(currentActorId);
+
+            // キャラクターが見つからない場合は処理を中断
+            if (characterStatus == null)
+            {
+                Debug.LogError($"ID: {currentActorId} のキャラクターステータスが見つかりません。");
+                return;
+            }
+
             foreach (var skillId in characterStatus.SkillList)
             {
                 var skillData = SkillDataManager.GetSkillDataById(skillId);
                 _characterSkillList.Add(skillData);
-            }
-
-            Debug.Log($"[SkillController] SetCharacterSkill completed. Skill count: {_characterSkillList.Count}");
-            foreach (var skill in _characterSkillList)
-            {
-                // skill が null でないかも確認
-                string skillName = skill != null ? skill.skillName : "NULL SkillData";
-                Debug.Log($"[SkillController] Loaded skill: {skillName}");
             }
         }
 

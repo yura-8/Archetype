@@ -18,5 +18,3 @@ MonoBehaviour:
   characterSkillRecords:
   - level: 1
     skillId: 1
-  - level: 1
-    skillId: 2

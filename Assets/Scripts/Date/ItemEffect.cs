@@ -27,5 +27,10 @@ namespace SimpleRpg
         /// 効果の対象
         /// </summary>
         public SkillParameter skillParameter;
+
+        /// <summary>
+        /// 持続ターン
+        /// </summary>
+        public int duration;
     }
 }

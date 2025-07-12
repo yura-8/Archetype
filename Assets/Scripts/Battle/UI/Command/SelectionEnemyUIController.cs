@@ -119,17 +119,58 @@ namespace SimpleRpg
         /// <summary>
         /// 敵リストの情報でUIを更新します。敵の数に応じて表示/非表示も行います。
         /// </summary>
-        public void UpdateEnemyList(List<EnemyData> activeEnemies)
+        //public void UpdateEnemyList(List<EnemyData> activeEnemies)
+        //{
+        //    SetUpControllerDictionary();
+
+        //    for (int i = 0; i < 4; i++)
+        //    {
+        //        if (_controllerDictionary.TryGetValue(i, out SelectionEnemyController controller))
+        //        {
+        //            if (i < activeEnemies.Count)
+        //            {
+        //                SetEnemyName(i,activeEnemies[i].enemyName);
+        //                controller.Show();
+        //            }
+        //            else
+        //            {
+        //                controller.Hide();
+        //            }
+        //        }
+        //    }
+        //}
+        /// <summary>
+        /// 敵リストの情報でUIを更新します。敵の数に応じて表示/非表示も行います。
+        /// </summary>
+        public void UpdateEnemyList(List<EnemyStatus> allEnemies) // ★ 引数をEnemyStatusのリストに変更
         {
-            SetUpControllerDictionary();
+            if (_controllerDictionary.Count == 0) // 安全のため、辞書が空なら初期化
+            {
+                SetUpControllerDictionary();
+            }
 
             for (int i = 0; i < 4; i++)
             {
                 if (_controllerDictionary.TryGetValue(i, out SelectionEnemyController controller))
                 {
-                    if (i < activeEnemies.Count)
+                    // このスロットに対応する敵がいるか？
+                    if (i < allEnemies.Count)
                     {
-                        SetEnemyName(i,activeEnemies[i].enemyName);
+                        var currentEnemyStatus = allEnemies[i];
+                        SetEnemyName(i, currentEnemyStatus.enemyData.enemyName);
+
+                        // ★★★★★ ここからが修正点 ★★★★★
+                        // 倒されているかどうかで文字色を変える
+                        if (currentEnemyStatus.isDefeated)
+                        {
+                            controller.SetTextColor(Color.gray); // 倒れていたら灰色
+                        }
+                        else
+                        {
+                            controller.SetTextColor(Color.white); // 生きていたら白（または元の色）
+                        }
+                        // ★★★★★ ここまで ★★★★★
+
                         controller.Show();
                     }
                     else
@@ -140,10 +181,10 @@ namespace SimpleRpg
             }
         }
 
-            /// <summary>
-            /// UIを表示します。
-            /// </summary>
-            public void Show()
+        /// <summary>
+        /// UIを表示します。
+        /// </summary>
+        public void Show()
         {
             gameObject.SetActive(true);
         }

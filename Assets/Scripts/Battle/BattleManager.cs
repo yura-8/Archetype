@@ -477,19 +477,33 @@ namespace SimpleRpg
                     SetBattlePhase(BattlePhase.SelectParty);
                     StartCoroutine(ShowPartySelectProcess());
                     break;
+
                 case EffectTarget.Own:
-                    // 自分自身がターゲットなら、行動実行フェーズへ
+                    // 自分自身がターゲットなら、ターゲット情報を即座に設定してアクション登録へ
                     Debug.Log("自分自身をターゲットにします。");
-                    ShowConfirmationProcess();
+                    GetWindowManager().GetDescriptionWindowController().HideWindow();
+
+                    // 現在行動中のキャラクターを自分自身として設定
+                    _selectedTargetId = GetCurrentActorCharacterId();
+                    _isTargetFriend = true;
+                    RegisterCurrentAction(); // アクションを登録して次のキャラクターの入力へ
                     break;
 
-                // ここに EnemyAll（敵全体）や FriendAll（味方全体）などのケースも追加していく
+                case EffectTarget.EnemyAll:
+                case EffectTarget.FriendAll:
+                    // 全体効果の場合もターゲット選択は不要
+                    Debug.Log("全体をターゲットにします。");
+                    GetWindowManager().GetDescriptionWindowController().HideWindow();
+
+                    // targetIdは-1（全体を示す）などの扱いでアクション登録
+                    _selectedTargetId = -1;
+                    RegisterCurrentAction();
+                    break;
 
                 default:
                     Debug.Log("ターゲット選択不要。行動を実行します。");
                     SetBattlePhase(BattlePhase.Action);
                     GetWindowManager().GetDescriptionWindowController().HideWindow();
-                    // 行動実行処理へ
                     break;
             }
         }
@@ -887,10 +901,47 @@ namespace SimpleRpg
                 SimpleLogger.Instance.Log("OnFinishedActions() || 戦闘が終了しているため、処理を中断します。");
                 return;
             }
+            ProcessBuffDurations();
 
             SimpleLogger.Instance.Log("ターン内の行動が完了しました。");
             TurnCount++;
             StartInputCommandPhase();
+        }
+
+        /// ターン終了時に全てのバフ・デバフの持続ターンを処理します。
+        private void ProcessBuffDurations()
+        {
+            // 味方キャラクターのバフを処理
+            var partyStatuses = CharacterStatusManager.GetPartyMemberStatuses();
+            foreach (var status in partyStatuses)
+            {
+                // リストから削除してもループが壊れないように逆順で処理
+                for (int i = status.buffs.Count - 1; i >= 0; i--)
+                {
+                    var buff = status.buffs[i];
+                    buff.duration--;
+                    if (buff.duration <= 0)
+                    {
+                        // TODO: 効果が切れたメッセージを表示する処理
+                        status.buffs.RemoveAt(i);
+                    }
+                }
+            }
+
+            // 敵キャラクターのバフを処理
+            var enemyStatuses = _enemyStatusManager.GetEnemyStatusList();
+            foreach (var status in enemyStatuses)
+            {
+                for (int i = status.buffs.Count - 1; i >= 0; i--)
+                {
+                    var buff = status.buffs[i];
+                    buff.duration--;
+                    if (buff.duration <= 0)
+                    {
+                        status.buffs.RemoveAt(i);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -910,6 +961,20 @@ namespace SimpleRpg
         public EnemyStatusUIManager GetEnemyStatusUIManager()
         {
             return _enemyStatusUIManager;
+        }
+
+        /// <summary>
+        /// 現在コマンドを入力しているキャラクターのIDを取得します。
+        /// </summary>
+        /// <returns>現在のキャラクターID。該当しない場合は-1を返します。</returns>
+        public int GetCurrentActorCharacterId()
+        {
+            if (_currentActorIndex >= 0 && _currentActorIndex < CharacterStatusManager.partyCharacter.Count)
+            {
+                return CharacterStatusManager.partyCharacter[_currentActorIndex];
+            }
+            Debug.LogError("有効なアクターインデックスではありません。");
+            return -1;
         }
     }
 }

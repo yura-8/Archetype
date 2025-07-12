@@ -1,4 +1,6 @@
-﻿namespace SimpleRpg
+﻿using System.Collections.Generic;
+
+namespace SimpleRpg
 {
     /// <summary>
     /// 戦闘中の敵キャラクターのステータスを保持するクラスです。
@@ -41,5 +43,7 @@
         /// 敵キャラクターが逃げたフラグです。
         /// </summary>
         public bool isRunaway;
+
+        public List<AppliedBuff> buffs = new List<AppliedBuff>();
     }
 }

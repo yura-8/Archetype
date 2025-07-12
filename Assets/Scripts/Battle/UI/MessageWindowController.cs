@@ -111,6 +111,19 @@ namespace SimpleRpg
         }
 
         /// <summary>
+        /// 補助効果のメッセージを生成します。
+        /// </summary>
+        public IEnumerator GenerateSupportEffectMessage(string targetName, SkillParameter parameter, int value)
+        {
+            // パラメータ名と変動メッセージを決定
+            string parameterName = parameter.ToString(); // ATK, DEFなど
+            string changeMessage = value > 0 ? "あがった" : "さがった";
+
+            string message = $"{targetName} の {parameterName} が {changeMessage}！";
+            yield return StartCoroutine(ShowMessageProcess(message));
+        }
+
+        /// <summary>
         /// 防御した時のメッセージを生成します。
         /// </summary>
         public IEnumerator GenerateGuardMessage(string actorName)

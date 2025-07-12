@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyId: 1
   enemyName: "\u30AF\u30A2\u30C9\u30A6\u30A9\u30FC\u30AB\u30FC"
-  sprite: {fileID: -4723188824610832630, guid: 65059a39d5d309d4e8dddbe087558977, type: 3}
+  sprite: {fileID: -4723188824610832630, guid: a37f6f7ce90bd1042a286faaf1a92977, type: 3}
   hp: 500
   bt: 1200
   atk: 20

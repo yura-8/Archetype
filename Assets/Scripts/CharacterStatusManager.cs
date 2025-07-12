@@ -87,6 +87,21 @@ namespace SimpleRpg
             baseParameter.def += equipmentParameter.def;
             baseParameter.dex += equipmentParameter.dex;
 
+            foreach (var buff in characterStatus.buffs)
+            {
+                switch (buff.parameter)
+                {
+                    case SkillParameter.atk: baseParameter.atk += buff.value; break;
+                    case SkillParameter.def: baseParameter.def += buff.value; break;
+                    case SkillParameter.dex: baseParameter.dex += buff.value; break;
+                }
+            }
+
+            // パラメータが0未満にならないように調整
+            if (baseParameter.atk < 0) baseParameter.atk = 0;
+            if (baseParameter.def < 0) baseParameter.def = 0;
+            if (baseParameter.dex < 0) baseParameter.dex = 0;
+
             return baseParameter;
         }
 

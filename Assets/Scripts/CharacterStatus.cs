@@ -55,5 +55,7 @@ namespace SimpleRpg
         public bool isDefeated;
 
         public bool isGuarding; // trueなら防御中
+
+        public List<AppliedBuff> buffs = new List<AppliedBuff>();
     }
 }

@@ -221,19 +221,36 @@ namespace SimpleRpg
 
             if (isFriend)
             {
+                // 味方の場合は既存の処理でベースパラメータと装備品を取得
                 battleParameter = CharacterStatusManager.GetCharacterBattleParameterById(characterId);
-
                 var characterStatus = CharacterStatusManager.GetCharacterStatusById(characterId);
                 battleParameter.isGuarding = characterStatus.isGuarding;
             }
             else
             {
+                // 敵の場合はベースパラメータを取得
                 var enemyStatus = _enemyStatusManager.GetEnemyStatusByBattleId(characterId);
                 var enemyData = enemyStatus.enemyData;
                 battleParameter.atk = enemyData.atk;
                 battleParameter.def = enemyData.def;
                 battleParameter.dex = enemyData.dex;
                 battleParameter.isGuarding = enemyStatus.isGuarding;
+
+                // ★ここから追加：敵に適用中のバフの効果を合算する
+                foreach (var buff in enemyStatus.buffs)
+                {
+                    switch (buff.parameter)
+                    {
+                        case SkillParameter.atk: battleParameter.atk += buff.value; break;
+                        case SkillParameter.def: battleParameter.def += buff.value; break;
+                        case SkillParameter.dex: battleParameter.dex += buff.value; break;
+                    }
+                }
+
+                // パラメータが0未満にならないように調整
+                if (battleParameter.atk < 0) battleParameter.atk = 0;
+                if (battleParameter.def < 0) battleParameter.def = 0;
+                if (battleParameter.dex < 0) battleParameter.dex = 0;
             }
             return battleParameter;
         }

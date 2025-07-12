@@ -8,6 +8,7 @@ namespace SimpleRpg
     [Serializable]
     public enum SkillParameter
     {
+        none, //パラメータなし
         hp, //HP
         bt, //バッテリー
         atk, //攻撃力

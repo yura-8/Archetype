@@ -124,12 +124,22 @@ namespace SimpleRpg
                 return;
             }
 
-            // EnemyDataManagerから現在の敵リストを取得
-            _activeEnemies = EnemyDataManager.GetenemySatuses();
+            // 1. EnemyStatusManagerから、現在戦闘中の全ての敵ステータスリストを取得
+            var allEnemies = _battleManager.GetEnemyStatusManager().GetEnemyStatusList();
+
+            // 2. その中から「isDefeated」がfalse、つまり「生きている敵」だけを絞り込む
+            _activeEnemies = new List<EnemyData>();
+            foreach (var enemyStatus in allEnemies)
+            {
+                if (!enemyStatus.isDefeated)
+                {
+                    _activeEnemies.Add(enemyStatus.enemyData);
+                }
+            }
             _selectedIndex = 0;
 
             // UIの表示を更新
-            _uiController.UpdateEnemyList(_activeEnemies);
+            _uiController.UpdateEnemyList(allEnemies);
             _uiController.ShowSelectedCursor(_selectedIndex);
             ShowWindow();
             _canSelect = false;

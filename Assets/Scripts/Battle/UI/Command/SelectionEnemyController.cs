@@ -41,6 +41,18 @@ namespace SimpleRpg
         }
 
         /// <summary>
+        /// 敵キャラクターの名前の文字色を設定します。
+        /// </summary>
+        /// <param name="color">設定したい色</param>
+        public void SetTextColor(Color color)
+        {
+            if (_enemyNameText != null)
+            {
+                _enemyNameText.color = color;
+            }
+        }
+
+        /// <summary>
         /// 選択項目のカーソルを表示します。
         /// </summary>
         public void ShowCursor()
