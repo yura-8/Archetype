@@ -359,5 +359,23 @@ namespace SimpleRpg
             uiController.ClearMessage();
         }
 
+        /// <summary>
+        /// BTが回復する時のメッセージを生成します。
+        /// </summary>
+        public IEnumerator GenerateBtHealMessage(string targetName, int healNum)
+        {
+            string message = $"{targetName} の BTが {healNum} 回復した！";
+            yield return StartCoroutine(ShowMessageProcess(message));
+        }
+
+        /// <summary>
+        /// 汎用的なメッセージを生成します（温度変化などで使用）。
+        /// </summary>
+        public IEnumerator GenerateGeneralMessage(string text)
+        {
+            string message = text;
+            yield return StartCoroutine(ShowMessageProcess(message));
+        }
+
     }
 }

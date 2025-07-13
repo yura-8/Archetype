@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic; // ★ Listを使用するために追加
 
 namespace SimpleRpg
 {
@@ -29,39 +30,14 @@ namespace SimpleRpg
         public ItemCategory itemCategory;
 
         /// <summary>
-        /// アイテムの効果です。
+        /// アイテムの効果リストです。
         /// </summary>
-        public ItemEffect itemEffect;
+        public List<ItemEffect> itemEffects;
 
         /// <summary>
         /// 使用可能回数です。
         /// </summary>
         public int numberOfUse;
-
-        /// <summary>
-        /// HP回復量。
-        /// </summary>
-        public int hp;
-
-        /// <summary>
-        /// バッテリー回復量。
-        /// </summary>
-        public int bt;
-
-        /// <summary>
-        /// 攻撃力の補正値です。
-        /// </summary>
-        public int atk;
-
-        /// <summary>
-        /// 防御力の補正値です。
-        /// </summary>
-        public int def;
-
-        /// <summary>
-        /// 素早さの補正値です。
-        /// </summary>
-        public int dex;
 
         /// <summary>
         /// アイテムの価格です。

@@ -194,7 +194,7 @@ namespace SimpleRpg
 
             _battleActionProcessor.InitializeProcessor(this);
             _battleActionRegister.InitializeRegister(_battleActionProcessor);
-            _enemyCommandSelector.SetReferences(this, _battleActionRegister);
+            _enemyCommandSelector.SetReferences(this, _battleActionProcessor);
             _battleResultManager.SetReferences(this);
             //_characterMoverManager.StopCharacterMover();
             _battleStarter.StartBattle(this);
@@ -475,7 +475,7 @@ namespace SimpleRpg
         /// </summary>
         public void OnItemSelected(int itemId)
         {
-            // ★ 選択されたIDを一時保存
+            // 選択されたIDを一時保存
             _selectedItemId = itemId;
 
             // スキルかアイテムかで処理を分ける
@@ -484,9 +484,6 @@ namespace SimpleRpg
                 // スキルの場合
                 var skillData = SkillDataManager.GetSkillDataById(itemId);
                 if (skillData == null) return;
-
-                //SimpleLogger.Instance.Log($"スキル選択: {skillData.skillName} (ターゲット: {skillData.skillEffect.effectTarget})");
-                //DetermineNextPhaseByTarget(skillData.skillEffect.effectTarget);
 
                 // スキル効果リストが存在し、かつ中身が1つ以上あることを確認
                 if (skillData.skillEffect != null && skillData.skillEffect.Count > 0)
@@ -498,18 +495,26 @@ namespace SimpleRpg
                 }
                 else
                 {
-                    // スキルに効果が設定されていない場合はエラーログを出して処理を中断
                     Debug.LogError($"スキル「{skillData.skillName}」に効果が設定されていません。");
                 }
-
             }
             else if (SelectedCommand == BattleCommand.Item)
             {
-                // アイテムの場合 (ItemDataManagerのようなものがあると仮定)
+                // アイテムの場合
                 var itemData = ItemDataManager.GetItemDataById(itemId);
                 if (itemData == null) return;
-                SimpleLogger.Instance.Log($"アイテム選択: {itemData.itemName} (ターゲット: {itemData.itemEffect.effectTarget})");
-                DetermineNextPhaseByTarget(itemData.itemEffect.effectTarget);
+
+                // ★ 修正点: itemEffectsリストの最初の要素からターゲットタイプを判定
+                if (itemData.itemEffects != null && itemData.itemEffects.Count > 0)
+                {
+                    EffectTarget targetType = itemData.itemEffects[0].effectTarget;
+                    SimpleLogger.Instance.Log($"アイテム選択: {itemData.itemName} (ターゲット: {targetType})");
+                    DetermineNextPhaseByTarget(targetType);
+                }
+                else
+                {
+                    Debug.LogError($"アイテム「{itemData.itemName}」に効果が設定されていません。");
+                }
             }
         }
 
@@ -889,7 +894,6 @@ namespace SimpleRpg
             BattlePhase = BattlePhase.Result;
             IsBattleFinished = true;
             _battleResultManager.OnWin();
-            if (_bgmAudioSource != null) _bgmAudioSource.Stop();
         }
 
         /// <summary>
@@ -901,7 +905,6 @@ namespace SimpleRpg
             BattlePhase = BattlePhase.Result;
             IsBattleFinished = true;
             _battleResultManager.OnLose();
-            if (_bgmAudioSource != null) _bgmAudioSource.Stop();
         }
 
         /// <summary>
@@ -924,7 +927,6 @@ namespace SimpleRpg
             BattlePhase = BattlePhase.Result;
             IsBattleFinished = true;
             _battleResultManager.OnWin();
-            if (_bgmAudioSource != null) _bgmAudioSource.Stop();
         }
 
         /// <summary>
@@ -969,6 +971,8 @@ namespace SimpleRpg
 
             //_characterMoverManager.ResumeCharacterMover();
             BattlePhase = BattlePhase.NotInBattle;
+
+            if (_bgmAudioSource != null) _bgmAudioSource.Stop();
 
             SceneManager.LoadScene("SampleScene");
         }
@@ -1283,7 +1287,7 @@ namespace SimpleRpg
         private IEnumerator UpdateTemperature()
         {
             // 例：30%の確率で温度が変化
-            if (UnityEngine.Random.Range(0, 100) < 80)
+            if (UnityEngine.Random.Range(0, 100) < 20)
             {
                 var messageWindow = _battleWindowManager.GetMessageWindowController();
                 TemperatureState newState;

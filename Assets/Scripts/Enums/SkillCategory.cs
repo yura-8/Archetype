@@ -10,5 +10,6 @@
         Damage, //ダメージ
         Support, //補助
         Movement,　//移動
+        Temperature, //温度
     }
 }

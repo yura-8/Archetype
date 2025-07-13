@@ -1,4 +1,6 @@
-﻿namespace SimpleRpg
+﻿using System.Linq; // ★ Linqを使用するために追加
+
+namespace SimpleRpg
 {
     /// <summary>
     /// 装備品による補正を計算するクラスです。
@@ -22,11 +24,28 @@
         static void CalculateBattleParameter(int itemId, BattleParameter battleParameter)
         {
             ItemData itemData = ItemDataManager.GetItemDataById(itemId);
-            if (itemData != null)
+            if (itemData != null && itemData.itemEffects != null)
             {
-                battleParameter.atk += itemData.atk;
-                battleParameter.def += itemData.def;
-                battleParameter.dex += itemData.dex;
+                // itemEffectsリストから能力値上昇効果を探して加算する
+                foreach (var effect in itemData.itemEffects)
+                {
+                    // サポート効果で、かつ永続効果（durationが0以下）のものを装備補正値とみなす
+                    if (effect.itemEffectCategory == ItemEffectCategory.Support && effect.duration <= 0)
+                    {
+                        switch (effect.skillParameter)
+                        {
+                            case SkillParameter.atk:
+                                battleParameter.atk += effect.value;
+                                break;
+                            case SkillParameter.def:
+                                battleParameter.def += effect.value;
+                                break;
+                            case SkillParameter.dex:
+                                battleParameter.dex += effect.value;
+                                break;
+                        }
+                    }
+                }
             }
         }
     }

@@ -155,13 +155,17 @@ namespace SimpleRpg
                 return;
             }
 
-            
+            // itemEffectsリストの最初の要素からターゲットが味方かどうかを判定
             bool isTargetFriend = false;
-            if (itemData.itemEffect.effectTarget == EffectTarget.Own
-                || itemData.itemEffect.effectTarget == EffectTarget.FriendAll
-                || itemData.itemEffect.effectTarget == EffectTarget.FriendSolo)
+            if (itemData.itemEffects != null && itemData.itemEffects.Count > 0)
             {
-                isTargetFriend = true;
+                var effectTarget = itemData.itemEffects[0].effectTarget;
+                if (effectTarget == EffectTarget.Own
+                    || effectTarget == EffectTarget.FriendAll
+                    || effectTarget == EffectTarget.FriendSolo)
+                {
+                    isTargetFriend = true;
+                }
             }
 
             BattleAction action = new()
