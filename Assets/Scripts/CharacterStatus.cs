@@ -57,5 +57,9 @@ namespace SimpleRpg
         public bool isGuarding; // trueなら防御中
 
         public List<AppliedBuff> buffs = new List<AppliedBuff>();
+
+        public SpecialStatusType currentStatus = SpecialStatusType.None; // 現在の特殊状態
+        public int statusDuration = 0; // 特殊状態の残りターン数
+        public int maxBtPenalty = 0; // 過充電による最大BTのペナルティ量
     }
 }

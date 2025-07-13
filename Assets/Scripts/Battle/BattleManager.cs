@@ -100,6 +100,12 @@ namespace SimpleRpg
         [SerializeField]
         private EnemyStatusUIManager _enemyStatusUIManager;
 
+        /// <summary>
+        /// 戦闘の結果処理を管理するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        BattleResultManager _battleResultManager;
+
 
         [Header("BGM設定")]
         [SerializeField]
@@ -164,6 +170,9 @@ namespace SimpleRpg
 
             EnemyDataManager.enemies = this.EnemyId;
 
+            TurnCount = 1;
+            IsBattleFinished = false;
+
             _battleWindowManager.SetUpWindowControllers(this);
             var messageWindowController = _battleWindowManager.GetMessageWindowController();
             messageWindowController.HidePager();
@@ -171,6 +180,7 @@ namespace SimpleRpg
             _battleActionProcessor.InitializeProcessor(this);
             _battleActionRegister.InitializeRegister(_battleActionProcessor);
             _enemyCommandSelector.SetReferences(this, _battleActionRegister);
+            _battleResultManager.SetReferences(this);
             //_characterMoverManager.StopCharacterMover();
             _battleStarter.StartBattle(this);
 
@@ -850,6 +860,7 @@ namespace SimpleRpg
             SimpleLogger.Instance.Log("敵を全て倒しました。");
             BattlePhase = BattlePhase.Result;
             IsBattleFinished = true;
+            _battleResultManager.OnWin();
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
         }
 
@@ -861,6 +872,7 @@ namespace SimpleRpg
             SimpleLogger.Instance.Log("ゲームオーバーになりました。");
             BattlePhase = BattlePhase.Result;
             IsBattleFinished = true;
+            _battleResultManager.OnLose();
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
         }
 
@@ -883,6 +895,7 @@ namespace SimpleRpg
             SimpleLogger.Instance.Log("敵が逃走に成功しました。");
             BattlePhase = BattlePhase.Result;
             IsBattleFinished = true;
+            _battleResultManager.OnWin();
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
         }
 
@@ -892,8 +905,29 @@ namespace SimpleRpg
         public void OnFinishBattle()
         {
             SimpleLogger.Instance.Log("戦闘に勝利して終了します。");
+
+            _enemyStatusManager.InitializeEnemyStatusList();
+            _battleActionProcessor.InitializeActions();
+            _battleActionProcessor.StopActions();
+
+            //_characterMoverManager.ResumeCharacterMover();
             BattlePhase = BattlePhase.NotInBattle;
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
+        }
+
+        /// <summary>
+        /// 戦闘を終了する時のコールバックです。
+        /// </summary>
+        public void OnFinishBattleWithGameover()
+        {
+            SimpleLogger.Instance.Log("ゲームオーバーとして戦闘を終了します。");
+
+            _enemyStatusManager.InitializeEnemyStatusList();
+            _battleActionProcessor.InitializeActions();
+            _battleActionProcessor.StopActions();
+
+            //_characterMoverManager.ResumeCharacterMover();
+            BattlePhase = BattlePhase.NotInBattle;
         }
 
         /// <summary>
@@ -909,6 +943,9 @@ namespace SimpleRpg
                     break;
                 case BattlePhase.Action:
                     _battleActionProcessor.ShowNextMessage();
+                    break;
+                case BattlePhase.Result:
+                    _battleResultManager.ShowNextMessage();
                     break;
             }
         }

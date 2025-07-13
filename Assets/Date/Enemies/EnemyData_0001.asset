@@ -29,5 +29,6 @@ MonoBehaviour:
       comparisonOperator: 4
       turnCriteria: 0
       hpRateCriteria: 30
+      btRateCriteria: 41.5
     skillData: {fileID: 0}
     priority: 50
