@@ -186,7 +186,7 @@ namespace SimpleRpg
         /// </summary>
         public IEnumerator GenerateWinMessage(string characterName)
         {
-            uiController.ClearMessage();
+            //uiController.ClearMessage();
             string message = $"{characterName}{BattleMessage.WinSuffix}";
             yield return StartCoroutine(ShowMessageProcess(message));
         }
@@ -214,7 +214,7 @@ namespace SimpleRpg
         /// </summary>
         public IEnumerator GenerateLevelUpMessage(string characterName, int level)
         {
-            uiController.ClearMessage();
+            //uiController.ClearMessage();
             string message = $"{characterName}{BattleMessage.LevelUpNameSuffix} {level} {BattleMessage.LevelUpNumberSuffix}";
             yield return StartCoroutine(ShowMessageProcess(message));
         }
@@ -260,7 +260,7 @@ namespace SimpleRpg
         /// <summary>
         /// メッセージを順番に表示するコルーチンです。
         /// </summary>
-        private IEnumerator ShowMessageProcess(string message) // メソッド名を変更
+        private IEnumerator ShowMessageProcess(string message) 
         {
             uiController.AppendMessage(message);
             yield return new WaitForSeconds(_messageInterval);
@@ -276,5 +276,88 @@ namespace SimpleRpg
             string message = "パーティはにげだした！";
             yield return StartCoroutine(ShowMessageProcess(message));
         }
+
+        /// <summary>
+        /// 特殊状態になった時のメッセージを生成します。
+        /// </summary>
+        public IEnumerator GenerateStatusEffectMessage(string targetName, SpecialStatusType statusType)
+        {
+            string statusMessage = "";
+            switch (statusType)
+            {
+                case SpecialStatusType.Overheat:
+                    statusMessage = "は オーバーヒートした！";
+                    break;
+                case SpecialStatusType.Overcharge:
+                    statusMessage = "は 過充電状態になった！";
+                    break;
+                case SpecialStatusType.Stun:
+                    statusMessage = "は スタンした！";
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(statusMessage))
+            {
+                string message = targetName + statusMessage;
+                yield return StartCoroutine(ShowMessageProcess(message));
+            }
+        }
+
+        /// <summary>
+        /// 特殊状態から回復した時のメッセージを生成します。
+        /// </summary>
+        public IEnumerator GenerateStatusRecoveryMessage(string targetName)
+        {
+            string message = $"{targetName} の 様子が元に戻った。";
+            yield return StartCoroutine(ShowMessageProcess(message));
+        }
+
+        /// <summary>
+        /// 過充電によるダメージメッセージを生成します。
+        /// </summary>
+        public IEnumerator GenerateOverchargeDamageMessage(string targetName, int damage)
+        {
+            string message = $"過充電により {targetName} は {damage} のダメージを受けた！";
+            yield return StartCoroutine(ShowMessageProcess(message));
+        }
+
+        /// <summary>
+        /// 緊急バッテリー発動メッセージを生成します。
+        /// </summary>
+        public IEnumerator GenerateEmergencyBatteryMessage(string targetName)
+        {
+            string message = $"緊急バッテリーが作動！ {targetName} のBTが回復した！";
+            yield return StartCoroutine(ShowMessageProcess(message));
+        }
+
+        /// <summary>
+        /// スタンで行動不能な時のメッセージを生成します。
+        /// </summary>
+        public IEnumerator GenerateStunnedMessage(string targetName)
+        {
+            string message = $"{targetName} は スタンしていて動けない！";
+            yield return StartCoroutine(ShowMessageProcess(message));
+        }
+
+        /// <summary>
+        /// 複数行のメッセージを一度に表示します。
+        /// </summary>
+        public IEnumerator GenerateMultiLineMessage(string message)
+        {
+            uiController.ClearMessage();
+            uiController.AppendMessage(message);
+            yield return StartCoroutine(ShowMessageProcess("")); // 既存の待機処理を流用
+        }
+
+        public int GetUIMessageLineCount()
+        {
+            return uiController.GetLineCount();
+        }
+
+        public void ClearMessage()
+        {
+            uiController.ClearMessage();
+        }
+
     }
 }

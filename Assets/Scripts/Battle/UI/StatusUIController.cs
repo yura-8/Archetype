@@ -16,6 +16,35 @@ namespace SimpleRpg
         [SerializeField] TextMeshProUGUI _maxBtText;
         [SerializeField] private Image _highlightImage;
 
+        [Header("特殊状態の色設定")]
+        [SerializeField] private Color _normalColor = Color.white;
+        [SerializeField] private Color _overheatColor = Color.red;
+        [SerializeField] private Color _overchargeColor = new Color(0.8f, 0.4f, 1f); // 紫色
+        [SerializeField] private Color _stunColor = new Color(0.5f, 0.8f, 1f); // 水色
+
+        /// <summary>
+        /// 特殊状態に応じてキャラクター名の色を変更します。
+        /// </summary>
+        public void SetStatusColor(SpecialStatusType status)
+        {
+            switch (status)
+            {
+                case SpecialStatusType.Overheat:
+                    _characterNameText.color = _overheatColor;
+                    break;
+                case SpecialStatusType.Overcharge:
+                    _characterNameText.color = _overchargeColor;
+                    break;
+                case SpecialStatusType.Stun:
+                    _characterNameText.color = _stunColor;
+                    break;
+                case SpecialStatusType.None:
+                default:
+                    _characterNameText.color = _normalColor;
+                    break;
+            }
+        }
+
         /// <summary>
         /// ハイライトカーソルの表示・非表示を切り替えます。
         /// </summary>

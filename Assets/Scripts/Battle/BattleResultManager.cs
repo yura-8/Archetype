@@ -28,6 +28,8 @@ namespace SimpleRpg
         /// </summary>
         bool _waitKeyInput;
 
+        public bool IsWaitingKeyInput { get; private set; }
+
         /// <summary>
         /// メッセージをポーズするかどうかのフラグです。
         /// </summary>
@@ -46,7 +48,14 @@ namespace SimpleRpg
 
         void Update()
         {
-            KeyWait();
+            if (!IsWaitingKeyInput)
+            {
+                return;
+            }
+            if (InputGameKey.ConfirmButton() || InputGameKey.CancelButton())
+            {
+                IsWaitingKeyInput = false;
+            }
         }
 
         /// <summary>
@@ -59,14 +68,27 @@ namespace SimpleRpg
             int gold = 0;
             foreach (var enemyStatus in _enemyStatusManager.GetEnemyStatusList())
             {
-                totalExp += enemyStatus.enemyData.exp;
-                gold += enemyStatus.enemyData.gold;
+                if (enemyStatus.isDefeated)
+                {
+                    totalExp += enemyStatus.enemyData.exp;
+                    gold += enemyStatus.enemyData.gold;
+                }
             }
 
-            // プレイヤーの経験値とゴールドを更新します。
-            CharacterStatusManager.IncreaseExp(totalExp);
-            CharacterStatusManager.IncreaseGold(gold);
+            // ゴールドを加算します。
+            if (gold > 0)
+            {
+                CharacterStatusManager.IncreaseGold(gold);
+            }
 
+            // 経験値を加算します。
+            // IncreaseExpメソッドが内部で生存確認を行っているため、この呼び出しだけでOKです。
+            if (totalExp > 0)
+            {
+                CharacterStatusManager.IncreaseExp(totalExp);
+            }
+
+            // メッセージ表示処理のコルーチンを開始します。
             StartCoroutine(WinMessageProcess(totalExp, gold));
         }
 
@@ -77,62 +99,70 @@ namespace SimpleRpg
         /// <param name="gold">獲得ゴールド</param>
         IEnumerator WinMessageProcess(int exp, int gold)
         {
-            // パーティの最初のメンバーの名前を取得します。
+            // --- 0. 開始前にウィンドウをクリア ---
+            _messageWindowController.ClearMessage();
+
             var firstMemberId = CharacterStatusManager.partyCharacter[0];
             var characterName = CharacterDataManager.GetCharacterName(firstMemberId);
 
-            _pauseMessage = true;
-            _messageWindowController.GenerateWinMessage(characterName);
-            while (_pauseMessage)
-            {
-                yield return null;
-            }
+            // --- 1. 勝利メッセージ、経験値、ゴールドを順番に表示 ---
+            // ShowMessageWithPagingという新しいメソッドを使って、1行ずつ表示とページ送りを制御します
+            yield return StartCoroutine(ShowMessageWithPaging(
+                _messageWindowController.GenerateWinMessage(characterName)
+            ));
 
             if (exp > 0)
             {
-                _pauseMessage = true;
-                _messageWindowController.GenerateGetExpMessage(exp);
-                while (_pauseMessage)
-                {
-                    yield return null;
-                }
+                yield return StartCoroutine(ShowMessageWithPaging(
+                    _messageWindowController.GenerateGetExpMessage(exp)
+                ));
             }
 
             if (gold > 0)
             {
-                _pauseMessage = true;
-                _messageWindowController.GenerateGetGoldMessage(gold);
-                while (_pauseMessage)
-                {
-                    yield return null;
-                }
+                yield return StartCoroutine(ShowMessageWithPaging(
+                    _messageWindowController.GenerateGetGoldMessage(gold)
+                ));
             }
 
-            // キー入力を待ちます。
-            yield return StartCoroutine(KeyWaitProcess());
-
+            // --- 2. レベルアップしたキャラクターを一人ずつ表示 ---
             foreach (var id in CharacterStatusManager.partyCharacter)
             {
-                var isLevelUp = CharacterStatusManager.CheckLevelUp(id);
-                if (isLevelUp)
+                if (CharacterStatusManager.CheckLevelUp(id))
                 {
-                    _pauseMessage = true;
-                    var characterStatus = CharacterStatusManager.GetCharacterStatusById(id);
-                    var level = characterStatus.level;
-                    characterName = CharacterDataManager.GetCharacterName(id);
-                    _messageWindowController.GenerateLevelUpMessage(characterName, level);
-                    while (_pauseMessage)
-                    {
-                        yield return null;
-                    }
-
-                    // キー入力を待ちます。
-                    yield return StartCoroutine(KeyWaitProcess());
+                    var status = CharacterStatusManager.GetCharacterStatusById(id);
+                    var name = CharacterDataManager.GetCharacterName(id);
+                    yield return StartCoroutine(ShowMessageWithPaging(
+                        _messageWindowController.GenerateLevelUpMessage(name, status.level)
+                    ));
                 }
             }
 
-            // 処理の終了を通知します。
+            // --- 3. 全てのメッセージ表示後、最後のキー入力を待つ ---
+            _messageWindowController.ShowPager();
+            IsWaitingKeyInput = true;
+            yield return new WaitUntil(() => !IsWaitingKeyInput);
+            _messageWindowController.HidePager();
+
+            // --- 4. 戦闘終了処理を呼び出し、シーンを遷移させる ---
             _battleManager.OnFinishBattle();
+        }
+
+        // 新しいヘルパーメソッド（ページ送り機能の中核）をここに追加します。
+        private IEnumerator ShowMessageWithPaging(IEnumerator messageCoroutine)
+        {
+            // 表示前に、ウィンドウの行数が3行以上ならページ送りを行う
+            if (_messageWindowController.GetUIMessageLineCount() >= 3)
+            {
+                _messageWindowController.ShowPager();
+                IsWaitingKeyInput = true;
+                yield return new WaitUntil(() => !IsWaitingKeyInput);
+                _messageWindowController.HidePager();
+                _messageWindowController.ClearMessage();
+            }
+
+            // 渡されたメッセージ表示コルーチンを実行（これで1行メッセージが表示される）
+            yield return StartCoroutine(messageCoroutine);
         }
 
         /// <summary>
@@ -141,13 +171,13 @@ namespace SimpleRpg
         IEnumerator KeyWaitProcess()
         {
             _waitKeyInput = true;
-            _messageWindowController.ShowPager();
+            //_messageWindowController.ShowPager();
             while (_waitKeyInput)
             {
                 yield return null;
             }
 
-            _messageWindowController.HidePager();
+            //_messageWindowController.HidePager();
         }
 
         /// <summary>
@@ -179,21 +209,19 @@ namespace SimpleRpg
         /// </summary>
         IEnumerator LoseMessageProcess()
         {
-            // パーティの最初のメンバーの名前を取得します。
+            _messageWindowController.ClearMessage();
             var firstMemberId = CharacterStatusManager.partyCharacter[0];
             var characterName = CharacterDataManager.GetCharacterName(firstMemberId);
 
-            _pauseMessage = true;
-            _messageWindowController.GenerateGameoverMessage(characterName);
-            while (_pauseMessage)
-            {
-                yield return null;
-            }
+            yield return StartCoroutine(ShowMessageWithPaging(
+                 _messageWindowController.GenerateGameoverMessage(characterName)
+            ));
 
-            // キー入力を待ちます。
-            yield return StartCoroutine(KeyWaitProcess());
+            _messageWindowController.ShowPager();
+            IsWaitingKeyInput = true;
+            yield return new WaitUntil(() => !IsWaitingKeyInput);
+            _messageWindowController.HidePager();
 
-            // 処理の終了を通知します。
             _battleManager.OnFinishBattleWithGameover();
         }
 

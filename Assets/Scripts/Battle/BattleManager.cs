@@ -4,6 +4,8 @@ using System.Collections;
 using UnityEngine;
 using System;
 using TMPro;
+using System.Linq;
+using UnityEngine.SceneManagement;
 
 namespace SimpleRpg
 {
@@ -106,6 +108,9 @@ namespace SimpleRpg
         [SerializeField]
         BattleResultManager _battleResultManager;
 
+        // 緊急バッテリーシステムの管理用変数を追加 
+        private const int MAX_EMERGENCY_BATTERY_USES = 3;
+        private int _emergencyBatteryUsesLeft;
 
         [Header("BGM設定")]
         [SerializeField]
@@ -132,6 +137,9 @@ namespace SimpleRpg
         /// 選択されたターゲットが味方かどうかです。
         /// </summary>
         private bool _isTargetFriend = false;
+
+        // 戦闘終了処理が重複しないようにするためのフラグを追加
+        private bool _isFinishingBattle = false;
 
         /// <summary>
         /// 戦闘のフェーズを変更します。
@@ -164,6 +172,8 @@ namespace SimpleRpg
         /// </summary>
         public void StartBattle()
         {
+            _isFinishingBattle = false;
+
             SimpleLogger.Instance.Log("戦闘を開始します。");
             GameStateManager.ChangeToBattle();
             SetBattlePhase(BattlePhase.ShowEnemy);
@@ -183,6 +193,9 @@ namespace SimpleRpg
             _battleResultManager.SetReferences(this);
             //_characterMoverManager.StopCharacterMover();
             _battleStarter.StartBattle(this);
+
+            // 緊急バッテリーの使用回数を初期化 
+            _emergencyBatteryUsesLeft = MAX_EMERGENCY_BATTERY_USES;
 
             if (_battleBgm != null && _bgmAudioSource != null)
             {
@@ -904,7 +917,13 @@ namespace SimpleRpg
         /// </summary>
         public void OnFinishBattle()
         {
+            // すでに終了処理が始まっている場合は、ここで処理を中断
+            if (_isFinishingBattle) return;
+            _isFinishingBattle = true;
+
             SimpleLogger.Instance.Log("戦闘に勝利して終了します。");
+
+            ClearAllCharacterStatuses();
 
             _enemyStatusManager.InitializeEnemyStatusList();
             _battleActionProcessor.InitializeActions();
@@ -913,6 +932,8 @@ namespace SimpleRpg
             //_characterMoverManager.ResumeCharacterMover();
             BattlePhase = BattlePhase.NotInBattle;
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
+
+            SceneManager.LoadScene("SampleScene");
         }
 
         /// <summary>
@@ -920,7 +941,12 @@ namespace SimpleRpg
         /// </summary>
         public void OnFinishBattleWithGameover()
         {
+            if (_isFinishingBattle) return;
+            _isFinishingBattle = true;
+
             SimpleLogger.Instance.Log("ゲームオーバーとして戦闘を終了します。");
+
+            ClearAllCharacterStatuses();
 
             _enemyStatusManager.InitializeEnemyStatusList();
             _battleActionProcessor.InitializeActions();
@@ -928,6 +954,8 @@ namespace SimpleRpg
 
             //_characterMoverManager.ResumeCharacterMover();
             BattlePhase = BattlePhase.NotInBattle;
+
+            SceneManager.LoadScene("SampleScene");
         }
 
         /// <summary>
@@ -944,9 +972,10 @@ namespace SimpleRpg
                 case BattlePhase.Action:
                     _battleActionProcessor.ShowNextMessage();
                     break;
-                case BattlePhase.Result:
-                    _battleResultManager.ShowNextMessage();
-                    break;
+                    // ★ Resultフェーズでの呼び出しは不要になったので、caseごと削除します。
+                    // case BattlePhase.Result:
+                    //     _battleResultManager.ShowNextMessage();
+                    //     break;
             }
         }
 
@@ -960,7 +989,18 @@ namespace SimpleRpg
                 SimpleLogger.Instance.Log("OnFinishedActions() || 戦闘が終了しているため、処理を中断します。");
                 return;
             }
+            StartCoroutine(OnFinishedActionsCoroutine());
+        }
+
+        /// <summary>
+        /// ターン終了時の処理をまとめたコルーチン
+        /// </summary>
+        private IEnumerator OnFinishedActionsCoroutine()
+        {
             ProcessBuffDurations();
+
+            // 特殊状態の処理が終わるのを待つ
+            yield return StartCoroutine(ProcessSpecialStatusDurations());
 
             SimpleLogger.Instance.Log("ターン内の行動が完了しました。");
             TurnCount++;
@@ -1048,6 +1088,171 @@ namespace SimpleRpg
             }
             Debug.LogError("有効なアクターインデックスではありません。");
             return -1;
+        }
+
+        /// <summary>
+        /// ターン終了時に全ての特殊状態の持続ターンや効果を処理します。
+        /// </summary>
+        private IEnumerator ProcessSpecialStatusDurations()
+        {
+            var messageWindow = _battleWindowManager.GetMessageWindowController();
+
+            // --- 味方キャラクターの特殊状態を処理 ---
+            // ループ中にリストが変更される可能性に備え、ToList()でコピーを作成して処理
+            foreach (var status in CharacterStatusManager.GetPartyMemberStatuses().ToList())
+            {
+                if (status.isDefeated || status.currentStatus == SpecialStatusType.None) continue;
+
+                bool statusRecovered = false;
+                string characterName = CharacterDataManager.GetCharacterName(status.characterId);
+
+                // 過充電のHP減少効果
+                if (status.currentStatus == SpecialStatusType.Overcharge)
+                {
+                    var parameterRecord = CharacterDataManager.GetParameterTable(status.characterId).parameterRecords.Find(p => p.level == status.level);
+                    int damage = Mathf.Max(1, (int)(parameterRecord.hp * 0.05f));
+                    CharacterStatusManager.ChangeCharacterStatus(status.characterId, -damage, 0);
+                    yield return StartCoroutine(messageWindow.GenerateOverchargeDamageMessage(characterName, damage));
+
+                    // ダメージで倒れた場合は以降の処理をスキップ
+                    if (CharacterStatusManager.IsCharacterDefeated(status.characterId))
+                    {
+                        OnUpdateStatus(); // UI更新
+                        if (CharacterStatusManager.IsAllCharacterDefeated()) OnGameover();
+                        continue;
+                    }
+                }
+
+                // スタン状態の処理
+                if (status.currentStatus == SpecialStatusType.Stun)
+                {
+                    status.statusDuration--;
+                    if (status.statusDuration <= 0)
+                    {
+                        if (status.currentBt <= 0)
+                        {
+                            if (_emergencyBatteryUsesLeft > 0)
+                            {
+                                _emergencyBatteryUsesLeft--;
+                                var parameterRecord = CharacterDataManager.GetParameterTable(status.characterId).parameterRecords.Find(p => p.level == status.level);
+                                CharacterStatusManager.ChangeCharacterStatus(status.characterId, 0, parameterRecord.bt);
+                                status.maxBtPenalty = 0;
+                                statusRecovered = true;
+                                yield return StartCoroutine(messageWindow.GenerateEmergencyBatteryMessage(characterName));
+                            }
+                        }
+                        else { statusRecovered = true; }
+                    }
+                }
+                else { status.statusDuration--; }
+
+                // ターン経過で状態が回復した場合
+                if (status.statusDuration <= 0 && !statusRecovered)
+                {
+                    yield return StartCoroutine(messageWindow.GenerateStatusRecoveryMessage(characterName));
+                    status.currentStatus = SpecialStatusType.None;
+                }
+                else if (statusRecovered)
+                {
+                    status.currentStatus = SpecialStatusType.None;
+                }
+            }
+            OnUpdateStatus(); // 味方全体のUIを更新
+
+            // --- 敵キャラクターの特殊状態を処理 ---
+            foreach (var status in _enemyStatusManager.GetEnemyStatusList().ToList())
+            {
+                if (status.isDefeated || status.isRunaway || status.currentStatus == SpecialStatusType.None) continue;
+
+                bool statusRecovered = false;
+                string characterName = status.enemyData.enemyName;
+
+                if (status.currentStatus == SpecialStatusType.Overcharge)
+                {
+                    int damage = Mathf.Max(1, (int)(status.enemyData.hp * 0.05f));
+                    _enemyStatusManager.ChangeEnemyStatus(status.enemyBattleId, -damage, 0);
+                    yield return StartCoroutine(messageWindow.GenerateOverchargeDamageMessage(characterName, damage));
+                    if (_enemyStatusManager.IsEnemyDefeated(status.enemyBattleId))
+                    {
+                        _enemyStatusManager.OnDefeatEnemy(status.enemyBattleId);
+                        UpdateEnemyVisuals(); // UI更新
+                        if (_enemyStatusManager.IsAllEnemyDefeated()) OnEnemyDefeated();
+                        continue;
+                    }
+                }
+
+                if (status.currentStatus == SpecialStatusType.Stun)
+                {
+                    status.statusDuration--;
+                    if (status.statusDuration <= 0)
+                    {
+                        if (status.currentBt <= 0)
+                        {
+                            _enemyStatusManager.ChangeEnemyStatus(status.enemyBattleId, 0, status.enemyData.bt);
+                            status.maxBtPenalty = 0;
+                            statusRecovered = true;
+                            yield return StartCoroutine(messageWindow.GenerateEmergencyBatteryMessage(characterName));
+                        }
+                        else { statusRecovered = true; }
+                    }
+                }
+                else { status.statusDuration--; }
+
+                if (status.statusDuration <= 0 && !statusRecovered)
+                {
+                    yield return StartCoroutine(messageWindow.GenerateStatusRecoveryMessage(characterName));
+                    status.currentStatus = SpecialStatusType.None;
+                }
+                else if (statusRecovered)
+                {
+                    status.currentStatus = SpecialStatusType.None;
+                }
+            }
+            UpdateEnemyVisuals(); // 敵全体のUIを更新
+        }
+
+        /// <summary>
+        /// 全てのキャラクターの特殊状態をリセットします。
+        /// </summary>
+        private void ClearAllCharacterStatuses()
+        {
+            // リストがnullでないことを確認するガード処理
+            if (CharacterStatusManager.characterStatuses == null) return;
+
+            // 味方
+            foreach (var status in CharacterStatusManager.characterStatuses)
+            {
+                if (status == null) continue;
+
+                status.currentStatus = SpecialStatusType.None;
+                status.statusDuration = 0;
+                status.maxBtPenalty = 0;
+                // 過充電で最大BTを超えていた場合、元に戻す
+                var parameterRecord = CharacterDataManager.GetParameterTable(status.characterId).parameterRecords.Find(p => p.level == status.level);
+                if (parameterRecord != null && status.currentBt > parameterRecord.bt)
+                {
+                    status.currentBt = parameterRecord.bt;
+                }
+            }
+            // 敵
+            foreach (var status in _enemyStatusManager.GetEnemyStatusList())
+            {
+                status.currentStatus = SpecialStatusType.None;
+                status.statusDuration = 0;
+                status.maxBtPenalty = 0;
+                if (status.currentBt > status.enemyData.bt)
+                {
+                    status.currentBt = status.enemyData.bt;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 戦闘結果マネージャーへの参照を取得します。
+        /// </summary>
+        public BattleResultManager GetResultManager()
+        {
+            return _battleResultManager;
         }
     }
 }

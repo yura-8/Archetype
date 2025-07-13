@@ -75,6 +75,9 @@ namespace SimpleRpg
             var parameterTable = CharacterDataManager.GetParameterTable(characterId);
             var parameterRecord = parameterTable.parameterRecords.Find(p => p.level == characterStatus.level);
 
+            int effectiveMaxBt = parameterRecord.bt - characterStatus.maxBtPenalty;
+            if (effectiveMaxBt < 1) effectiveMaxBt = 1;
+
             BattleParameter baseParameter = new()
             {
                 atk = parameterRecord.atk,
@@ -86,6 +89,30 @@ namespace SimpleRpg
             baseParameter.atk += equipmentParameter.atk;
             baseParameter.def += equipmentParameter.def;
             baseParameter.dex += equipmentParameter.dex;
+
+            // 特殊状態による補正
+            switch (characterStatus.currentStatus)
+            {
+                case SpecialStatusType.Overheat:
+                    baseParameter.atk = (int)(baseParameter.atk * 1.2f);
+                    baseParameter.def = (int)(baseParameter.def * 0.8f);
+                    break;
+                case SpecialStatusType.Overcharge:
+                    baseParameter.atk = (int)(baseParameter.atk * 1.3f);
+                    break;
+            }
+
+            // BT残量による補正
+            float btRate = (float)characterStatus.currentBt / effectiveMaxBt;
+            if (btRate >= 0.9f)
+            {
+                baseParameter.atk = (int)(baseParameter.atk * 1.05f);
+            }
+            else if (btRate <= 0.1f)
+            {
+                baseParameter.atk = (int)(baseParameter.atk * 0.95f);
+            }
+
 
             foreach (var buff in characterStatus.buffs)
             {
@@ -111,39 +138,62 @@ namespace SimpleRpg
         /// <param name="characterId">キャラクターのID</param>
         /// <param name="hpDelta">増減させるHP</param>
         /// <param name="btDelta">増減させるBT</param>
-        public static void ChangeCharacterStatus(int characterId, int hpDelta, int btDelta)
+        public static SpecialStatusType ChangeCharacterStatus(int characterId, int hpDelta, int btDelta)
         {
             var characterStatus = GetCharacterStatusById(characterId);
-            if (characterStatus == null)
-            {
-                Debug.LogWarning($"キャラクターのステータスが見つかりませんでした。 ID : {characterId}");
-                return;
-            }
+            if (characterStatus == null) return SpecialStatusType.None;
+            var parameterRecord = CharacterDataManager.GetParameterTable(characterId).parameterRecords.Find(p => p.level == characterStatus.level);
 
-            var parameterTable = CharacterDataManager.GetParameterTable(characterId);
-            var parameterRecord = parameterTable.parameterRecords.Find(p => p.level == characterStatus.level);
+            SpecialStatusType newStatus = SpecialStatusType.None; // 発生したステータスを記録する変数
 
+            // HP変動
             characterStatus.currentHp += hpDelta;
-            if (characterStatus.currentHp > parameterRecord.hp)
-            {
-                characterStatus.currentHp = parameterRecord.hp;
-            }
-            else if (characterStatus.currentHp < 0)
-            {
-                characterStatus.currentHp = 0;
-            }
+            if (characterStatus.currentHp > parameterRecord.hp) characterStatus.currentHp = parameterRecord.hp;
+            if (characterStatus.currentHp < 0) characterStatus.currentHp = 0;
+            if (characterStatus.currentHp == 0) characterStatus.isDefeated = true;
 
-            if (characterStatus.currentHp == 0)
+            // BT変動
+            if (btDelta != 0)
             {
-                characterStatus.isDefeated = true;
-                return;
-            }
+                int effectiveMaxBt = parameterRecord.bt - characterStatus.maxBtPenalty;
+                if (effectiveMaxBt < 1) effectiveMaxBt = 1;
 
-            characterStatus.currentBt += btDelta;
-            if (characterStatus.currentBt < 0)
-            {
-                characterStatus.currentBt = 0;
+                if (btDelta < 0)
+                {
+                    if (Mathf.Abs(btDelta) >= effectiveMaxBt * 0.2f)
+                    {
+                        if (characterStatus.currentStatus != SpecialStatusType.Overheat) newStatus = SpecialStatusType.Overheat;
+                        characterStatus.currentStatus = SpecialStatusType.Overheat;
+                        characterStatus.statusDuration = 2;
+                    }
+                }
+
+                characterStatus.currentBt += btDelta;
+
+                if (characterStatus.currentBt <= 0)
+                {
+                    characterStatus.currentBt = 0;
+                    if (characterStatus.currentStatus != SpecialStatusType.Stun) newStatus = SpecialStatusType.Stun;
+                    characterStatus.currentStatus = SpecialStatusType.Stun;
+                    characterStatus.statusDuration = 2;
+                }
+                else if (characterStatus.currentBt > effectiveMaxBt)
+                {
+                    int overchargeLimit = (int)(parameterRecord.bt * 1.3f);
+                    if (characterStatus.currentBt > overchargeLimit) characterStatus.currentBt = overchargeLimit;
+
+                    if (characterStatus.currentStatus != SpecialStatusType.Overcharge) newStatus = SpecialStatusType.Overcharge;
+                    characterStatus.currentStatus = SpecialStatusType.Overcharge;
+                    characterStatus.statusDuration = 99;
+                    characterStatus.maxBtPenalty = (int)(parameterRecord.bt * 0.05f);
+                }
+                else if (characterStatus.currentStatus == SpecialStatusType.Overcharge && characterStatus.currentBt <= effectiveMaxBt)
+                {
+                    characterStatus.currentStatus = SpecialStatusType.None;
+                    characterStatus.maxBtPenalty = 0;
+                }
             }
+            return newStatus;
         }
 
         /// <summary>

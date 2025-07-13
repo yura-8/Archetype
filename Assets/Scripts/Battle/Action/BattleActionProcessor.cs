@@ -52,6 +52,8 @@ namespace SimpleRpg
         [SerializeField]
         private BattleActionProcessorGuard _battleActionProcessorGuard;
 
+        private MessageWindowController _messageWindowController;
+
         /// <summary>
         /// 戦闘中のアイテムアクションを処理するクラスへの参照です。
         /// </summary>
@@ -82,6 +84,7 @@ namespace SimpleRpg
         {
             _battleManager = battleManager;
             _enemyStatusManager = _battleManager.GetEnemyStatusManager();
+            _messageWindowController = _battleManager.GetWindowManager().GetMessageWindowController();
 
             _battleActionProcessorAttack.SetReferences(_battleManager, this);
             _battleActionProcessorSkill.SetReferences(_battleManager, this);
@@ -169,53 +172,78 @@ namespace SimpleRpg
             var query = _actions.OrderByDescending(a => a.priority).ToList();
             foreach (var action in query)
             {
-                SimpleLogger.Instance.Log($"キャラクターの行動を開始します。action.priority : {action.priority}");
+                // --- [共通処理] 戦闘が終了していたら、全ての行動を中断 ---
                 if (_battleManager.IsBattleFinished)
                 {
-                    SimpleLogger.Instance.Log("戦闘が終了しているため、処理を中断します。");
+                    SimpleLogger.Instance.Log("戦闘が終了しているため、アクション処理を中断します。");
                     yield break;
                 }
 
-                // 行動実行前に、行動者が生存しているかチェック
-                bool actorIsAlive = true;
+                string actorName = GetCharacterName(action.actorId, action.isActorFriend);
+
+                // --- [共通処理] 行動主が行動可能かチェック (生存/スタン) ---
+                bool canAct = true;
                 if (action.isActorFriend)
                 {
                     var friendStatus = CharacterStatusManager.GetCharacterStatusById(action.actorId);
-                    if (friendStatus == null || friendStatus.currentHp <= 0)
+                    if (friendStatus == null || friendStatus.isDefeated)
                     {
-                        actorIsAlive = false;
+                        canAct = false;
+                        // 倒れている場合はメッセージ不要
+                    }
+                    else if (friendStatus.currentStatus == SpecialStatusType.Stun)
+                    {
+                        canAct = false;
+                        yield return StartCoroutine(_messageWindowController.GenerateStunnedMessage(actorName));
                     }
                 }
                 else // 敵の場合
                 {
                     var enemyStatus = _enemyStatusManager.GetEnemyStatusByBattleId(action.actorId);
-                    // 敵がすでに倒されているか(isDefeated) or 逃げているか(isRunaway)をチェック
                     if (enemyStatus == null || enemyStatus.isDefeated || enemyStatus.isRunaway)
                     {
-                        actorIsAlive = false;
+                        canAct = false;
+                    }
+                    else if (enemyStatus.currentStatus == SpecialStatusType.Stun)
+                    {
+                        canAct = false;
+                        yield return StartCoroutine(_messageWindowController.GenerateStunnedMessage(actorName));
                     }
                 }
 
-                // 生きていなければ、このアクションをスキップして次のアクションへ
-                if (!actorIsAlive)
+                if (!canAct)
                 {
-                    string actorName = GetCharacterName(action.actorId, action.isActorFriend);
-                    SimpleLogger.Instance.Log($"{actorName} は行動前に倒されたため、アクションをスキップします。");
-                    continue; // foreachループの次のイテレーションに進む
+                    SimpleLogger.Instance.Log($"{actorName} は行動不能のため、アクションをスキップします。");
+                    continue; // 次のアクションへ
                 }
 
+                // --- [共通処理] ターゲットが既に倒されている場合、別の生きている敵にターゲットを変更 ---
+                if ((action.battleCommand == BattleCommand.Attack || action.battleCommand == BattleCommand.Item) && !action.isTargetFriend && action.targetId != -1)
+                {
+                    var targetStatus = _enemyStatusManager.GetEnemyStatusByBattleId(action.targetId);
+                    if (targetStatus == null || targetStatus.isDefeated)
+                    {
+                        var livingEnemies = _enemyStatusManager.GetEnemyStatusList().Where(e => !e.isDefeated && !e.isRunaway).ToList();
+                        if (livingEnemies.Count > 0)
+                        {
+                            action.targetId = livingEnemies[0].enemyBattleId;
+                            SimpleLogger.Instance.Log($"ターゲットが倒されていたため、{GetCharacterName(action.targetId, false)} にターゲットを変更しました。");
+                        }
+                        else
+                        {
+                            SimpleLogger.Instance.Log("攻撃対象の敵がいないため、アクションをスキップします。");
+                            continue;
+                        }
+                    }
+                }
+
+                // --- アクションの実行 ---
                 SimpleLogger.Instance.Log($"コマンドに応じた行動を行います。 コマンド : {action.battleCommand}");
                 switch (action.battleCommand)
                 {
                     case BattleCommand.Attack:
-                        if (action.itemId > 0) // スキル
-                        {
-                            _battleActionProcessorSkill.ProcessAction(action);
-                        }
-                        else // 通常攻撃
-                        {
-                            _battleActionProcessorAttack.ProcessAction(action);
-                        }
+                        if (action.itemId > 0) _battleActionProcessorSkill.ProcessAction(action);
+                        else _battleActionProcessorAttack.ProcessAction(action);
                         break;
                     case BattleCommand.Guard:
                         _battleActionProcessorGuard.ProcessAction(action);
@@ -223,22 +251,37 @@ namespace SimpleRpg
                     case BattleCommand.Item:
                         _battleActionProcessorItem.ProcessAction(action);
                         break;
-                    case BattleCommand.Status:
-                        break;
                     case BattleCommand.Escape:
                         _battleActionProcessorEscape.ProcessAction(action);
                         break;
+                    case BattleCommand.Status:
+                        break;
                 }
 
+                // スキルや攻撃のメッセージ表示などの処理が終わるのを待つ
                 while (IsPausedProcess)
                 {
                     yield return null;
                 }
 
+                // --- [共通処理] 各アクション終了後に、戦闘の勝利/敗北を必ずチェック ---
+                if (_enemyStatusManager.IsAllEnemyDefeated())
+                {
+                    SimpleLogger.Instance.Log("敵が全滅しました。戦闘を終了します。");
+                    _battleManager.OnEnemyDefeated();
+                    yield break; // アクション処理のコルーチンを完全に停止
+                }
+                if (CharacterStatusManager.IsAllCharacterDefeated())
+                {
+                    SimpleLogger.Instance.Log("味方が全滅しました。ゲームオーバーです。");
+                    _battleManager.OnGameover();
+                    yield break; // アクション処理のコルーチンを完全に停止
+                }
+
                 yield return new WaitForSeconds(_actionInterval);
             }
 
-            // ターン内の行動が完了したことを通知します。
+            // 全てのアクションが終わった後
             _battleManager.OnFinishedActions();
         }
 
@@ -274,12 +317,30 @@ namespace SimpleRpg
                 // 敵の場合はベースパラメータを取得
                 var enemyStatus = _enemyStatusManager.GetEnemyStatusByBattleId(characterId);
                 var enemyData = enemyStatus.enemyData;
+                int effectiveMaxBt = enemyData.bt - enemyStatus.maxBtPenalty;
+                if (effectiveMaxBt < 1) effectiveMaxBt = 1;
+
                 battleParameter.atk = enemyData.atk;
                 battleParameter.def = enemyData.def;
                 battleParameter.dex = enemyData.dex;
                 battleParameter.isGuarding = enemyStatus.isGuarding;
 
-                // ★ここから追加：敵に適用中のバフの効果を合算する
+                // 特殊状態とBT残量による補正
+                switch (enemyStatus.currentStatus)
+                {
+                    case SpecialStatusType.Overheat:
+                        battleParameter.atk = (int)(battleParameter.atk * 1.2f);
+                        battleParameter.def = (int)(battleParameter.def * 0.8f);
+                        break;
+                    case SpecialStatusType.Overcharge:
+                        battleParameter.atk = (int)(battleParameter.atk * 1.3f);
+                        break;
+                }
+                float btRate = (float)enemyStatus.currentBt / effectiveMaxBt;
+                if (btRate >= 0.9f) battleParameter.atk = (int)(battleParameter.atk * 1.05f);
+                else if (btRate <= 0.1f) battleParameter.atk = (int)(battleParameter.atk * 0.95f);
+
+                // 敵に適用中のバフの効果を合算する
                 foreach (var buff in enemyStatus.buffs)
                 {
                     switch (buff.parameter)

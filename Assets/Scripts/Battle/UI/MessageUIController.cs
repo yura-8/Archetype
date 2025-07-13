@@ -26,6 +26,9 @@ namespace SimpleRpg
         /// </summary>
         string _currentMessage;
 
+        // ファイル上部の変数宣言に以下を追加
+        private int _lineCount = 0;
+
         /// <summary>
         /// メッセージをクリアします。
         /// </summary>
@@ -33,6 +36,7 @@ namespace SimpleRpg
         {
             _messageText.text = string.Empty;
             _currentMessage = string.Empty;
+            _lineCount = 0;
         }
 
         /// <summary>
@@ -50,6 +54,15 @@ namespace SimpleRpg
             sb.Append(message);
             _currentMessage = sb.ToString();
             _messageText.text = _currentMessage;
+            _lineCount++;
+        }
+
+        /// <summary>
+        /// 現在の表示行数を取得します。
+        /// </summary>
+        public int GetLineCount()
+        {
+            return _lineCount;
         }
 
         /// <summary>

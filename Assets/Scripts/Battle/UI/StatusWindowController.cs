@@ -37,6 +37,8 @@ namespace SimpleRpg
             _uiController.SetMaxHp(record.hp);
             _uiController.SetCurrentBt(characterStatus.currentBt);
             _uiController.SetMaxBt(record.bt);
+
+            _uiController.SetStatusColor(characterStatus.currentStatus);
         }
 
         public void UpdateAllCharacterStatus()

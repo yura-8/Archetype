@@ -1,6 +1,4 @@
-﻿// BattleActionProcessorAttack.cs
-
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace SimpleRpg
@@ -11,7 +9,6 @@ namespace SimpleRpg
         private BattleManager _battleManager;
         private MessageWindowController _messageWindowController;
         private EnemyStatusManager _enemyStatusManager;
-        private const int NORMAL_ATTACK_BT_COST = 20;
 
         public void SetReferences(BattleManager battleManager, BattleActionProcessor actionProcessor)
         {
@@ -19,7 +16,6 @@ namespace SimpleRpg
             _actionProcessor = actionProcessor;
             _messageWindowController = _battleManager.GetWindowManager().GetMessageWindowController();
             _enemyStatusManager = _battleManager.GetEnemyStatusManager();
-            // BattleSpriteControllerへの参照は不要になります
         }
 
         public void ProcessAction(BattleAction action)
@@ -28,17 +24,18 @@ namespace SimpleRpg
             var targetParam = _actionProcessor.GetCharacterParameter(action.targetId, action.isTargetFriend);
             int damage = BattleCalculator.CalculateDamage(actorParam.atk, targetParam.def, targetParam.isGuarding);
 
-            // --- ダメージ処理 ---
             int hpDelta = damage * -1;
             bool isTargetDefeated = false;
+            SpecialStatusType newStatus = SpecialStatusType.None;
+
             if (action.isTargetFriend)
             {
-                CharacterStatusManager.ChangeCharacterStatus(action.targetId, hpDelta, 0);
+                newStatus = CharacterStatusManager.ChangeCharacterStatus(action.targetId, hpDelta, 0);
                 isTargetDefeated = CharacterStatusManager.IsCharacterDefeated(action.targetId);
             }
             else
             {
-                _enemyStatusManager.ChangeEnemyStatus(action.targetId, hpDelta, 0);
+                newStatus = _enemyStatusManager.ChangeEnemyStatus(action.targetId, hpDelta, 0);
                 isTargetDefeated = _enemyStatusManager.IsEnemyDefeated(action.targetId);
                 if (isTargetDefeated)
                 {
@@ -46,8 +43,7 @@ namespace SimpleRpg
                 }
             }
 
-            // --- コスト処理 ---
-            int btDelta = NORMAL_ATTACK_BT_COST * -1;
+            int btDelta = 20 * -1; // NORMAL_ATTACK_BT_COST
             if (action.isActorFriend)
             {
                 CharacterStatusManager.ChangeCharacterStatus(action.actorId, 0, btDelta);
@@ -58,61 +54,50 @@ namespace SimpleRpg
             }
 
             _actionProcessor.SetPauseProcess(true);
-            StartCoroutine(ShowAttackMessageCoroutine(action, damage, isTargetDefeated));
+            StartCoroutine(ShowAttackMessageCoroutine(action, damage, isTargetDefeated, newStatus));
         }
 
-        private IEnumerator ShowAttackMessageCoroutine(BattleAction action, int damage, bool isTargetDefeated)
+        private IEnumerator ShowAttackMessageCoroutine(BattleAction action, int damage, bool isTargetDefeated, SpecialStatusType newStatus)
         {
             string actorName = _actionProcessor.GetCharacterName(action.actorId, action.isActorFriend);
             string targetName = _actionProcessor.GetCharacterName(action.targetId, action.isTargetFriend);
 
-            // 1.「〇〇の攻撃！」
             yield return _messageWindowController.StartCoroutine(
                 _messageWindowController.GenerateAttackMessage(actorName)
             );
 
-            // 2. ダメージメッセージの前にUIとスプライトを更新
-            _battleManager.OnUpdateStatus();       // 味方ステータス更新
-            _battleManager.UpdateEnemyVisuals();    // ★★★ 敵の見た目をまとめて更新！
+            _battleManager.OnUpdateStatus();
+            _battleManager.UpdateEnemyVisuals();
 
-            // 3.「〇〇は XX のダメージを受けた！」
             yield return _messageWindowController.StartCoroutine(
                 _messageWindowController.GenerateDamageMessage(targetName, damage)
             );
 
-            // 4. 相手を倒していなければ、ここで処理を終了
-            if (!isTargetDefeated)
-            {
-                _actionProcessor.SetPauseProcess(false);
-                yield break;
-            }
-
-            // --- 5. 相手を倒した場合の追加処理 ---
-            _battleManager.UpdateEnemyVisuals(); // 倒した後の見た目を再更新
-
-            if (action.isTargetFriend)
+            if (newStatus != SpecialStatusType.None)
             {
                 yield return _messageWindowController.StartCoroutine(
-                    _messageWindowController.GenerateDefeateFriendMessage(targetName)
+                    _messageWindowController.GenerateStatusEffectMessage(targetName, newStatus)
                 );
-                if (CharacterStatusManager.IsAllCharacterDefeated())
+            }
+
+            if (isTargetDefeated)
+            {
+                _battleManager.UpdateEnemyVisuals();
+                if (action.isTargetFriend)
                 {
-                    _battleManager.OnGameover();
-                    yield break;
+                    yield return _messageWindowController.StartCoroutine(
+                        _messageWindowController.GenerateDefeateFriendMessage(targetName)
+                    );
                 }
-            }
-            else // 敵を倒した場合
-            {
-                yield return _messageWindowController.StartCoroutine(
-                    _messageWindowController.GenerateDefeateEnemyMessage(targetName)
-                );
-                if (_enemyStatusManager.IsAllEnemyDefeated())
+                else
                 {
-                    _battleManager.OnEnemyDefeated();
-                    yield break;
+                    yield return _messageWindowController.StartCoroutine(
+                        _messageWindowController.GenerateDefeateEnemyMessage(targetName)
+                    );
                 }
             }
 
+            // このクラスでの勝利判定は行わず、必ず一時停止を解除して処理を終える
             _actionProcessor.SetPauseProcess(false);
         }
     }

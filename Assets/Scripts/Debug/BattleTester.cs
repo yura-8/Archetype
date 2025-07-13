@@ -53,6 +53,8 @@ namespace SimpleRpg
         [SerializeField]
         bool _executeBattle;
 
+        private static bool _isGameInitialized = false;
+
         void Update()
         {
             CheckStartFlag();
@@ -101,6 +103,18 @@ namespace SimpleRpg
         /// </summary>
         void SetPlayerStatus()
         {
+            // もしゲームの初期設定が完了しているなら、
+            // 何もせずにこのメソッドを抜けます。
+            if (_isGameInitialized)
+            {
+                // これにより、2回目以降のステータス上書きを防ぎます。
+                return;
+            }
+
+            // --- ここから下は、初回実行時のみ通る処理 ---
+
+            SimpleLogger.Instance.Log("初回設定：キャラクターのステータスを生成します。");
+
             // 経験値表を使って、レベルから経験値を取得します。
             var expTable = CharacterDataManager.GetExpTable();
             var expRecord = expTable.expRecords.Find(record => record.level == _playerLevel);
@@ -111,7 +125,7 @@ namespace SimpleRpg
             var parameterTable = CharacterDataManager.GetParameterTable(charcterId);
             if (expRecord == null)
             {
-                Debug.LogError($"ExpTable にレベル {_playerLevel} がありません"); 
+                Debug.LogError($"ExpTable にレベル {_playerLevel} がありません");
                 return;
             }
 
@@ -122,11 +136,8 @@ namespace SimpleRpg
                 return;
             }
 
-
-            // 指定したレベルまでに覚えているスキルのIDをリスト化します。
             var skillList = GetSkillIdList(charcterId, _playerLevel);
 
-            // キャラクターのステータスを設定します。
             CharacterStatus status = new()
             {
                 characterId = charcterId,
@@ -143,23 +154,16 @@ namespace SimpleRpg
             {
                 status
             };
-
-            // パーティにいるキャラクターのIDをセットします。
             CharacterStatusManager.partyCharacter = new()
             {
                 charcterId
             };
 
-
-
             charcterId = 2;
             parameterTable = CharacterDataManager.GetParameterTable(charcterId);
             parameterRecord = parameterTable.parameterRecords.Find(record => record.level == _playerLevel);
-
-            // 指定したレベルまでに覚えているスキルのIDをリスト化します。
             skillList = GetSkillIdList(charcterId, _playerLevel);
 
-            // キャラクターのステータスを設定します。
             status = new()
             {
                 characterId = charcterId,
@@ -174,9 +178,11 @@ namespace SimpleRpg
 
             CharacterStatusManager.characterStatuses.Add(status);
             CharacterStatusManager.partyCharacter.Add(charcterId);
-
-            // 所持アイテムをセットします。
             CharacterStatusManager.partyItemInfoList = _partyItemInfoList;
+
+            // すべての初期設定が終わったら、フラグを true にします。
+            // これで、次回以降はこの処理がスキップされるようになります。
+            _isGameInitialized = true;
         }
 
         /// <summary>

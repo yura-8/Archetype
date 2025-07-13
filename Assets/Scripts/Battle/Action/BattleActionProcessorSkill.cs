@@ -181,23 +181,20 @@ namespace SimpleRpg
             int hpDelta = damage * -1;
             bool isTargetDefeated = false;
 
-            // ステータス変更と撃破判定
+            SpecialStatusType newStatus;
+
             if (effectTargetAction.isTargetFriend)
             {
-                CharacterStatusManager.ChangeCharacterStatus(effectTargetAction.targetId, hpDelta, 0);
+                newStatus = CharacterStatusManager.ChangeCharacterStatus(effectTargetAction.targetId, hpDelta, 0);
                 isTargetDefeated = CharacterStatusManager.IsCharacterDefeated(effectTargetAction.targetId);
             }
             else
             {
-                _enemyStatusManager.ChangeEnemyStatus(effectTargetAction.targetId, hpDelta, 0);
+                newStatus = _enemyStatusManager.ChangeEnemyStatus(effectTargetAction.targetId, hpDelta, 0);
                 isTargetDefeated = _enemyStatusManager.IsEnemyDefeated(effectTargetAction.targetId);
-                if (isTargetDefeated)
-                {
-                    _enemyStatusManager.OnDefeatEnemy(effectTargetAction.targetId);
-                }
+                if (isTargetDefeated) _enemyStatusManager.OnDefeatEnemy(effectTargetAction.targetId);
             }
 
-            // UI更新とメッセージ表示
             _battleManager.OnUpdateStatus();
             _battleManager.UpdateEnemyVisuals();
             string targetName = _actionProcessor.GetCharacterName(effectTargetAction.targetId, effectTargetAction.isTargetFriend);
@@ -206,29 +203,23 @@ namespace SimpleRpg
                 _messageWindowController.GenerateDamageMessage(targetName, damage)
             );
 
-            // 撃破時のメッセージ処理
+            if (newStatus != SpecialStatusType.None)
+            {
+                yield return _messageWindowController.StartCoroutine(
+                    _messageWindowController.GenerateStatusEffectMessage(targetName, newStatus)
+                );
+            }
+
             if (isTargetDefeated)
             {
                 _battleManager.UpdateEnemyVisuals();
                 if (effectTargetAction.isTargetFriend)
                 {
-                    yield return _messageWindowController.StartCoroutine(
-                       _messageWindowController.GenerateDefeateFriendMessage(targetName)
-                    );
-                    if (CharacterStatusManager.IsAllCharacterDefeated())
-                    {
-                        _battleManager.OnGameover();
-                    }
+                    yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDefeateFriendMessage(targetName));
                 }
                 else
                 {
-                    yield return _messageWindowController.StartCoroutine(
-                        _messageWindowController.GenerateDefeateEnemyMessage(targetName)
-                    );
-                    if (_enemyStatusManager.IsAllEnemyDefeated())
-                    {
-                        _battleManager.OnEnemyDefeated();
-                    }
+                    yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDefeateEnemyMessage(targetName));
                 }
             }
         }
@@ -243,79 +234,73 @@ namespace SimpleRpg
 
             if (skillEffect.effectTarget == EffectTarget.FriendAll)
             {
-                var targetList = CharacterStatusManager.GetPartyMemberStatuses().ToList();
-                foreach (var targetStatus in targetList)
+                foreach (var targetStatus in CharacterStatusManager.GetPartyMemberStatuses().ToList())
                 {
                     if (targetStatus.currentHp <= 0) continue;
                     var targetParam = _actionProcessor.GetCharacterParameter(targetStatus.characterId, true);
                     int damage = BattleCalculator.CalculateDamage(totalPower, targetParam.def, targetParam.isGuarding);
                     int hpDelta = damage * -1;
+                    string targetName = _actionProcessor.GetCharacterName(targetStatus.characterId, true);
 
-                    CharacterStatusManager.ChangeCharacterStatus(targetStatus.characterId, hpDelta, 0);
+                    // ▼▼▼ 修正点 ▼▼▼
+                    SpecialStatusType newStatus = CharacterStatusManager.ChangeCharacterStatus(targetStatus.characterId, hpDelta, 0);
+                    // ▲▲▲ ここまで ▲▲▲
                     bool isTargetDefeated = CharacterStatusManager.IsCharacterDefeated(targetStatus.characterId);
 
                     _battleManager.OnUpdateStatus();
-                    string targetName = _actionProcessor.GetCharacterName(targetStatus.characterId, true);
-                    yield return _messageWindowController.StartCoroutine(
-                        _messageWindowController.GenerateDamageMessage(targetName, damage)
-                    );
+
+                    yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDamageMessage(targetName, damage));
+
+                    // ▼▼▼ 修正点 ▼▼▼
+                    if (newStatus != SpecialStatusType.None)
+                    {
+                        yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateStatusEffectMessage(targetName, newStatus));
+                    }
+                    // ▲▲▲ ここまで ▲▲▲
 
                     if (isTargetDefeated)
                     {
                         _battleManager.OnUpdateStatus();
-                        yield return _messageWindowController.StartCoroutine(
-                           _messageWindowController.GenerateDefeateFriendMessage(targetName)
-                        );
-                        if (CharacterStatusManager.IsAllCharacterDefeated())
-                        {
-                            _battleManager.OnGameover();
-                            yield break;
-                        }
+                        yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDefeateFriendMessage(targetName));
                     }
                 }
             }
             else if (skillEffect.effectTarget == EffectTarget.EnemyAll)
             {
-                var targetList = _enemyStatusManager.GetEnemyStatusList().ToList();
-                foreach (var targetStatus in targetList)
+                foreach (var targetStatus in _enemyStatusManager.GetEnemyStatusList().ToList())
                 {
                     if (targetStatus.isDefeated || targetStatus.isRunaway) continue;
                     var targetParam = _actionProcessor.GetCharacterParameter(targetStatus.enemyBattleId, false);
                     int damage = BattleCalculator.CalculateDamage(totalPower, targetParam.def, targetParam.isGuarding);
                     int hpDelta = damage * -1;
+                    string targetName = _actionProcessor.GetCharacterName(targetStatus.enemyBattleId, false);
 
-                    _enemyStatusManager.ChangeEnemyStatus(targetStatus.enemyBattleId, hpDelta, 0);
+                    SpecialStatusType newStatus = _enemyStatusManager.ChangeEnemyStatus(targetStatus.enemyBattleId, hpDelta, 0);
+
                     bool isTargetDefeated = _enemyStatusManager.IsEnemyDefeated(targetStatus.enemyBattleId);
-                    if (isTargetDefeated)
-                    {
-                        _enemyStatusManager.OnDefeatEnemy(targetStatus.enemyBattleId);
-                    }
+                    if (isTargetDefeated) _enemyStatusManager.OnDefeatEnemy(targetStatus.enemyBattleId);
 
                     _battleManager.UpdateEnemyVisuals();
-                    string targetName = _actionProcessor.GetCharacterName(targetStatus.enemyBattleId, false);
-                    yield return _messageWindowController.StartCoroutine(
-                        _messageWindowController.GenerateDamageMessage(targetName, damage)
-                    );
+
+                    yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDamageMessage(targetName, damage));
+
+                    if (newStatus != SpecialStatusType.None)
+                    {
+                        yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateStatusEffectMessage(targetName, newStatus));
+                    }
 
                     if (isTargetDefeated)
                     {
                         _battleManager.UpdateEnemyVisuals();
-                        yield return _messageWindowController.StartCoroutine(
-                            _messageWindowController.GenerateDefeateEnemyMessage(targetName)
-                        );
-                        if (_enemyStatusManager.IsAllEnemyDefeated())
-                        {
-                            _battleManager.OnEnemyDefeated();
-                            yield break;
-                        }
+                        yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDefeateEnemyMessage(targetName));
                     }
                 }
             }
         }
 
         /// <summary>
-        /// 補助効果（ステータス変動）の処理とメッセージ表示を行います。
-        /// </summary>
+            /// 補助効果（ステータス変動）の処理とメッセージ表示を行います。
+            /// </summary>
         private IEnumerator ProcessSupportEffect(BattleAction effectTargetAction, SkillEffect skillEffect)
         {
             if (skillEffect.duration > -1)

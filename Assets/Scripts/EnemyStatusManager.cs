@@ -75,34 +75,60 @@ namespace SimpleRpg
         /// <param name="battleId">戦闘中のID</param>
         /// <param name="hpDelta">HPの変化量</param>
         /// <param name="btDelta">BTの変化量</param>
-        public void ChangeEnemyStatus(int battleId, int hpDelta, int btDelta)
+        public SpecialStatusType ChangeEnemyStatus(int battleId, int hpDelta, int btDelta)
         {
             var enemyStatus = GetEnemyStatusByBattleId(battleId);
-            if (enemyStatus == null)
-            {
-                SimpleLogger.Instance.LogWarning($"敵キャラクターのステータスが見つかりませんでした。 戦闘中ID : {battleId}");
-                return;
-            }
+            if (enemyStatus == null) return SpecialStatusType.None;
 
+            SpecialStatusType newStatus = SpecialStatusType.None;
+
+            // HP変動
             enemyStatus.currentHp += hpDelta;
-            if (enemyStatus.currentHp > enemyStatus.enemyData.hp)
-            {
-                enemyStatus.currentHp = enemyStatus.enemyData.hp;
-            }
-            else if (enemyStatus.currentHp < 0)
-            {
-                enemyStatus.currentHp = 0;
-            }
+            if (enemyStatus.currentHp > enemyStatus.enemyData.hp) enemyStatus.currentHp = enemyStatus.enemyData.hp;
+            if (enemyStatus.currentHp < 0) enemyStatus.currentHp = 0;
 
-            enemyStatus.currentBt += btDelta;
-            if (enemyStatus.currentBt > enemyStatus.enemyData.bt)
+            // BT変動
+            if (btDelta != 0)
             {
-                enemyStatus.currentBt = enemyStatus.enemyData.bt;
+                int effectiveMaxBt = enemyStatus.enemyData.bt - enemyStatus.maxBtPenalty;
+                if (effectiveMaxBt < 1) effectiveMaxBt = 1;
+
+                if (btDelta < 0)
+                {
+                    if (Mathf.Abs(btDelta) >= effectiveMaxBt * 0.2f)
+                    {
+                        if (enemyStatus.currentStatus != SpecialStatusType.Overheat) newStatus = SpecialStatusType.Overheat;
+                        enemyStatus.currentStatus = SpecialStatusType.Overheat;
+                        enemyStatus.statusDuration = 2;
+                    }
+                }
+
+                enemyStatus.currentBt += btDelta;
+
+                if (enemyStatus.currentBt <= 0)
+                {
+                    enemyStatus.currentBt = 0;
+                    if (enemyStatus.currentStatus != SpecialStatusType.Stun) newStatus = SpecialStatusType.Stun;
+                    enemyStatus.currentStatus = SpecialStatusType.Stun;
+                    enemyStatus.statusDuration = 2;
+                }
+                else if (enemyStatus.currentBt > effectiveMaxBt)
+                {
+                    int overchargeLimit = (int)(enemyStatus.enemyData.bt * 1.3f);
+                    if (enemyStatus.currentBt > overchargeLimit) enemyStatus.currentBt = overchargeLimit;
+
+                    if (enemyStatus.currentStatus != SpecialStatusType.Overcharge) newStatus = SpecialStatusType.Overcharge;
+                    enemyStatus.currentStatus = SpecialStatusType.Overcharge;
+                    enemyStatus.statusDuration = 99;
+                    enemyStatus.maxBtPenalty = (int)(enemyStatus.enemyData.bt * 0.05f);
+                }
+                else if (enemyStatus.currentStatus == SpecialStatusType.Overcharge && enemyStatus.currentBt <= effectiveMaxBt)
+                {
+                    enemyStatus.currentStatus = SpecialStatusType.None;
+                    enemyStatus.maxBtPenalty = 0;
+                }
             }
-            else if (enemyStatus.currentBt < 0)
-            {
-                enemyStatus.currentBt = 0;
-            }
+            return newStatus;
         }
 
         /// <summary>
