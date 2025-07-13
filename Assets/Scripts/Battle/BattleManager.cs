@@ -108,6 +108,11 @@ namespace SimpleRpg
         [SerializeField]
         BattleResultManager _battleResultManager;
 
+        private TemperatureState _currentTemperature;
+
+        // 外部から現在の温度を取得するためのプロパティ
+        public TemperatureState CurrentTemperature => _currentTemperature;
+
         // 緊急バッテリーシステムの管理用変数を追加 
         private const int MAX_EMERGENCY_BATTERY_USES = 3;
         private int _emergencyBatteryUsesLeft;
@@ -196,6 +201,16 @@ namespace SimpleRpg
 
             // 緊急バッテリーの使用回数を初期化 
             _emergencyBatteryUsesLeft = MAX_EMERGENCY_BATTERY_USES;
+
+            // 温度をNORMALに初期化
+            _currentTemperature = TemperatureState.NORMAL;
+            // 温度UIを初期化して表示
+            var tempGauge = _battleWindowManager.GetTemperatureGaugeController();
+            if (tempGauge != null)
+            {
+                tempGauge.UpdateTemperatureUI(_currentTemperature);
+                tempGauge.ShowWindow();
+            }
 
             if (_battleBgm != null && _bgmAudioSource != null)
             {
@@ -1002,6 +1017,8 @@ namespace SimpleRpg
             // 特殊状態の処理が終わるのを待つ
             yield return StartCoroutine(ProcessSpecialStatusDurations());
 
+            yield return StartCoroutine(UpdateTemperature());
+
             SimpleLogger.Instance.Log("ターン内の行動が完了しました。");
             TurnCount++;
             StartInputCommandPhase();
@@ -1135,7 +1152,10 @@ namespace SimpleRpg
                             {
                                 _emergencyBatteryUsesLeft--;
                                 var parameterRecord = CharacterDataManager.GetParameterTable(status.characterId).parameterRecords.Find(p => p.level == status.level);
+
+                                // ★修正点: キャラクター本来の最大BT値を回復量に設定
                                 CharacterStatusManager.ChangeCharacterStatus(status.characterId, 0, parameterRecord.bt);
+
                                 status.maxBtPenalty = 0;
                                 statusRecovered = true;
                                 yield return StartCoroutine(messageWindow.GenerateEmergencyBatteryMessage(characterName));
@@ -1188,7 +1208,9 @@ namespace SimpleRpg
                     {
                         if (status.currentBt <= 0)
                         {
+                            // ★修正点: 敵キャラクター本来の最大BT値を回復量に設定
                             _enemyStatusManager.ChangeEnemyStatus(status.enemyBattleId, 0, status.enemyData.bt);
+
                             status.maxBtPenalty = 0;
                             statusRecovered = true;
                             yield return StartCoroutine(messageWindow.GenerateEmergencyBatteryMessage(characterName));
@@ -1212,8 +1234,8 @@ namespace SimpleRpg
         }
 
         /// <summary>
-        /// 全てのキャラクターの特殊状態をリセットします。
-        /// </summary>
+            /// 全てのキャラクターの特殊状態をリセットします。
+            /// </summary>
         private void ClearAllCharacterStatuses()
         {
             // リストがnullでないことを確認するガード処理
@@ -1253,6 +1275,94 @@ namespace SimpleRpg
         public BattleResultManager GetResultManager()
         {
             return _battleResultManager;
+        }
+
+        /// <summary>
+        /// ターン終了時に温度を確率で変化させます。
+        /// </summary>
+        private IEnumerator UpdateTemperature()
+        {
+            // 例：30%の確率で温度が変化
+            if (UnityEngine.Random.Range(0, 100) < 80)
+            {
+                var messageWindow = _battleWindowManager.GetMessageWindowController();
+                TemperatureState newState;
+                string message = "";
+
+                // 現在の温度に応じて次の状態を決定
+                switch (_currentTemperature)
+                {
+                    case TemperatureState.NORMAL:
+                        // NORMALからはHOTかCOLDに変化
+                        newState = (UnityEngine.Random.value > 0.5f) ? TemperatureState.HOT : TemperatureState.COLD;
+                        break;
+                    case TemperatureState.HOT:
+                        // HOTからはNORMALに変化
+                        newState = TemperatureState.NORMAL;
+                        break;
+                    case TemperatureState.COLD:
+                        // COLDからはNORMALに変化
+                        newState = TemperatureState.NORMAL;
+                        break;
+                    default:
+                        newState = TemperatureState.NORMAL;
+                        break;
+                }
+
+                int randomNumber = UnityEngine.Random.Range(1, 4);
+
+                if(randomNumber==1)
+                {
+                    if (newState == TemperatureState.HOT) message = "敵ロボットからの排熱で気温が上がった！";
+                    else if (newState == TemperatureState.COLD) message = "敵ロボットの攻撃で空調が壊れて気温が下がった…";
+                    else message = "異常を感知した警備ロボットが温度をもとに戻した。";
+                }
+                else if(randomNumber==2)
+                {
+                    if (newState == TemperatureState.HOT) message = "敵ロボットの攻撃で近くの機械が炎上した！";
+                    else if (newState == TemperatureState.COLD) message = "敵ロボットの攻撃で近くにあった自販機が壊れて冷気が漏れ出した…";
+                    else message = "異常を感知した警備ロボットが温度をもとに戻した。";
+                }
+                else
+                {
+                    if (newState == TemperatureState.HOT) message = "敵ロボットの攻撃で空調が壊れて気温が上がった！";
+                    else if (newState == TemperatureState.COLD) message = "敵ロボットが冷気を吹き出し気温が下がった…";
+                    else message = "異常を感知した警備ロボットが温度をもとに戻した。";
+                }
+                
+
+                // 状態を更新してメッセージ表示
+                ChangeTemperature(newState);
+                yield return StartCoroutine(messageWindow.GenerateMultiLineMessage(message));
+            }
+        }
+
+        /// <summary>
+        /// 温度状態を変更し、関連する処理を呼び出します。
+        /// </summary>
+        /// <param name="newState">新しい温度状態</param>
+        public void ChangeTemperature(TemperatureState newState)
+        {
+            _currentTemperature = newState;
+            SimpleLogger.Instance.Log($"温度が {newState} に変化しました。");
+
+            // UIを更新
+            var tempGauge = _battleWindowManager.GetTemperatureGaugeController();
+            if (tempGauge != null)
+            {
+                tempGauge.UpdateTemperatureUI(newState);
+            }
+
+            // COLD状態の特殊効果を適用
+            if (newState == TemperatureState.COLD)
+            {
+                // 全キャラクターの最大BTを減少させる
+                CharacterStatusManager.ApplyColdPenaltyToAll(0.1f); // 10%減少
+                _enemyStatusManager.ApplyColdPenaltyToAll(0.1f);
+                OnUpdateStatus(); // 味方UI更新
+                UpdateEnemyStatusUI(); // 敵UI更新
+            }
+            // 注意：要件通り、HOTやNORMALに戻ってもペナルティは解除しません。
         }
     }
 }

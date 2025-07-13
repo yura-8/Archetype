@@ -355,6 +355,17 @@ namespace SimpleRpg
                 if (battleParameter.atk < 0) battleParameter.atk = 0;
                 if (battleParameter.def < 0) battleParameter.def = 0;
                 if (battleParameter.dex < 0) battleParameter.dex = 0;
+
+                // 温度によるATK補正
+                var currentTemperature = _battleManager.CurrentTemperature;
+                if (currentTemperature == TemperatureState.HOT)
+                {
+                    battleParameter.atk = (int)(battleParameter.atk * 1.2f); // ATK 20%増加
+                }
+                else if (currentTemperature == TemperatureState.COLD)
+                {
+                    battleParameter.atk = (int)(battleParameter.atk * 0.9f); // ATK 10%減少
+                }
             }
             return battleParameter;
         }

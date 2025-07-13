@@ -34,9 +34,16 @@ namespace SimpleRpg
                 return;
             }
 
-            // BT消費
+            // BT消費の計算を温度に応じて変更
+            float costMultiplier = 1.0f;
+            if (_battleManager.CurrentTemperature == TemperatureState.HOT)
+            {
+                costMultiplier = 1.5f; // BT消費 50%増加
+            }
+            int actualCost = (int)(skillData.cost * costMultiplier);
             int hpDelta = 0;
-            int btDelta = skillData.cost * -1;
+            int btDelta = actualCost * -1;
+
             if (action.isActorFriend)
             {
                 CharacterStatusManager.ChangeCharacterStatus(action.actorId, hpDelta, btDelta);
@@ -242,21 +249,18 @@ namespace SimpleRpg
                     int hpDelta = damage * -1;
                     string targetName = _actionProcessor.GetCharacterName(targetStatus.characterId, true);
 
-                    // ▼▼▼ 修正点 ▼▼▼
                     SpecialStatusType newStatus = CharacterStatusManager.ChangeCharacterStatus(targetStatus.characterId, hpDelta, 0);
-                    // ▲▲▲ ここまで ▲▲▲
+                   
                     bool isTargetDefeated = CharacterStatusManager.IsCharacterDefeated(targetStatus.characterId);
 
                     _battleManager.OnUpdateStatus();
 
                     yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDamageMessage(targetName, damage));
 
-                    // ▼▼▼ 修正点 ▼▼▼
                     if (newStatus != SpecialStatusType.None)
                     {
                         yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateStatusEffectMessage(targetName, newStatus));
                     }
-                    // ▲▲▲ ここまで ▲▲▲
 
                     if (isTargetDefeated)
                     {

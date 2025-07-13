@@ -43,7 +43,15 @@ namespace SimpleRpg
                 }
             }
 
-            int btDelta = 20 * -1; // NORMAL_ATTACK_BT_COST
+            // 温度によるBT消費量補正
+            float costMultiplier = 1.0f;
+            if (_battleManager.CurrentTemperature == TemperatureState.HOT)
+            {
+                costMultiplier = 1.5f; // BT消費 50%増加
+            }
+            int actualCost = (int)(20 * costMultiplier); // 20は元のコードの消費量
+            int btDelta = actualCost * -1;
+
             if (action.isActorFriend)
             {
                 CharacterStatusManager.ChangeCharacterStatus(action.actorId, 0, btDelta);

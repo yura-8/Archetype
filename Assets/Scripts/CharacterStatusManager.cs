@@ -330,5 +330,36 @@ namespace SimpleRpg
                 status.isGuarding = false;
             }
         }
+
+        /// <summary>
+        /// COLD状態の効果として、全パーティメンバーの最大BTにペナルティを与えます。
+        /// </summary>
+        /// <param name="percentage">最大BTから減少させる割合（例: 0.1fで10%）</param>
+        public static void ApplyColdPenaltyToAll(float percentage)
+        {
+            foreach (var status in characterStatuses)
+            {
+                if (status.isDefeated) continue;
+
+                var parameterRecord = CharacterDataManager.GetParameterTable(status.characterId).parameterRecords.Find(p => p.level == status.level);
+                if (parameterRecord != null)
+                {
+                    // 現在の実効最大BTを基準にペナルティ量を計算します
+                    int currentEffectiveMaxBt = parameterRecord.bt - status.maxBtPenalty;
+                    int penalty = (int)(currentEffectiveMaxBt * percentage);
+
+                    // 計算したペナルティを加算します
+                    status.maxBtPenalty += penalty;
+
+                    // 新しい最大BTを元に、現在BTを調整します
+                    int newEffectiveMaxBt = parameterRecord.bt - status.maxBtPenalty;
+                    if (newEffectiveMaxBt < 1) newEffectiveMaxBt = 1;
+                    if (status.currentBt > newEffectiveMaxBt)
+                    {
+                        status.currentBt = newEffectiveMaxBt;
+                    }
+                }
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace SimpleRpg
         [SerializeField]
         StatusUIController _uiController;
 
-        // ★ 修正点：このクラスはもう_highlightImageを直接持たないため、以下の変数を削除します
+        // このクラスはもう_highlightImageを直接持たないため、以下の変数を削除します
         // [SerializeField] private Image _highlightImage;
 
         // --- SetUpController, SetCharacterStatus, UpdateStatus, UpdateAllCharacterStatus は変更なし ---
@@ -33,10 +33,14 @@ namespace SimpleRpg
             var parameterTable = CharacterDataManager.GetParameterTable(characterStatus.characterId);
             var record = parameterTable.parameterRecords.Find(r => r.level == level);
 
+            // ペナルティを考慮した「実効最大BT」を計算します
+            int effectiveMaxBt = record.bt - characterStatus.maxBtPenalty;
+            if (effectiveMaxBt < 1) effectiveMaxBt = 1; // 最小値は1
+
             _uiController.SetCurrentHp(characterStatus.currentHp);
             _uiController.SetMaxHp(record.hp);
             _uiController.SetCurrentBt(characterStatus.currentBt);
-            _uiController.SetMaxBt(record.bt);
+            _uiController.SetMaxBt(effectiveMaxBt);
 
             _uiController.SetStatusColor(characterStatus.currentStatus);
         }

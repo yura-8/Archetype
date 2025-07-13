@@ -60,6 +60,12 @@ namespace SimpleRpg
         MessageWindowController _messageWindowController;
 
         /// <summary>
+        /// 温度ゲージを制御するクラスへの参照です。
+        /// </summary>
+        [SerializeField]
+        TemperatureGaugeController _temperatureGaugeController;
+
+        /// <summary>
         /// ウィンドウのコントローラのリストです。
         /// </summary>
         List<IBattleWindowController> _battleWindowControllers = new();
@@ -89,6 +95,7 @@ namespace SimpleRpg
             _battleWindowControllers.Add(_descriptionWindowController);
             _battleWindowControllers.Add(_confirmationWindowController);
             _battleWindowControllers.Add(_messageWindowController);
+            _battleWindowControllers.Add(_temperatureGaugeController);
         }
 
         /// <summary>
@@ -189,6 +196,14 @@ namespace SimpleRpg
         public MessageWindowController GetMessageWindowController()
         {
             return _messageWindowController;
+        }
+
+        /// <summary>
+        /// 温度ゲージを制御するクラスへの参照を取得します。
+        /// </summary>
+        public TemperatureGaugeController GetTemperatureGaugeController()
+        {
+            return _temperatureGaugeController;
         }
     }
 
