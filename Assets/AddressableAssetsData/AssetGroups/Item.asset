@@ -27,8 +27,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - Item
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12e2f1af127b7d6429112b6d72c4fe78
+    m_Address: ItemData_0016
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3872ce2062796d34899347c6ae653eb5
     m_Address: ItemData_0005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d1e27475a70968468c760dbbf568348
+    m_Address: ItemData_0013
     m_ReadOnly: 0
     m_SerializedLabels:
     - Item
@@ -39,14 +51,74 @@ MonoBehaviour:
     m_SerializedLabels:
     - Item
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 518c58435afb3444db77083804213c60
+    m_Address: ItemData_0015
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 711a06de464500e44abef75a7c912174
+    m_Address: ItemData_0018
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fe76b08be71546499b4cab2937f1da0
+    m_Address: ItemData_0011
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9cbe3e527b90c204cb4223c1593ccaa4
+    m_Address: ItemData_0017
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9eec110f1f3fa8c4d80b14bb07d9f1da
     m_Address: ItemData_0003
     m_ReadOnly: 0
     m_SerializedLabels:
     - Item
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a21ea096aeb0d4d4ca0a2d8b168f2752
+    m_Address: ItemData_0014
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a2e5b46eb67d07341be6e29de3f3c299
+    m_Address: ItemData_0012
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aefa2caead4afbe419bc7f91e2c4f853
+    m_Address: ItemData_0008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0ca90ec3b1216c43839f9f7cd82a197
+    m_Address: ItemData_0010
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b98c3c6813eae7c41b370757b50e4e11
+    m_Address: ItemData_0009
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc937ee6cf9b1324c8b3e5608d5eb848
     m_Address: ItemData_0006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Item
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5efd6b7ab6224b478444bf330065a1b
+    m_Address: ItemData_0007
     m_ReadOnly: 0
     m_SerializedLabels:
     - Item

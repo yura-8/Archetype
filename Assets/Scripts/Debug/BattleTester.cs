@@ -10,7 +10,7 @@ namespace SimpleRpg
     {
         [Header("テスト用の設定")]
         [SerializeField]
-        List<int> _partyCharacterIds = new List<int> { 1, 2 };
+        List<int> _partyCharacterIds = new List<int> { 1, 2, 3, 4 };
 
         [SerializeField]
         int _playerLevel = 1;

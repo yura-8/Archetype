@@ -49,7 +49,6 @@ namespace SimpleRpg
             _isInitializing = true;
             Debug.Log("GameDataManager: 全データロードを開始します...");
 
-            // ★★★ 抜けていたロード処理を追加 ★★★
             await CharacterDataManager.LoadExpTables();
             await CharacterDataManager.LoadParameterTables();
             await CharacterDataManager.LoadCharacterData();
@@ -71,15 +70,15 @@ namespace SimpleRpg
         {
             // このメソッドの中身は変更なし
             CharacterStatuses = new List<CharacterStatus>();
-            PartyCharacterIds = new List<int> { 1, 2 };
+            PartyCharacterIds = new List<int> { 1, 2, 3, 4 };
             PartyItems = new List<PartyItemInfo>
             {
-                new PartyItemInfo { itemId = 1, itemNum = 5, usedNum = 0 },
-                new PartyItemInfo { itemId = 2, itemNum = 3, usedNum = 0 }
+                new PartyItemInfo { itemId = 1, itemNum = 5 },
+                new PartyItemInfo { itemId = 2, itemNum = 3 }
             };
             PartyGold = 500;
 
-            int[] allCharacterIds = { 1, 2, 3 };
+            int[] allCharacterIds = { 1, 2, 3, 4 };
             foreach (var id in allCharacterIds)
             {
                 var characterData = CharacterDataManager.GetCharacterData(id);

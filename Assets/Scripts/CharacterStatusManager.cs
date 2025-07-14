@@ -170,17 +170,17 @@ namespace SimpleRpg
 
         public static void UseItem(int itemId)
         {
-            var partyItemInfo = GameDataManager.Instance.PartyItems.Find(info => info.itemId == itemId);
+            var inventory = GameDataManager.Instance.PartyItems;
+            var partyItemInfo = inventory.Find(info => info.itemId == itemId);
             if (partyItemInfo == null) return;
-            partyItemInfo.usedNum++;
-            var itemData = ItemDataManager.GetItemDataById(itemId);
-            if (partyItemInfo.usedNum >= itemData.numberOfUse && itemData.numberOfUse > 0)
-            {
-                partyItemInfo.itemNum--;
-            }
+
+            // 1. アイテムの所持数を1減らす
+            partyItemInfo.itemNum--;
+
+            // 2. もし所持数が0になったら、インベントリから削除する
             if (partyItemInfo.itemNum <= 0)
             {
-                GameDataManager.Instance.PartyItems.Remove(partyItemInfo);
+                inventory.Remove(partyItemInfo);
             }
         }
 

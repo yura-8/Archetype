@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Character
   m_GUID: 65d28e4f73beaa041b76c15e44cea679
   m_SerializeEntries:
+  - m_GUID: 259fcc72e2ad4b5418bd3d856098cce4
+    m_Address: ParameterTable_0004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ParameterTable
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 29a57613de097f84d987baa549c26162
     m_Address: ExpTable
     m_ReadOnly: 0
@@ -33,8 +39,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - ParameterTable
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d2fc8266c9fee84b948dbd0723d5d91
+    m_Address: ParameterTable_0003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ParameterTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 68740a647450dfe45a38beb3bfd4438d
+    m_Address: CharacterData_0003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6a4b507e6f50b644d81b78c4bf28654e
     m_Address: CharacterData_0002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ffbb2a4ae380c341ab3dee44f424618
+    m_Address: CharacterData_0004
     m_ReadOnly: 0
     m_SerializedLabels:
     - Character

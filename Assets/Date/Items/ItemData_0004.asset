@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ItemData_0004
   m_EditorClassIdentifier: 
   itemId: 4
-  itemName: "\u30ED\u30F3\u30B0\u30BD\u30FC\u30C9"
-  itemDesc: "\u653B\u6483\u529B\u304C\u5C11\u3057\u9AD8\u3044\u5263"
-  itemCategory: 2
-  hp: 0
-  bt: 0
-  numberOfUse: 0
-  atk: 6
-  def: 0
-  dex: 0
-  price: 50
+  itemName: force_zio
+  itemDesc: "\u5473\u65B9\u5358\u4F53\u306EBT\u3092500\u56DE\u5FA9\u3002"
+  itemCategory: 1
+  itemEffects:
+  - itemEffectCategory: 1
+    effectTarget: 1
+    value: 500
+    skillParameter: 2
+    duration: 0
+  price: 10

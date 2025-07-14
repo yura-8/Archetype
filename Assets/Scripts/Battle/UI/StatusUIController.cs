@@ -18,12 +18,12 @@ namespace SimpleRpg
 
         [Header("特殊状態の色設定")]
         [SerializeField] private Color _normalColor = Color.white;
-        [SerializeField] private Color _overheatColor = Color.red;
+        [SerializeField] private Color _overheatColor = new Color(255, 191, 127);
         [SerializeField] private Color _overchargeColor = new Color(0.8f, 0.4f, 1f); // 紫色
         [SerializeField] private Color _stunColor = new Color(0.5f, 0.8f, 1f); // 水色
 
         [Header("属性別のハイライト色設定")]
-        [SerializeField] private Color _noneAttributeColor = Color.red;// デフォルト色 (半透明の白)
+        [SerializeField] private Color _noneAttributeColor = Color.white;// デフォルト色 (半透明の白)
         [SerializeField] private Color _plasmaColor = new Color(0.5f, 1f, 1f); // 黄緑
         [SerializeField] private Color _cryoColor = new Color(0.5f, 0.8f, 1f);   // 水色
         [SerializeField] private Color _pulseColor = new Color(1f, 0.5f, 1f);    // 赤

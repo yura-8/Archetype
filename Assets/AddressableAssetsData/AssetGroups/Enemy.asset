@@ -15,8 +15,26 @@ MonoBehaviour:
   m_GroupName: Enemy
   m_GUID: 1be032caa7702924a83e3e7638bd2436
   m_SerializeEntries:
+  - m_GUID: 17a3911012da54b4eb8379116733f8cd
+    m_Address: EnemyData_0006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fc0d0d3a8e207d40ab989da2927ade3
+    m_Address: EnemyData_0009
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 36e1cb6b0ea8c934a89bfdfd27d94da2
     m_Address: EnemyData_0001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69d80af7006124e4dbf5b0b4d5c58ea5
+    m_Address: EnemyData_0013
     m_ReadOnly: 0
     m_SerializedLabels:
     - Enemy
@@ -27,8 +45,62 @@ MonoBehaviour:
     m_SerializedLabels:
     - Enemy
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 75bf613bd22dbca46a95761a73d741a3
+    m_Address: EnemyData_0008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 78ef22d4524ec1c4a951079c0f25c10a
+    m_Address: EnemyData_0011
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80cc61d1a01c3904d878b1ccdd1d2493
+    m_Address: EnemyData_0005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af1182875d8093e4ebae2fc189cb7893
+    m_Address: EnemyData_0010
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2dfdd7b2ba246546bceb47d15db64ee
+    m_Address: EnemyData_0015
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b716232deed0934438beee080d88c3e1
+    m_Address: EnemyData_0012
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ba54b534de431344599c0952fc7b4e4d
+    m_Address: EnemyData_0007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bab9a4a37805367469a45a658c7fabc7
+    m_Address: EnemyData_0016
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d40f4518d0c08fe46806b53ab5b47e8d
     m_Address: EnemyData_0003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Enemy
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eab425c6a4e011f48a3b9469a357f9e5
+    m_Address: EnemyData_0014
     m_ReadOnly: 0
     m_SerializedLabels:
     - Enemy

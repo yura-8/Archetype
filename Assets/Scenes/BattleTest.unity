@@ -192,8 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8465e7514e384854987658bfd55d1112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _battleManager: {fileID: 0}
-  _partyCharacterIds: 0100000002000000
+  _partyCharacterIds: 01000000020000000300000004000000
   _playerLevel: 1
   _weaponId: 0
   _armorId: 0

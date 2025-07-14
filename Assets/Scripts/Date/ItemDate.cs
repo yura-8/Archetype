@@ -35,11 +35,6 @@ namespace SimpleRpg
         public List<ItemEffect> itemEffects;
 
         /// <summary>
-        /// 使用可能回数です。
-        /// </summary>
-        public int numberOfUse;
-
-        /// <summary>
         /// アイテムの価格です。
         /// </summary>
         public int price;
