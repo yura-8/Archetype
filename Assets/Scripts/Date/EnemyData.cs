@@ -60,6 +60,11 @@ namespace SimpleRpg
         public int gold;
 
         /// <summary>
+        /// 敵キャラクターの属性です。
+        /// </summary>
+        public ElementAttribute attribute;
+
+        /// <summary>
         /// 行動パターンのリストです。
         /// </summary>
         public List<EnemyActionRecord> enemyActionRecords;

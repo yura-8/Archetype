@@ -43,11 +43,12 @@ namespace SimpleRpg
             _uiController.SetMaxBt(effectiveMaxBt);
 
             _uiController.SetStatusColor(characterStatus.currentStatus);
+            _uiController.SetAttributeHighlightColor(characterStatus.attribute);
         }
 
         public void UpdateAllCharacterStatus()
         {
-            foreach (var characterId in CharacterStatusManager.partyCharacter)
+            foreach (var characterId in GameDataManager.Instance.PartyCharacterIds)
             {
                 var characterStatus = CharacterStatusManager.GetCharacterStatusById(characterId);
                 SetCharacterStatus(characterStatus);

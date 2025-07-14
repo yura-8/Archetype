@@ -31,11 +31,16 @@ namespace SimpleRpg
                 return;
             }
 
-            // BT消費
+            // 温度と属性に応じたBT消費量補正
+            var actorParam = _actionProcessor.GetCharacterParameter(action.actorId, action.isActorFriend);
             float costMultiplier = 1.0f;
             if (_battleManager.CurrentTemperature == TemperatureState.HOT)
             {
+                // デフォルトのHOT補正は1.5倍
                 costMultiplier = 1.5f;
+                // 属性による上書き
+                if (actorParam.attribute == ElementAttribute.Plasma) costMultiplier = 1.8f; // 80%増
+                if (actorParam.attribute == ElementAttribute.Cryo) costMultiplier = 1.2f; // 20%増
             }
             int actualCost = (int)(skillData.cost * costMultiplier);
             if (action.isActorFriend)
@@ -99,13 +104,15 @@ namespace SimpleRpg
         }
 
 
-        #region 回復処理 (Recovery)
+        //回復処理 (Recovery)
         private IEnumerator ProcessRecoveryEffect(BattleAction effectTargetAction, SkillEffect skillEffect)
         {
             int hpDelta = 0;
             int btDelta = 0;
-            int healAmount = 0;
+            int baseHealAmount = 0;
             string targetName = _actionProcessor.GetCharacterName(effectTargetAction.targetId, effectTargetAction.isTargetFriend);
+            var targetParam = _actionProcessor.GetCharacterParameter(effectTargetAction.targetId, effectTargetAction.isTargetFriend);
+            var currentTemp = _battleManager.CurrentTemperature;
 
             if (effectTargetAction.isTargetFriend)
             {
@@ -114,51 +121,71 @@ namespace SimpleRpg
 
                 if (skillEffect.skillParameter == SkillParameter.hp)
                 {
-                    healAmount = (int)(param.hp * skillEffect.value);
-                    hpDelta = healAmount;
+                    baseHealAmount = (int)(param.hp * skillEffect.value);
                 }
                 else if (skillEffect.skillParameter == SkillParameter.bt)
                 {
                     int maxBt = param.bt - status.maxBtPenalty;
-                    healAmount = (int)(maxBt * skillEffect.value);
-                    btDelta = healAmount;
+                    baseHealAmount = (int)(maxBt * skillEffect.value);
                 }
-                CharacterStatusManager.ChangeCharacterStatus(effectTargetAction.targetId, hpDelta, btDelta);
             }
-            // ★ 敵への回復処理を追加
-            else
+            else // 敵への回復
             {
                 var status = _enemyStatusManager.GetEnemyStatusByBattleId(effectTargetAction.targetId);
-                if (status == null || status.isDefeated) yield break; // 対象がいないか倒れているなら終了
+                if (status == null || status.isDefeated) yield break;
                 var param = status.enemyData;
 
                 if (skillEffect.skillParameter == SkillParameter.hp)
                 {
-                    healAmount = (int)(param.hp * skillEffect.value);
-                    hpDelta = healAmount;
+                    baseHealAmount = (int)(param.hp * skillEffect.value);
                 }
                 else if (skillEffect.skillParameter == SkillParameter.bt)
                 {
                     int maxBt = param.bt - status.maxBtPenalty;
-                    healAmount = (int)(maxBt * skillEffect.value);
-                    btDelta = healAmount;
+                    baseHealAmount = (int)(maxBt * skillEffect.value);
                 }
-                _enemyStatusManager.ChangeEnemyStatus(effectTargetAction.targetId, hpDelta, btDelta);
             }
 
+            float recoveryModifier = 1.0f;
+
+            // Pulse属性の回復量増加効果を、HP・BT問わず適用する
+            if (targetParam.attribute == ElementAttribute.Pulse)
+            {
+                recoveryModifier *= 1.1f; // Pulseは常に10%増
+            }
+
+            // 温度と他属性によるBT被回復量補正 (BT回復の場合のみ適用)
+            if (skillEffect.skillParameter == SkillParameter.bt)
+            {
+                if (currentTemp == TemperatureState.HOT)
+                {
+                    if (targetParam.attribute == ElementAttribute.Plasma) recoveryModifier *= 1.4f;
+                    else if (targetParam.attribute == ElementAttribute.Cryo) recoveryModifier *= 1.15f;
+                }
+                else if (currentTemp == TemperatureState.COLD)
+                {
+                    if (targetParam.attribute == ElementAttribute.Plasma) recoveryModifier *= 0.9f;
+                    else if (targetParam.attribute == ElementAttribute.Cryo) recoveryModifier *= 0.7f;
+                }
+            }
+
+            int finalHealAmount = (int)(baseHealAmount * recoveryModifier);
+
+            if (skillEffect.skillParameter == SkillParameter.hp) hpDelta = finalHealAmount;
+            else if (skillEffect.skillParameter == SkillParameter.bt) btDelta = finalHealAmount;
+
+            if (effectTargetAction.isTargetFriend)
+                CharacterStatusManager.ChangeCharacterStatus(effectTargetAction.targetId, hpDelta, btDelta);
+            else
+                _enemyStatusManager.ChangeEnemyStatus(effectTargetAction.targetId, hpDelta, btDelta);
 
             _battleManager.OnUpdateStatus();
             _battleManager.UpdateEnemyVisuals();
 
-            // メッセージ表示
             if (skillEffect.skillParameter == SkillParameter.hp)
-            {
-                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateHpHealMessage(targetName, healAmount));
-            }
+                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateHpHealMessage(targetName, finalHealAmount));
             else if (skillEffect.skillParameter == SkillParameter.bt)
-            {
-                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateBtHealMessage(targetName, healAmount));
-            }
+                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateBtHealMessage(targetName, finalHealAmount));
         }
 
         private IEnumerator ProcessAllRecoveryEffect(BattleAction action, SkillEffect skillEffect)
@@ -191,7 +218,7 @@ namespace SimpleRpg
                 }
             }
         }
-        #endregion
+
 
         #region ダメージ処理 (Damage)
         private IEnumerator ProcessDamageEffect(BattleAction effectTargetAction, SkillEffect skillEffect)
@@ -199,10 +226,14 @@ namespace SimpleRpg
             var actorParam = _actionProcessor.GetCharacterParameter(effectTargetAction.actorId, effectTargetAction.isActorFriend);
             var targetParam = _actionProcessor.GetCharacterParameter(effectTargetAction.targetId, effectTargetAction.isTargetFriend);
 
-            // 計算式: {攻撃力 * (1 + スキル倍率)}
             int totalPower = (int)(actorParam.atk * (1 + skillEffect.value));
-            int damage = BattleCalculator.CalculateDamage(totalPower, targetParam.def, targetParam.isGuarding);
-            int hpDelta = damage * -1;
+
+            // 属性相性を考慮したダメージ計算
+            int baseDamage = BattleCalculator.CalculateDamage(totalPower, targetParam.def, targetParam.isGuarding);
+            float attributeModifier = GetAttributeModifier(actorParam.attribute, targetParam.attribute);
+            int finalDamage = Mathf.Max(1, (int)(baseDamage * attributeModifier));
+
+            int hpDelta = finalDamage * -1;
             bool isTargetDefeated = false;
             SpecialStatusType newStatus;
 
@@ -222,7 +253,7 @@ namespace SimpleRpg
             _battleManager.UpdateEnemyVisuals();
             string targetName = _actionProcessor.GetCharacterName(effectTargetAction.targetId, effectTargetAction.isTargetFriend);
 
-            yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDamageMessage(targetName, damage));
+            yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateDamageMessage(targetName, finalDamage));
 
             if (newStatus != SpecialStatusType.None)
             {
@@ -266,6 +297,28 @@ namespace SimpleRpg
             }
         }
         #endregion
+
+        // 属性相性係数を返すメソッド
+        private float GetAttributeModifier(ElementAttribute attacker, ElementAttribute defender)
+        {
+            if (attacker == ElementAttribute.None || defender == ElementAttribute.None) return 1.0f;
+
+            if ((attacker == ElementAttribute.Plasma && defender == ElementAttribute.Cryo) ||
+                (attacker == ElementAttribute.Cryo && defender == ElementAttribute.Pulse) ||
+                (attacker == ElementAttribute.Pulse && defender == ElementAttribute.Plasma))
+            {
+                return 1.1f; // 有利
+            }
+
+            if ((attacker == ElementAttribute.Cryo && defender == ElementAttribute.Plasma) ||
+                (attacker == ElementAttribute.Pulse && defender == ElementAttribute.Cryo) ||
+                (attacker == ElementAttribute.Plasma && defender == ElementAttribute.Pulse))
+            {
+                return 0.9f; // 不利
+            }
+
+            return 1.0f; // 等倍
+        }
 
         #region 補助処理 (Support)
         private IEnumerator ProcessSupportEffect(BattleAction effectTargetAction, SkillEffect skillEffect)
@@ -381,7 +434,7 @@ namespace SimpleRpg
         }
         #endregion
 
-        // ★★★ 修正点: 術者が誰であってもターゲットの所属を正しく判定するように修正
+        // 術者が誰であってもターゲットの所属を正しく判定するように修正
         private BattleAction DetermineEffectTarget(BattleAction originalAction, SkillEffect skillEffect)
         {
             BattleAction effectTargetAction = originalAction.Clone();

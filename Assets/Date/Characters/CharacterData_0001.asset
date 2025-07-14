@@ -15,6 +15,7 @@ MonoBehaviour:
   characterId: 1
   characterName: KUROGANE LEN
   firstName: LEN
+  attribute: 1
   characterSkillRecords:
   - level: 1
     skillId: 1

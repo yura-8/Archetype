@@ -14,11 +14,11 @@ namespace SimpleRpg
         /// <param name="defense">攻撃を受ける側の防御力</param>
         public static int CalculateDamage(int attack, int defense, bool isTargetGuarding)
         {
-            float atk = attack / 2.0f;
-            float def = defense / 4.0f;
+            //float atk = attack / 2.0f;
+            //float def = defense / 4.0f;
             // float rand = Random.Range(0.8f, 1.2f);
             // int damage = Mathf.Max(Mathf.CeilToInt((atk - def) * rand), 1);
-            int damage = Mathf.Max(Mathf.CeilToInt((atk - def)), 1);
+            int damage = Mathf.Max(attack - defense, 1);
             if (isTargetGuarding)
             {
                 damage /= 2;

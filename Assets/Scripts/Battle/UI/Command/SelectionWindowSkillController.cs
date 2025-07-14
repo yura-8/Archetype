@@ -138,7 +138,7 @@ namespace SimpleRpg
                 return false;
             }
 
-            var currentSelectingCharacter = CharacterStatusManager.partyCharacter[0];
+            var currentSelectingCharacter = GameDataManager.Instance.PartyCharacterIds[0];
             var characterStatus = CharacterStatusManager.GetCharacterStatusById(currentSelectingCharacter);
             // BTが足りているか？
             bool hasEnoughBt = characterStatus.currentBt >= skillData.cost;

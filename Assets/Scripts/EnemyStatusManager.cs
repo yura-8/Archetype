@@ -14,6 +14,11 @@ namespace SimpleRpg
         /// </summary>
         List<EnemyStatus> _enemyStatuses = new();
 
+        private void Awake()
+        {
+            _enemyStatuses = new List<EnemyStatus>();
+        }
+
         /// <summary>
         /// 敵キャラクターのステータス一覧を初期化します。
         /// </summary>
@@ -63,7 +68,8 @@ namespace SimpleRpg
                     enemyBattleId = battleId,
                     enemyData = enemyData,
                     currentHp = enemyData.hp,
-                    currentBt = enemyData.bt
+                    currentBt = enemyData.bt,
+                    attribute = enemyData.attribute
                 };
                 _enemyStatuses.Add(enemyStatus);
             }
@@ -82,7 +88,7 @@ namespace SimpleRpg
 
             SpecialStatusType newStatus = SpecialStatusType.None;
 
-            // HP変動
+            // HP変動 (変更なし)
             enemyStatus.currentHp += hpDelta;
             if (enemyStatus.currentHp > enemyStatus.enemyData.hp) enemyStatus.currentHp = enemyStatus.enemyData.hp;
             if (enemyStatus.currentHp < 0) enemyStatus.currentHp = 0;
@@ -120,7 +126,14 @@ namespace SimpleRpg
                     if (enemyStatus.currentStatus != SpecialStatusType.Overcharge) newStatus = SpecialStatusType.Overcharge;
                     enemyStatus.currentStatus = SpecialStatusType.Overcharge;
                     enemyStatus.statusDuration = 99;
-                    enemyStatus.maxBtPenalty = (int)(enemyStatus.enemyData.bt * 0.05f);
+
+                    // Pulse属性の場合、過充電ペナルティを1.5倍にする
+                    int penalty = (int)(enemyStatus.enemyData.bt * 0.05f);
+                    if (enemyStatus.attribute == ElementAttribute.Pulse)
+                    {
+                        penalty = (int)(penalty * 1.5f);
+                    }
+                    enemyStatus.maxBtPenalty = penalty;
                 }
                 else if (enemyStatus.currentStatus == SpecialStatusType.Overcharge && enemyStatus.currentBt <= effectiveMaxBt)
                 {

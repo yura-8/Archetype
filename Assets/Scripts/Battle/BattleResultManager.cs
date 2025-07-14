@@ -102,7 +102,7 @@ namespace SimpleRpg
             // --- 0. 開始前にウィンドウをクリア ---
             _messageWindowController.ClearMessage();
 
-            var firstMemberId = CharacterStatusManager.partyCharacter[0];
+            var firstMemberId = GameDataManager.Instance.PartyCharacterIds[0];
             var characterName = CharacterDataManager.GetCharacterName(firstMemberId);
 
             // --- 1. 勝利メッセージ、経験値、ゴールドを順番に表示 ---
@@ -126,7 +126,7 @@ namespace SimpleRpg
             }
 
             // --- 2. レベルアップしたキャラクターを一人ずつ表示 ---
-            foreach (var id in CharacterStatusManager.partyCharacter)
+            foreach (var id in GameDataManager.Instance.PartyCharacterIds)
             {
                 if (CharacterStatusManager.CheckLevelUp(id))
                 {
@@ -210,7 +210,7 @@ namespace SimpleRpg
         IEnumerator LoseMessageProcess()
         {
             _messageWindowController.ClearMessage();
-            var firstMemberId = CharacterStatusManager.partyCharacter[0];
+            var firstMemberId = GameDataManager.Instance.PartyCharacterIds[0];
             var characterName = CharacterDataManager.GetCharacterName(firstMemberId);
 
             yield return StartCoroutine(ShowMessageWithPaging(

@@ -44,7 +44,7 @@ namespace SimpleRpg
             }
 
             var itemId = _itemIdDictionary[indexInPage];
-            var partyItemInfo = CharacterStatusManager.partyItemInfoList.Find(info => info.itemId == itemId);
+            var partyItemInfo = GameDataManager.Instance.PartyItems.Find(info => info.itemId == itemId);
             isValid = partyItemInfo.itemNum > 0;
             return isValid;
         }
@@ -67,7 +67,7 @@ namespace SimpleRpg
             _displayItemList.Clear();
 
             // パーティの全所持アイテムを取得
-            var allItems = CharacterStatusManager.partyItemInfoList;
+            var allItems = GameDataManager.Instance.PartyItems;
 
             // ここで表示するアイテムを絞り込むことができる
             foreach (var itemInfo in allItems)
@@ -124,7 +124,7 @@ namespace SimpleRpg
         /// <param name="itemId">アイテムID</param>
         bool CanSelectItem(int itemId)
         {
-            var partyItemInfo = CharacterStatusManager.partyItemInfoList.Find(info => info.itemId == itemId);
+            var partyItemInfo = GameDataManager.Instance.PartyItems.Find(info => info.itemId == itemId);
             return partyItemInfo.itemNum > 0;
         }
 

@@ -58,7 +58,6 @@ namespace SimpleRpg
             {
                 bool isAllTarget = itemEffect.effectTarget == EffectTarget.FriendAll || itemEffect.effectTarget == EffectTarget.EnemyAll;
 
-                // ★ StatusCureのcaseを削除
                 switch (itemEffect.itemEffectCategory)
                 {
                     case ItemEffectCategory.Recovery:
@@ -135,51 +134,71 @@ namespace SimpleRpg
         {
             int hpDelta = 0;
             int btDelta = 0;
-            int healAmount = 0;
+            // アイテムの基本回復量
+            int baseHealAmount = itemEffect.value;
             string targetName = _actionProcessor.GetCharacterName(action.targetId, action.isTargetFriend);
 
+            // 属性と温度を取得
+            var targetParam = _actionProcessor.GetCharacterParameter(action.targetId, action.isTargetFriend);
+            var currentTemp = _battleManager.CurrentTemperature;
+
+            // 回復量補正係数を計算
+            float recoveryModifier = 1.0f;
+
+            // Pulse属性の回復量増加効果を、HP・BT問わず適用する
+            if (targetParam.attribute == ElementAttribute.Pulse)
+            {
+                recoveryModifier *= 1.1f; // Pulseは常に10%増
+            }
+
+            // 温度と他属性によるBT被回復量補正 (BT回復の場合のみ適用)
+            if (itemEffect.skillParameter == SkillParameter.bt)
+            {
+                if (currentTemp == TemperatureState.HOT)
+                {
+                    if (targetParam.attribute == ElementAttribute.Plasma) recoveryModifier *= 1.4f;
+                    else if (targetParam.attribute == ElementAttribute.Cryo) recoveryModifier *= 1.15f;
+                }
+                else if (currentTemp == TemperatureState.COLD)
+                {
+                    if (targetParam.attribute == ElementAttribute.Plasma) recoveryModifier *= 0.9f;
+                    else if (targetParam.attribute == ElementAttribute.Cryo) recoveryModifier *= 0.7f;
+                }
+            }
+
+            // 最終的な回復量を計算
+            int finalHealAmount = (int)(baseHealAmount * recoveryModifier);
+
+            // 回復量をHPまたはBTの変動量に設定
+            if (itemEffect.skillParameter == SkillParameter.hp)
+            {
+                hpDelta = finalHealAmount;
+            }
+            else if (itemEffect.skillParameter == SkillParameter.bt)
+            {
+                btDelta = finalHealAmount;
+            }
+
+            // ステータスを更新
             if (action.isTargetFriend)
             {
-                var status = CharacterStatusManager.GetCharacterStatusById(action.targetId);
-                var param = CharacterDataManager.GetParameterTable(status.characterId).parameterRecords.Find(p => p.level == status.level);
-
-                if (itemEffect.skillParameter == SkillParameter.hp)
-                {
-                    healAmount = itemEffect.value;
-                    hpDelta = healAmount;
-                }
-                else if (itemEffect.skillParameter == SkillParameter.bt)
-                {
-                    healAmount = itemEffect.value;
-                    btDelta = healAmount;
-                }
                 CharacterStatusManager.ChangeCharacterStatus(action.targetId, hpDelta, btDelta);
             }
             else
             {
                 var status = _enemyStatusManager.GetEnemyStatusByBattleId(action.targetId);
                 if (status == null || status.isDefeated) yield break;
-
-                if (itemEffect.skillParameter == SkillParameter.hp)
-                {
-                    healAmount = itemEffect.value;
-                    hpDelta = healAmount;
-                }
-                else if (itemEffect.skillParameter == SkillParameter.bt)
-                {
-                    healAmount = itemEffect.value;
-                    btDelta = healAmount;
-                }
                 _enemyStatusManager.ChangeEnemyStatus(action.targetId, hpDelta, btDelta);
             }
 
             _battleManager.OnUpdateStatus();
             _battleManager.UpdateEnemyVisuals();
 
+            // メッセージを表示
             if (itemEffect.skillParameter == SkillParameter.hp)
-                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateHpHealMessage(targetName, healAmount));
+                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateHpHealMessage(targetName, finalHealAmount));
             else if (itemEffect.skillParameter == SkillParameter.bt)
-                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateBtHealMessage(targetName, healAmount));
+                yield return _messageWindowController.StartCoroutine(_messageWindowController.GenerateBtHealMessage(targetName, finalHealAmount));
         }
 
         private IEnumerator ProcessDamageEffect(BattleAction action, ItemEffect itemEffect)

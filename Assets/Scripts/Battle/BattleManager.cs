@@ -166,6 +166,23 @@ namespace SimpleRpg
             SimpleLogger.Instance.Log($"敵キャラクターのステータスをセットしました。ID: {string.Join(", ", enemyId)}");
         }
 
+        private void Start()
+        {
+            // GameDataManagerに次の戦闘情報があれば、それを使って戦闘を開始する
+            if (GameDataManager.Instance != null && GameDataManager.Instance.NextEncounterEnemyIds != null)
+            {
+                // 敵のIDをGameDataManagerから取得してセットアップ
+                var enemyIds = GameDataManager.Instance.NextEncounterEnemyIds;
+                SetUpEnemyStatus(enemyIds);
+
+                // 戦闘開始
+                StartBattle();
+
+                // 使ったエンカウント情報はクリア
+                GameDataManager.Instance.NextEncounterEnemyIds = null;
+            }
+        }
+
         private void Awake()
         {
             // このゲームオブジェクトにアタッチされているAudioSourceを取得
@@ -177,45 +194,44 @@ namespace SimpleRpg
         /// </summary>
         public void StartBattle()
         {
-            _isFinishingBattle = false;
+            // ★修正点：直接GameDataManagerからパーティIDを取得
+            var partyIds = GameDataManager.Instance.PartyCharacterIds;
+            if (partyIds == null || partyIds.Count == 0)
+            {
+                Debug.LogError("戦闘を開始できません: パーティメンバーがいません。");
+                return;
+            }
 
+            _isFinishingBattle = false;
             SimpleLogger.Instance.Log("戦闘を開始します。");
             GameStateManager.ChangeToBattle();
             SetBattlePhase(BattlePhase.ShowEnemy);
 
-            EnemyDataManager.enemies = this.EnemyId;
+            // ★修正点：EnemyDataManagerの古い変数を参照していたため削除
+            // EnemyDataManager.enemies = this.EnemyId;
 
             TurnCount = 1;
             IsBattleFinished = false;
-
             _battleWindowManager.SetUpWindowControllers(this);
             var messageWindowController = _battleWindowManager.GetMessageWindowController();
             messageWindowController.HidePager();
-
             _battleActionProcessor.InitializeProcessor(this);
             _battleActionRegister.InitializeRegister(_battleActionProcessor);
             _enemyCommandSelector.SetReferences(this, _battleActionProcessor);
             _battleResultManager.SetReferences(this);
-            //_characterMoverManager.StopCharacterMover();
             _battleStarter.StartBattle(this);
-
-            // 緊急バッテリーの使用回数を初期化 
             _emergencyBatteryUsesLeft = MAX_EMERGENCY_BATTERY_USES;
-
-            // 温度をNORMALに初期化
             _currentTemperature = TemperatureState.NORMAL;
-            // 温度UIを初期化して表示
             var tempGauge = _battleWindowManager.GetTemperatureGaugeController();
             if (tempGauge != null)
             {
                 tempGauge.UpdateTemperatureUI(_currentTemperature);
                 tempGauge.ShowWindow();
             }
-
             if (_battleBgm != null && _bgmAudioSource != null)
             {
                 _bgmAudioSource.clip = _battleBgm;
-                _bgmAudioSource.loop = true; // ループ再生を有効に
+                _bgmAudioSource.loop = true;
                 _bgmAudioSource.Play();
             }
         }
@@ -254,17 +270,12 @@ namespace SimpleRpg
             messageWindowController.HideWindow();
             BattlePhase = BattlePhase.InputCommand_Main;
             _battleActionProcessor.InitializeActions();
-
             var commandWindow = GetWindowManager().GetCommandWindowController();
             commandWindow.InitializeCommand();
             commandWindow.ResetSelection();
             commandWindow.ShowWindow();
-
-            // ★ ターン開始時に防御状態を解除
             _enemyStatusManager.ResetAllGuardingStates();
             CharacterStatusManager.ResetAllGuardingStates();
-
-            // ★ 最初のキャラクターからコマンド入力を開始
             _currentActorIndex = 0;
             StartNextCharacterCommand();
         }
@@ -276,39 +287,30 @@ namespace SimpleRpg
         {
             var statusWindows = GetWindowManager().GetStatusWindowController();
             var windowManager = GetWindowManager();
-
-            // 全ての関連ウィンドウを非表示にする
             windowManager.GetAttackCommandWindowController().HideWindow();
             windowManager.GetSelectionWindowController().HideWindow();
             windowManager.GetDescriptionWindowController().HideWindow();
             windowManager.GetSelectionEnemyWindowController().HideWindow();
             windowManager.GetSelectionPartyWindowController().HideWindow();
             windowManager.GetConfirmationWindowController().HideWindow();
-
             SetBattlePhase(BattlePhase.InputCommand_Main);
             SimpleLogger.Instance.Log($"StartNextCharacterCommand: フェーズを{BattlePhase}に設定, アクターインデックス: {_currentActorIndex}");
-
-            // 1. まず、すべてのウィンドウのハイライトを解除します
             foreach (var window in statusWindows)
             {
-                if (window != null) // 安全チェック
-                {
-                    window.SetHighlight(false);
-                }
+                if (window != null) window.SetHighlight(false);
             }
 
-            // 2. 全員のコマンド入力が完了した場合の処理
-            if (_currentActorIndex >= CharacterStatusManager.partyCharacter.Count)
+            // ★修正点：GameDataManagerからパーティIDリストを取得
+            var partyCharacterIds = GameDataManager.Instance.PartyCharacterIds;
+            if (_currentActorIndex >= partyCharacterIds.Count)
             {
                 SimpleLogger.Instance.Log("味方全員のコマンド入力が完了しました。");
                 if (_currentActorNameText != null) _currentActorNameText.gameObject.SetActive(false);
-                //windowManager.GetCommandWindowController().HideWindow();
                 PostCommandSelect();
                 return;
             }
 
-            // 戦闘不能キャラクターのスキップ処理
-            int currentActorId = CharacterStatusManager.partyCharacter[_currentActorIndex];
+            int currentActorId = partyCharacterIds[_currentActorIndex];
             var currentActorStatus = CharacterStatusManager.GetCharacterStatusById(currentActorId);
             if (currentActorStatus.currentHp <= 0)
             {
@@ -318,11 +320,9 @@ namespace SimpleRpg
                 return;
             }
 
-            // 3. 現在のキャラクターの情報を取得してUIを更新
             if (_currentActorIndex < statusWindows.Count && statusWindows[_currentActorIndex] != null)
             {
                 statusWindows[_currentActorIndex].SetHighlight(true);
-
                 if (_currentActorNameText != null)
                 {
                     string actorName = CharacterDataManager.GetCharacterName(currentActorId);
@@ -337,20 +337,16 @@ namespace SimpleRpg
         /// </summary>
         private void RegisterCurrentAction()
         {
-            // 現在行動を選択しているキャラクターのIDを取得
-            int actorId = CharacterStatusManager.partyCharacter[_currentActorIndex];
+            // ★修正点：GameDataManagerからパーティIDを取得
+            int actorId = GameDataManager.Instance.PartyCharacterIds[_currentActorIndex];
+            bool isTargetFriend = (SelectedCommand == BattleCommand.Item && ItemDataManager.GetItemDataById(_selectedItemId)?.itemEffects[0].effectTarget == EffectTarget.FriendSolo);
+
             SimpleLogger.Instance.Log($"アクションを登録します。Actor: {actorId}, Command: {SelectedCommand}, Target: {_selectedTargetId}");
             switch (SelectedCommand)
             {
                 case BattleCommand.Attack:
-                    if (SelectedAttackCommand == AttackCommand.Normal)
-                    {
-                        _battleActionRegister.SetFriendAttackAction(actorId, _selectedTargetId);
-                    }
-                    else if (SelectedAttackCommand == AttackCommand.Skill)
-                    {
-                        _battleActionRegister.SetFriendSkillAction(actorId, _selectedTargetId, _selectedItemId);
-                    }
+                    if (SelectedAttackCommand == AttackCommand.Normal) _battleActionRegister.SetFriendAttackAction(actorId, _selectedTargetId);
+                    else if (SelectedAttackCommand == AttackCommand.Skill) _battleActionRegister.SetFriendSkillAction(actorId, _selectedTargetId, _selectedItemId);
                     break;
                 case BattleCommand.Item:
                     _battleActionRegister.SetFriendItemAction(actorId, _selectedTargetId, _selectedItemId);
@@ -358,12 +354,7 @@ namespace SimpleRpg
                 case BattleCommand.Guard:
                     _battleActionRegister.SetFriendGuardAction(actorId);
                     break;
-                case BattleCommand.Escape:
-                    // 逃走はアクションを登録しないので何もしない
-                    break;
             }
-
-            // 次のキャラクターへ
             _currentActorIndex++;
             StartNextCharacterCommand();
         }
@@ -861,23 +852,19 @@ namespace SimpleRpg
         public void OnUpdateStatus()
         {
             var statusWindows = _battleWindowManager.GetStatusWindowController();
-            int partyCount = CharacterStatusManager.partyCharacter.Count;
-
-            // ウィンドウの数がパーティメンバーの数より少ない場合のみエラーを出す
+            // ★修正点：GameDataManagerからパーティIDリストを取得
+            var partyCharacterIds = GameDataManager.Instance.PartyCharacterIds;
+            int partyCount = partyCharacterIds.Count;
             if (statusWindows.Count < partyCount)
             {
                 Debug.LogError("パーティメンバーの数に対してステータスウィンドウが不足しています。");
                 return;
             }
-
-            // パーティメンバーの数だけループして、対応するウィンドウの表示を更新する
             for (int i = 0; i < partyCount; i++)
             {
                 var windowController = statusWindows[i];
-                var characterId = CharacterStatusManager.partyCharacter[i];
+                var characterId = partyCharacterIds[i];
                 var characterStatus = CharacterStatusManager.GetCharacterStatusById(characterId);
-
-                // ウィンドウとステータスを渡して更新を命令
                 if (windowController != null && characterStatus != null)
                 {
                     windowController.UpdateStatus(characterStatus);
@@ -1103,9 +1090,10 @@ namespace SimpleRpg
         /// <returns>現在のキャラクターID。該当しない場合は-1を返します。</returns>
         public int GetCurrentActorCharacterId()
         {
-            if (_currentActorIndex >= 0 && _currentActorIndex < CharacterStatusManager.partyCharacter.Count)
+            var partyCharacterIds = GameDataManager.Instance.PartyCharacterIds;
+            if (_currentActorIndex >= 0 && _currentActorIndex < partyCharacterIds.Count)
             {
-                return CharacterStatusManager.partyCharacter[_currentActorIndex];
+                return partyCharacterIds[_currentActorIndex];
             }
             Debug.LogError("有効なアクターインデックスではありません。");
             return -1;
@@ -1243,10 +1231,11 @@ namespace SimpleRpg
         private void ClearAllCharacterStatuses()
         {
             // リストがnullでないことを確認するガード処理
-            if (CharacterStatusManager.characterStatuses == null) return;
+            var characterStatuses = GameDataManager.Instance.CharacterStatuses;
+            if (characterStatuses == null) return;
 
             // 味方
-            foreach (var status in CharacterStatusManager.characterStatuses)
+            foreach (var status in characterStatuses)
             {
                 if (status == null) continue;
 
@@ -1287,7 +1276,7 @@ namespace SimpleRpg
         private IEnumerator UpdateTemperature()
         {
             // 例：30%の確率で温度が変化
-            if (UnityEngine.Random.Range(0, 100) < 20)
+            if (UnityEngine.Random.Range(0, 100) < 40)
             {
                 var messageWindow = _battleWindowManager.GetMessageWindowController();
                 TemperatureState newState;

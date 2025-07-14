@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4fcfa610280d2ac43b369df0bb43567e, type: 3}
-  m_Name: EnemyData_0001
+  m_Name: EnemyData_0003
   m_EditorClassIdentifier: 
-  enemyId: 1
-  enemyName: "\u30AF\u30A2\u30C9\u30A6\u30A9\u30FC\u30AB\u30FC"
-  sprite: {fileID: -4723188824610832630, guid: a37f6f7ce90bd1042a286faaf1a92977, type: 3}
-  hp: 150
+  enemyId: 3
+  enemyName: "\u30AA\u30FC\u30C8\u30F4\u30A7\u30F3\u30C8"
+  sprite: {fileID: -4943834004522873809, guid: d3383d6252a3f5a47988b70128cc794c, type: 3}
+  hp: 200
   bt: 1200
-  atk: 40
+  atk: 20
   def: 25
-  dex: 7
+  dex: 5
   exp: 3
   gold: 500
-  attribute: 1
+  attribute: 2
   enemyActionRecords: []

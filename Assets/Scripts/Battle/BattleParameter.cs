@@ -21,5 +21,10 @@
         public int dex;
 
         public bool isGuarding;
+
+        /// <summary>
+        /// キャラクターの属性です。
+        /// </summary>
+        public ElementAttribute attribute;
     }
 }

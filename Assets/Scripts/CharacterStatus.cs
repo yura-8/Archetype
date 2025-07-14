@@ -60,6 +60,11 @@ namespace SimpleRpg
 
         public SpecialStatusType currentStatus = SpecialStatusType.None; // 現在の特殊状態
         public int statusDuration = 0; // 特殊状態の残りターン数
-        public int maxBtPenalty = 0; // 過充電による最大BTのペナルティ量
+        public int maxBtPenalty = 0; // 最大BTのペナルティ量
+
+        /// <summary>
+        /// キャラクターの属性です。
+        /// </summary>
+        public ElementAttribute attribute;
     }
 }

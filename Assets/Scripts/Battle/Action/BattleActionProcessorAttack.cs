@@ -22,9 +22,13 @@ namespace SimpleRpg
         {
             var actorParam = _actionProcessor.GetCharacterParameter(action.actorId, action.isActorFriend);
             var targetParam = _actionProcessor.GetCharacterParameter(action.targetId, action.isTargetFriend);
-            int damage = BattleCalculator.CalculateDamage(actorParam.atk, targetParam.def, targetParam.isGuarding);
 
-            int hpDelta = damage * -1;
+            // 属性相性を考慮したダメージ計算
+            int baseDamage = BattleCalculator.CalculateDamage(actorParam.atk, targetParam.def, targetParam.isGuarding);
+            float attributeModifier = GetAttributeModifier(actorParam.attribute, targetParam.attribute);
+            int finalDamage = Mathf.Max(1, (int)(baseDamage * attributeModifier));
+
+            int hpDelta = finalDamage * -1;
             bool isTargetDefeated = false;
             SpecialStatusType newStatus = SpecialStatusType.None;
 
@@ -43,11 +47,15 @@ namespace SimpleRpg
                 }
             }
 
-            // 温度によるBT消費量補正
+            // 温度と属性に応じたBT消費量補正
             float costMultiplier = 1.0f;
             if (_battleManager.CurrentTemperature == TemperatureState.HOT)
             {
-                costMultiplier = 1.5f; // BT消費 50%増加
+                // デフォルトのHOT補正は1.5倍
+                costMultiplier = 1.5f;
+                // 属性による上書き
+                if (actorParam.attribute == ElementAttribute.Plasma) costMultiplier = 1.8f; // 80%増
+                if (actorParam.attribute == ElementAttribute.Cryo) costMultiplier = 1.2f; // 20%増
             }
             int actualCost = (int)(20 * costMultiplier); // 20は元のコードの消費量
             int btDelta = actualCost * -1;
@@ -62,7 +70,8 @@ namespace SimpleRpg
             }
 
             _actionProcessor.SetPauseProcess(true);
-            StartCoroutine(ShowAttackMessageCoroutine(action, damage, isTargetDefeated, newStatus));
+            // finalDamageをメッセージ表示に渡す
+            StartCoroutine(ShowAttackMessageCoroutine(action, finalDamage, isTargetDefeated, newStatus));
         }
 
         private IEnumerator ShowAttackMessageCoroutine(BattleAction action, int damage, bool isTargetDefeated, SpecialStatusType newStatus)
@@ -105,8 +114,32 @@ namespace SimpleRpg
                 }
             }
 
-            // このクラスでの勝利判定は行わず、必ず一時停止を解除して処理を終える
             _actionProcessor.SetPauseProcess(false);
+        }
+
+        // 属性相性係数を返すメソッド
+        private float GetAttributeModifier(ElementAttribute attacker, ElementAttribute defender)
+        {
+            if (attacker == ElementAttribute.None || defender == ElementAttribute.None) return 1.0f;
+
+            if ((attacker == ElementAttribute.Plasma && defender == ElementAttribute.Cryo) ||
+                (attacker == ElementAttribute.Cryo && defender == ElementAttribute.Pulse) ||
+                (attacker == ElementAttribute.Pulse && defender == ElementAttribute.Plasma))
+            {
+                // 有利属性
+                return 1.1f;
+            }
+
+            if ((attacker == ElementAttribute.Cryo && defender == ElementAttribute.Plasma) ||
+                (attacker == ElementAttribute.Pulse && defender == ElementAttribute.Cryo) ||
+                (attacker == ElementAttribute.Plasma && defender == ElementAttribute.Pulse))
+            {
+                // 不利属性
+                return 0.9f;
+            }
+
+            // 同属性または三すくみ外
+            return 1.0f;
         }
     }
 }

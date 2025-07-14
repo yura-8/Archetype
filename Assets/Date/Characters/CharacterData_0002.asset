@@ -15,6 +15,7 @@ MonoBehaviour:
   characterId: 2
   characterName: SHIROHANE TUBAKI
   firstName: TUBAKI
+  attribute: 2
   characterSkillRecords:
   - level: 1
     skillId: 1

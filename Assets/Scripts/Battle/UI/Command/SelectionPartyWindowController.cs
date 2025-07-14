@@ -130,7 +130,7 @@ namespace SimpleRpg
 
             // PartyDataManagerから現在の敵リストを取得
             _partyMembers = new List<CharacterStatus>();
-            foreach (var characterId in CharacterStatusManager.partyCharacter)
+            foreach (var characterId in GameDataManager.Instance.PartyCharacterIds)
             {
                 var status = CharacterStatusManager.GetCharacterStatusById(characterId);
                 if (status != null)

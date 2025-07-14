@@ -304,28 +304,67 @@ namespace SimpleRpg
         public BattleParameter GetCharacterParameter(int characterId, bool isFriend)
         {
             BattleParameter battleParameter = new();
+            ElementAttribute attribute;
+            CharacterStatus friendStatus = null;
+            EnemyStatus enemyStatus = null;
 
             if (isFriend)
             {
-                // 味方の場合は既存の処理でベースパラメータと装備品を取得
+                friendStatus = CharacterStatusManager.GetCharacterStatusById(characterId);
                 battleParameter = CharacterStatusManager.GetCharacterBattleParameterById(characterId);
-                var characterStatus = CharacterStatusManager.GetCharacterStatusById(characterId);
-                battleParameter.isGuarding = characterStatus.isGuarding;
+                battleParameter.isGuarding = friendStatus.isGuarding;
+                attribute = friendStatus.attribute; // 味方の属性を取得
             }
             else
             {
-                // 敵の場合はベースパラメータを取得
-                var enemyStatus = _enemyStatusManager.GetEnemyStatusByBattleId(characterId);
+                enemyStatus = _enemyStatusManager.GetEnemyStatusByBattleId(characterId);
                 var enemyData = enemyStatus.enemyData;
-                int effectiveMaxBt = enemyData.bt - enemyStatus.maxBtPenalty;
-                if (effectiveMaxBt < 1) effectiveMaxBt = 1;
+                attribute = enemyStatus.attribute; // 敵の属性を取得
 
                 battleParameter.atk = enemyData.atk;
                 battleParameter.def = enemyData.def;
                 battleParameter.dex = enemyData.dex;
                 battleParameter.isGuarding = enemyStatus.isGuarding;
+            }
 
-                // 特殊状態とBT残量による補正
+            // 属性と温度による補正処理 
+            var currentTemperature = _battleManager.CurrentTemperature;
+
+            // --- 温度による補正 ---
+            if (currentTemperature == TemperatureState.HOT)
+            {
+                // 敵の基本HOT補正 (味方には基本補正なし)
+                if (!isFriend) battleParameter.atk = (int)(battleParameter.atk * 1.2f);
+
+                // 属性による上書き
+                if (attribute == ElementAttribute.Plasma) battleParameter.atk = (int)(battleParameter.atk * 1.3f); // Plasmaは30%増
+                if (attribute == ElementAttribute.Cryo) battleParameter.atk = (int)(battleParameter.atk * 1.05f); // Cryoは5%増
+            }
+            else if (currentTemperature == TemperatureState.COLD)
+            {
+                // 敵の基本COLD補正 (味方には基本補正なし)
+                if (!isFriend) battleParameter.atk = (int)(battleParameter.atk * 0.9f);
+
+                // 属性による上書き
+                if (attribute == ElementAttribute.Plasma) battleParameter.atk = (int)(battleParameter.atk * 0.95f); // Plasmaは5%減
+                if (attribute == ElementAttribute.Cryo) battleParameter.atk = (int)(battleParameter.atk * 0.8f);  // Cryoは20%減
+            }
+            else // NORMALの場合
+            {
+                if (attribute == ElementAttribute.Pulse)
+                {
+                    battleParameter.atk = (int)(battleParameter.atk * 1.1f); // PulseはATK,DEF 10%増
+                    battleParameter.def = (int)(battleParameter.def * 1.1f);
+                }
+            }
+
+            // --- 既存の補正（特殊状態、BT残量、バフ） ---
+            if (isFriend)
+            {
+                // 味方の場合はGetCharacterBattleParameterByIdで計算済みなので再計算しない
+            }
+            else // 敵の場合のみ、ここで残りの補正を適用
+            {
                 switch (enemyStatus.currentStatus)
                 {
                     case SpecialStatusType.Overheat:
@@ -336,11 +375,13 @@ namespace SimpleRpg
                         battleParameter.atk = (int)(battleParameter.atk * 1.3f);
                         break;
                 }
+
+                int effectiveMaxBt = enemyStatus.enemyData.bt - enemyStatus.maxBtPenalty;
+                if (effectiveMaxBt < 1) effectiveMaxBt = 1;
                 float btRate = (float)enemyStatus.currentBt / effectiveMaxBt;
                 if (btRate >= 0.9f) battleParameter.atk = (int)(battleParameter.atk * 1.05f);
                 else if (btRate <= 0.1f) battleParameter.atk = (int)(battleParameter.atk * 0.95f);
 
-                // 敵に適用中のバフの効果を合算する
                 foreach (var buff in enemyStatus.buffs)
                 {
                     switch (buff.parameter)
@@ -350,23 +391,16 @@ namespace SimpleRpg
                         case SkillParameter.dex: battleParameter.dex += buff.value; break;
                     }
                 }
-
-                // パラメータが0未満にならないように調整
-                if (battleParameter.atk < 0) battleParameter.atk = 0;
-                if (battleParameter.def < 0) battleParameter.def = 0;
-                if (battleParameter.dex < 0) battleParameter.dex = 0;
-
-                // 温度によるATK補正
-                var currentTemperature = _battleManager.CurrentTemperature;
-                if (currentTemperature == TemperatureState.HOT)
-                {
-                    battleParameter.atk = (int)(battleParameter.atk * 1.2f); // ATK 20%増加
-                }
-                else if (currentTemperature == TemperatureState.COLD)
-                {
-                    battleParameter.atk = (int)(battleParameter.atk * 0.9f); // ATK 10%減少
-                }
             }
+
+            // 属性情報をパラメータに詰める
+            battleParameter.attribute = attribute;
+
+            // パラメータが0未満にならないように最終調整
+            if (battleParameter.atk < 0) battleParameter.atk = 0;
+            if (battleParameter.def < 0) battleParameter.def = 0;
+            if (battleParameter.dex < 0) battleParameter.dex = 0;
+
             return battleParameter;
         }
 

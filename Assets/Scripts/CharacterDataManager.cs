@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -28,7 +29,7 @@ namespace SimpleRpg
         /// <summary>
         /// 経験値表のデータをロードします。
         /// </summary>
-        public static async void LoadExpTables()
+        public static async Task LoadExpTables()
         {
             AsyncOperationHandle<IList<ExpTable>> handle = Addressables.LoadAssetsAsync<ExpTable>(AddressablesLabels.ExpTable, null);
             await handle.Task;
@@ -52,7 +53,7 @@ namespace SimpleRpg
         /// <summary>
         /// パラメータ表のデータをロードします。
         /// </summary>
-        public static async void LoadParameterTables()
+        public static async Task LoadParameterTables()
         {
             AsyncOperationHandle<IList<ParameterTable>> handle = Addressables.LoadAssetsAsync<ParameterTable>(AddressablesLabels.ParameterTable, null);
             await handle.Task;
@@ -72,7 +73,7 @@ namespace SimpleRpg
         /// <summary>
         /// キャラクターの定義データをロードします。
         /// </summary>
-        public static async void LoadCharacterData()
+        public static async Task LoadCharacterData()
         {
             AsyncOperationHandle<IList<CharacterData>> handle = Addressables.LoadAssetsAsync<CharacterData>(AddressablesLabels.Character, null);
             await handle.Task;
