@@ -21,7 +21,7 @@ namespace SimpleRpg
         /// <summary>
         /// 効果量
         /// </summary>
-        public int value;
+        public float value;
 
         /// <summary>
         /// 効果の対象
