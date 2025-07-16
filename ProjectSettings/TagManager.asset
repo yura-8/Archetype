@@ -3,12 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Gate
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - EncounterArea
   - Water
   - UI
   - 
@@ -58,6 +59,9 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 3516680985
+    locked: 0
+  - name: Fronttile
+    uniqueID: 459089785
     locked: 0
   m_RenderingLayers:
   - Default
