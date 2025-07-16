@@ -58,3 +58,4 @@ Assets/AssetStoreTools/
 
 # Optional: Uncomment to ignore Burst cache
 # Library/BurstCache/
+UserSettings/Layouts/*.dwlt
