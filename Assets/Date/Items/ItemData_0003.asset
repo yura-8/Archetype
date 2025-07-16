@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ItemData_0003
   m_EditorClassIdentifier: 
   itemId: 3
-  itemName: "\u77ED\u5263"
-  itemDesc: "\u653B\u6483\u529B\u4F4E\u3081\u306E\u6B66\u5668"
-  itemCategory: 2
-  hp: 0
-  bt: 0
-  numberOfUse: 0
-  atk: 3
-  def: 0
-  dex: 0
-  price: 20
+  itemName: pls_supply
+  itemDesc: "\u5473\u65B9\u5168\u4F53\u306EBT\u3092200\u56DE\u5FA9\u3059\u308B\u3002"
+  itemCategory: 1
+  itemEffects:
+  - itemEffectCategory: 1
+    effectTarget: 2
+    value: 200
+    skillParameter: 2
+    duration: 0
+  price: 10

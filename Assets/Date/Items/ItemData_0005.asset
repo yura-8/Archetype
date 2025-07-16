@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ItemData_0005
   m_EditorClassIdentifier: 
   itemId: 5
-  itemName: "\u80F8\u5F53\u3066"
-  itemDesc: "\u9632\u5FA1\u529B\u304C\u5C11\u3057\u4E0A\u304C\u308B"
-  itemCategory: 3
-  hp: 0
-  bt: 0
-  numberOfUse: 0
-  atk: 0
-  def: 3
-  dex: 0
+  itemName: raise_rightning
+  itemDesc: "\u5473\u65B9\u5358\u4F53\u306EBT\u3092800\u56DE\u5FA9\u3002"
+  itemCategory: 1
+  itemEffects:
+  - itemEffectCategory: 1
+    effectTarget: 1
+    value: 800
+    skillParameter: 2
+    duration: 0
   price: 10

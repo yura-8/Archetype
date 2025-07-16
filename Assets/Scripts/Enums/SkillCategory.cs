@@ -1,14 +1,15 @@
-namespace SimpleRpg
+ï»¿namespace SimpleRpg
 {
     /// <summary>
-    /// –‚–@‚Ìí•Ê‚ğ’è‹`‚·‚é—ñ‹“Œ^‚Å‚·B
+    /// é­”æ³•ã®ç¨®åˆ¥ã‚’å®šç¾©ã™ã‚‹åˆ—æŒ™å‹ã§ã™ã€‚
     /// </summary>
     public enum SkillCategory
     {
-        None, //ƒJƒeƒSƒŠ‚È‚µ
-        Recovery, //‰ñ•œŒn
-        Damage, //ƒ_ƒ[ƒW
-        Support, //•â•
-        Skill, //•KE‹Z
+        None, //ã‚«ãƒ†ã‚´ãƒªãªã—
+        Recovery, //å›å¾©ç³»
+        Damage, //ãƒ€ãƒ¡ãƒ¼ã‚¸
+        Support, //è£œåŠ©
+        Movement,ã€€//ç§»å‹•
+        Temperature, //æ¸©åº¦
     }
 }

@@ -1,31 +1,36 @@
-using System;
+ï»¿using System;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// –‚–@‚ÌŒø‰Ê‚ÉŠÖ‚·‚éİ’è‚ğ•Û‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// ã‚¹ã‚­ãƒ«ã®åŠ¹æœã«é–¢ã™ã‚‹è¨­å®šã‚’ä¿æŒã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [Serializable]
     public class SkillEffect
     {
         /// <summary>
-        /// –‚–@‚ÌƒJƒeƒSƒŠ‚Å‚·B
+        /// ã‚¹ã‚­ãƒ«ã®ã‚«ãƒ†ã‚´ãƒª
         /// </summary>
         public SkillCategory skillCategory;
 
         /// <summary>
-        /// –‚–@‚ÌŒø‰Ê”ÍˆÍ‚Å‚·B
+        /// ã‚¹ã‚­ãƒ«ã®åŠ¹æœç¯„å›²
         /// </summary>
-        public SkillTarget magicTarget;
+        public EffectTarget effectTarget;
 
         /// <summary>
-        /// Œø‰Ê—Ê‚Å‚·B
+        /// åŠ¹æœé‡
         /// </summary>
         public int value;
 
         /// <summary>
-        /// ƒXƒeƒCƒ^ƒXw’è
+        /// åŠ¹æœã®å¯¾è±¡
         /// </summary>
-        public ParameterRecord parameter;
+        public SkillParameter skillParameter;
+
+        /// <summary>
+        /// æŒç¶šã‚¿ãƒ¼ãƒ³
+        /// </summary>
+        public int duration;
     }
 }

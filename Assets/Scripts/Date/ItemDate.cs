@@ -1,65 +1,41 @@
-using UnityEngine;
+ï»¿using UnityEngine;
+using System.Collections.Generic; // â˜… Listã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ã«è¿½åŠ 
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// ƒAƒCƒeƒ€‚Ìî•ñ‚ğ’è‹`‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®æƒ…å ±ã‚’å®šç¾©ã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [CreateAssetMenu(fileName = "ItemData", menuName = "Scriptable Objects/SimpleRpg/ItemData")]
     public class ItemData : ScriptableObject
     {
         /// <summary>
-        /// ƒAƒCƒeƒ€‚ÌID‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®IDã§ã™ã€‚
         /// </summary>
         public int itemId;
 
         /// <summary>
-        /// ƒAƒCƒeƒ€‚Ì–¼‘O‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®åå‰ã§ã™ã€‚
         /// </summary>
         public string itemName;
 
         /// <summary>
-        /// ƒAƒCƒeƒ€‚Ìà–¾‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®èª¬æ˜ã§ã™ã€‚
         /// </summary>
         public string itemDesc;
 
         /// <summary>
-        /// ƒAƒCƒeƒ€‚ÌƒJƒeƒSƒŠ‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚«ãƒ†ã‚´ãƒªã§ã™ã€‚
         /// </summary>
         public ItemCategory itemCategory;
 
         /// <summary>
-        /// HP‰ñ•œ—ÊB
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®åŠ¹æœãƒªã‚¹ãƒˆã§ã™ã€‚
         /// </summary>
-        public int hp;
+        public List<ItemEffect> itemEffects;
 
         /// <summary>
-        /// ƒoƒbƒeƒŠ[‰ñ•œ—ÊB
-        /// </summary>
-        public int bt;
-
-        /// <summary>
-        /// g—p‰Â”\‰ñ”‚Å‚·B
-        /// </summary>
-        public int numberOfUse;
-
-        /// <summary>
-        /// UŒ‚—Í‚Ì•â³’l‚Å‚·B
-        /// </summary>
-        public int atk;
-
-        /// <summary>
-        /// –hŒä—Í‚Ì•â³’l‚Å‚·B
-        /// </summary>
-        public int def;
-
-        /// <summary>
-        /// ‘f‘‚³‚Ì•â³’l‚Å‚·B
-        /// </summary>
-        public int dex;
-
-        /// <summary>
-        /// ƒAƒCƒeƒ€‚Ì‰¿Ši‚Å‚·B
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã®ä¾¡æ ¼ã§ã™ã€‚
         /// </summary>
         public int price;
     }
