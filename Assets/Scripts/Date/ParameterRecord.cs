@@ -1,40 +1,40 @@
-using System;
+ï»¿using System;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// ƒŒƒxƒ‹‚É‘Î‰‚·‚éƒpƒ‰ƒ[ƒ^‚ğ•Û‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// ãƒ¬ãƒ™ãƒ«ã«å¯¾å¿œã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [Serializable]
     public class ParameterRecord
     {
         /// <summary>
-        /// ƒŒƒxƒ‹‚Ì’l‚Å‚·B
+        /// ãƒ¬ãƒ™ãƒ«ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int level;
 
         /// <summary>
-        /// HP‚Ì’l‚Å‚·B
+        /// HPã®å€¤ã§ã™ã€‚
         /// </summary>
         public int hp;
 
         /// <summary>
-        /// ƒoƒbƒeƒŠ[‚Ì’l‚Å‚·B
+        /// ãƒãƒƒãƒ†ãƒªãƒ¼ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int bt;
 
         /// <summary>
-        /// UŒ‚—Í‚Ì’l‚Å‚·B
+        /// æ”»æ’ƒåŠ›ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int atk;
 
         /// <summary>
-        /// –hŒä‚Ì’l‚Å‚·B
+        /// é˜²å¾¡ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int def;
 
         /// <summary>
-        /// ‘¬“x‚Ì’l‚Å‚·B
+        /// é€Ÿåº¦ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int dex;
     }

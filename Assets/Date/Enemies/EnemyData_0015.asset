@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fcfa610280d2ac43b369df0bb43567e, type: 3}
+  m_Name: EnemyData_0015
+  m_EditorClassIdentifier: 
+  enemyId: 15
+  enemyName: "\u30AA\u30FC\u30C8\u30F4\u30A7\u30F3\u30C8"
+  sprite: {fileID: -4943834004522873809, guid: d3383d6252a3f5a47988b70128cc794c, type: 3}
+  hp: 1500
+  bt: 2000
+  atk: 260
+  def: 40
+  dex: 15
+  exp: 17
+  gold: 1800
+  attribute: 2
+  enemyActionRecords: []

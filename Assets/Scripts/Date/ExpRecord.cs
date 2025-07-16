@@ -1,20 +1,20 @@
-using System;
+ï»¿using System;
 
 namespace SimpleRpg
 {
     /// <summary>
-    /// ƒŒƒxƒ‹‚É‘Î‰‚·‚éŒoŒ±’l‚ğ•Û‚·‚éƒNƒ‰ƒX‚Å‚·B
+    /// ãƒ¬ãƒ™ãƒ«ã«å¯¾å¿œã™ã‚‹çµŒé¨“å€¤ã‚’ä¿æŒã™ã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
     /// </summary>
     [Serializable]
     public class ExpRecord
     {
         /// <summary>
-        /// ƒŒƒxƒ‹‚Ì’l‚Å‚·B
+        /// ãƒ¬ãƒ™ãƒ«ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int level;
 
         /// <summary>
-        /// ƒŒƒxƒ‹‚É‘Î‰‚·‚éŒoŒ±’l‚Ì’l‚Å‚·B
+        /// ãƒ¬ãƒ™ãƒ«ã«å¯¾å¿œã™ã‚‹çµŒé¨“å€¤ã®å€¤ã§ã™ã€‚
         /// </summary>
         public int exp;
     }
