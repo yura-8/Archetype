@@ -29,6 +29,10 @@ namespace SimpleRpg
         /// </summary>
         public ElementAttribute attribute;
 
+        [Header("戦闘時のスプライト")]
+        public Sprite idleSprite; // 待機中の画像
+        public Sprite actionSprite; // 行動中の画像
+
         /// <summary>
         /// レベルと覚えるスキルの対応レコードのリストです。
         /// </summary>

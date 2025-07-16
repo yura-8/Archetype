@@ -16,6 +16,8 @@ MonoBehaviour:
   characterName: KUROGANE LEN
   firstName: LEN
   attribute: 1
+  idleSprite: {fileID: 5339537912085697906, guid: b79eef984517ee54c8c554e8c400b740, type: 3}
+  actionSprite: {fileID: -8056399561033118342, guid: a94d5d7e42cb671418cd47945c7ed205, type: 3}
   characterSkillRecords:
   - level: 1
     skillId: 1

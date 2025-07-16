@@ -194,7 +194,7 @@ namespace SimpleRpg
         /// </summary>
         public void StartBattle()
         {
-            // ★修正点：直接GameDataManagerからパーティIDを取得
+            // 直接GameDataManagerからパーティIDを取得
             var partyIds = GameDataManager.Instance.PartyCharacterIds;
             if (partyIds == null || partyIds.Count == 0)
             {
@@ -207,9 +207,6 @@ namespace SimpleRpg
             GameStateManager.ChangeToBattle();
             SetBattlePhase(BattlePhase.ShowEnemy);
 
-            // ★修正点：EnemyDataManagerの古い変数を参照していたため削除
-            // EnemyDataManager.enemies = this.EnemyId;
-
             TurnCount = 1;
             IsBattleFinished = false;
             _battleWindowManager.SetUpWindowControllers(this);
@@ -220,6 +217,8 @@ namespace SimpleRpg
             _enemyCommandSelector.SetReferences(this, _battleActionProcessor);
             _battleResultManager.SetReferences(this);
             _battleStarter.StartBattle(this);
+
+            _battleSpriteController.ShowParty(partyIds);
             _emergencyBatteryUsesLeft = MAX_EMERGENCY_BATTERY_USES;
             _currentTemperature = TemperatureState.NORMAL;
             var tempGauge = _battleWindowManager.GetTemperatureGaugeController();

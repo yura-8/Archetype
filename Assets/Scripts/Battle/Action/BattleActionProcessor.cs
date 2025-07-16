@@ -237,6 +237,16 @@ namespace SimpleRpg
                     }
                 }
 
+                int partyIndex = -1;
+                if (action.isActorFriend)
+                {
+                    partyIndex = GameDataManager.Instance.PartyCharacterIds.IndexOf(action.actorId);
+                    if (partyIndex != -1)
+                    {
+                        _battleManager.GetBattleSpriteController().SetCharacterSpriteToAction(partyIndex);
+                    }
+                }
+
                 // --- アクションの実行 ---
                 SimpleLogger.Instance.Log($"コマンドに応じた行動を行います。 コマンド : {action.battleCommand}");
                 switch (action.battleCommand)
@@ -263,6 +273,16 @@ namespace SimpleRpg
                 {
                     yield return null;
                 }
+
+                // 行動主が味方の場合、スプライトを「待機中」に戻す
+                if (action.isActorFriend && partyIndex != -1)
+                {
+                    _battleManager.GetBattleSpriteController().SetCharacterSpriteToIdle(partyIndex);
+                }
+
+                // アクション後に、味方と敵の全スプライトの状態を更新する
+                _battleManager.GetBattleSpriteController().UpdateAllPartySprites(CharacterStatusManager.GetPartyMemberStatuses());
+                _battleManager.GetBattleSpriteController().UpdateAllEnemySprites(_enemyStatusManager.GetEnemyStatusList());
 
                 // --- [共通処理] 各アクション終了後に、戦闘の勝利/敗北を必ずチェック ---
                 if (_enemyStatusManager.IsAllEnemyDefeated())

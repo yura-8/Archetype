@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SimpleRpg
 {
@@ -22,6 +23,12 @@ namespace SimpleRpg
         /// </summary>
         [SerializeField]
         private List<SpriteRenderer> _enemyRenderers = new List<SpriteRenderer>();
+
+        [Header("味方パーティ表示用のSpriteRenderer")]
+        [SerializeField]
+        private List<SpriteRenderer> _partyIdleRenderers = new List<SpriteRenderer>(); // 待機中スプライト用のリスト
+        [SerializeField]
+        private List<SpriteRenderer> _partyActionRenderers = new List<SpriteRenderer>(); // 行動中スプライト用のリストスプライト用のImageリスト
 
         /// <summary>
         /// 背景を表示します。
@@ -126,6 +133,82 @@ namespace SimpleRpg
                     {
                         _enemyRenderers[i].gameObject.SetActive(false);
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 味方パーティの画像（待機中）を初期表示します。
+        /// </summary>
+        public void ShowParty(List<int> partyCharacterIds)
+        {
+            foreach (var renderer in _partyIdleRenderers) { if (renderer != null) renderer.gameObject.SetActive(false); }
+            foreach (var renderer in _partyActionRenderers) { if (renderer != null) renderer.gameObject.SetActive(false); }
+
+            for (int i = 0; i < partyCharacterIds.Count; i++)
+            {
+                if (i >= _partyIdleRenderers.Count) break;
+
+                CharacterData charaData = CharacterDataManager.GetCharacterData(partyCharacterIds[i]);
+                if (charaData != null && _partyIdleRenderers[i] != null)
+                {
+                    _partyIdleRenderers[i].sprite = charaData.idleSprite;
+                    _partyIdleRenderers[i].gameObject.SetActive(true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 指定したキャラクターの画像を「行動中」スプライトに切り替えます。
+        /// </summary>
+        public void SetCharacterSpriteToAction(int partyIndex)
+        {
+            if (partyIndex < 0 || partyIndex >= _partyIdleRenderers.Count) return;
+
+            int charId = GameDataManager.Instance.PartyCharacterIds[partyIndex];
+            CharacterData charaData = CharacterDataManager.GetCharacterData(charId);
+
+            if (charaData != null && _partyIdleRenderers[partyIndex] != null && _partyActionRenderers[partyIndex] != null)
+            {
+                _partyActionRenderers[partyIndex].sprite = charaData.actionSprite;
+                _partyActionRenderers[partyIndex].gameObject.SetActive(true);
+                _partyIdleRenderers[partyIndex].gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// 指定したキャラクターの画像を「待機中」スプライトに戻します。
+        /// </summary>
+        public void SetCharacterSpriteToIdle(int partyIndex)
+        {
+            if (partyIndex < 0 || partyIndex >= _partyIdleRenderers.Count) return;
+
+            if (_partyIdleRenderers[partyIndex] != null && _partyActionRenderers[partyIndex] != null)
+            {
+                _partyIdleRenderers[partyIndex].gameObject.SetActive(true);
+                _partyActionRenderers[partyIndex].gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// 味方パーティ全員のスプライト表示を、現在のステータスに基づいて更新します。
+        /// </summary>
+        public void UpdateAllPartySprites(List<CharacterStatus> allPartyMembers)
+        {
+            for (int i = 0; i < _partyIdleRenderers.Count; i++)
+            {
+                if (i < allPartyMembers.Count)
+                {
+                    var status = allPartyMembers[i];
+                    bool isAlive = (status != null && !status.isDefeated);
+
+                    if (_partyIdleRenderers[i] != null) _partyIdleRenderers[i].gameObject.SetActive(isAlive);
+                    if (_partyActionRenderers[i] != null) _partyActionRenderers[i].gameObject.SetActive(false);
+                }
+                else
+                {
+                    if (_partyIdleRenderers[i] != null) _partyIdleRenderers[i].gameObject.SetActive(false);
+                    if (_partyActionRenderers[i] != null) _partyActionRenderers[i].gameObject.SetActive(false);
                 }
             }
         }

@@ -16,6 +16,8 @@ MonoBehaviour:
   characterName: SHIROHANE TUBAKI
   firstName: TUBAKI
   attribute: 2
+  idleSprite: {fileID: 7245717575251908838, guid: e833769795ee40e4eac95081e4266b47, type: 3}
+  actionSprite: {fileID: -245082972568163704, guid: d9da451e208248148ad20fe4a671adf3, type: 3}
   characterSkillRecords:
   - level: 1
     skillId: 1

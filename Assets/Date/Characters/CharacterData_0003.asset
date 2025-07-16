@@ -16,6 +16,8 @@ MonoBehaviour:
   characterName: AKASHIRO TOMA
   firstName: TOMA
   attribute: 3
+  idleSprite: {fileID: 3754295477024649158, guid: d8ae2a9bd80178343bf72365eaa9b1da, type: 3}
+  actionSprite: {fileID: -97070717747410966, guid: c423e5b1314b5a24bad0fec302cc2050, type: 3}
   characterSkillRecords:
   - level: 1
     skillId: 1

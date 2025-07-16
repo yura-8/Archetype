@@ -16,6 +16,8 @@ MonoBehaviour:
   characterName: MIZUSHIRO SERIKA
   firstName: SERIKA
   attribute: 1
+  idleSprite: {fileID: -1152149623662826358, guid: f90fd5d02635ac04797fce27471cf3df, type: 3}
+  actionSprite: {fileID: 7969401935563302065, guid: 3e42859593e797e42b7764f6fc90cb4d, type: 3}
   characterSkillRecords:
   - level: 1
     skillId: 1
