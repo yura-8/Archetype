@@ -84,22 +84,14 @@ namespace SimpleRpg
             if (Keyboard.current.upArrowKey.wasPressedThisFrame)
             {
                 _selectedIndex--;
-                // カーソルが一番上を通り越したら、一番下にループ
-                if (_selectedIndex < 0)
-                {
-                    _selectedIndex = _partyMembers.Count - 1;
-                }
-                _uiController.ShowSelectedCursor(_selectedIndex);
+                if (_selectedIndex < 0) _selectedIndex = _partyMembers.Count - 1;
+                UpdateCursorDisplay(); 
             }
             else if (Keyboard.current.downArrowKey.wasPressedThisFrame)
             {
                 _selectedIndex++;
-                // カーソルが一番下を通り越したら、一番上にループ
-                if (_selectedIndex >= _partyMembers.Count)
-                {
-                    _selectedIndex = 0;
-                }
-                _uiController.ShowSelectedCursor(_selectedIndex);
+                if (_selectedIndex >= _partyMembers.Count) _selectedIndex = 0;
+                UpdateCursorDisplay();
             }
             else if (InputGameKey.ConfirmButton())
             {
@@ -143,9 +135,18 @@ namespace SimpleRpg
 
             // UIの表示を更新
             _uiController.UpdatePartyList(_partyMembers);
-            _uiController.ShowSelectedCursor(_selectedIndex);
+            UpdateCursorDisplay();
             ShowWindow();
             _canSelect = false;
+        }
+
+        private void UpdateCursorDisplay()
+        {
+            if (_partyMembers.Count > _selectedIndex)
+            {
+                var selectedCharacter = _partyMembers[_selectedIndex];
+                _uiController.ShowSelectedCursor(_selectedIndex, selectedCharacter.attribute);
+            }
         }
 
         /// <summary>外部から選択可否を切り替える</summary>

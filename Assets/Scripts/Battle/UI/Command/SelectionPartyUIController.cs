@@ -68,7 +68,7 @@ namespace SimpleRpg
         /// <summary>
         /// 選択中のコマンドのカーソルを表示します。
         /// </summary>
-        public void ShowSelectedCursor(int selectedPosition)
+        public void ShowSelectedCursor(int selectedPosition, ElementAttribute attribute)
         {
             HideAllCursor();
 
@@ -76,6 +76,7 @@ namespace SimpleRpg
             if (selectedController != null)
             {
                 selectedController.ShowCursor();
+                selectedController.SetCursorColor(attribute);
             }
         }
 

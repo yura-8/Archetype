@@ -15,14 +15,182 @@ MonoBehaviour:
   characterId: 1
   parameterRecords:
   - level: 1
-    hp: 100
+    hp: 220
     bt: 1000
-    atk: 600
+    atk: 60
     def: 30
     dex: 10
   - level: 2
-    hp: 150
-    bt: 1200
-    atk: 1000
+    hp: 270
+    bt: 1000
+    atk: 80
     def: 30
     dex: 10
+  - level: 3
+    hp: 320
+    bt: 1000
+    atk: 100
+    def: 35
+    dex: 10
+  - level: 4
+    hp: 370
+    bt: 1000
+    atk: 120
+    def: 35
+    dex: 10
+  - level: 5
+    hp: 420
+    bt: 1000
+    atk: 140
+    def: 35
+    dex: 15
+  - level: 6
+    hp: 470
+    bt: 1000
+    atk: 160
+    def: 35
+    dex: 15
+  - level: 7
+    hp: 520
+    bt: 1500
+    atk: 180
+    def: 35
+    dex: 15
+  - level: 8
+    hp: 620
+    bt: 1500
+    atk: 200
+    def: 40
+    dex: 15
+  - level: 9
+    hp: 720
+    bt: 1500
+    atk: 220
+    def: 40
+    dex: 20
+  - level: 10
+    hp: 820
+    bt: 1500
+    atk: 240
+    def: 40
+    dex: 20
+  - level: 11
+    hp: 920
+    bt: 1500
+    atk: 260
+    def: 40
+    dex: 20
+  - level: 12
+    hp: 1020
+    bt: 1500
+    atk: 280
+    def: 40
+    dex: 20
+  - level: 13
+    hp: 1120
+    bt: 2000
+    atk: 300
+    def: 45
+    dex: 20
+  - level: 14
+    hp: 1220
+    bt: 2000
+    atk: 320
+    def: 45
+    dex: 20
+  - level: 15
+    hp: 1320
+    bt: 2000
+    atk: 340
+    def: 50
+    dex: 20
+  - level: 16
+    hp: 1420
+    bt: 2000
+    atk: 360
+    def: 50
+    dex: 20
+  - level: 17
+    hp: 1520
+    bt: 2000
+    atk: 380
+    def: 50
+    dex: 30
+  - level: 18
+    hp: 1670
+    bt: 2000
+    atk: 400
+    def: 55
+    dex: 30
+  - level: 19
+    hp: 1820
+    bt: 2500
+    atk: 420
+    def: 55
+    dex: 30
+  - level: 20
+    hp: 1970
+    bt: 2500
+    atk: 440
+    def: 55
+    dex: 30
+  - level: 21
+    hp: 2120
+    bt: 2500
+    atk: 460
+    def: 60
+    dex: 30
+  - level: 22
+    hp: 2120
+    bt: 2500
+    atk: 460
+    def: 60
+    dex: 30
+  - level: 23
+    hp: 2420
+    bt: 2500
+    atk: 500
+    def: 60
+    dex: 30
+  - level: 24
+    hp: 2570
+    bt: 2500
+    atk: 520
+    def: 65
+    dex: 30
+  - level: 25
+    hp: 2720
+    bt: 3000
+    atk: 540
+    def: 65
+    dex: 30
+  - level: 26
+    hp: 2870
+    bt: 3000
+    atk: 560
+    def: 65
+    dex: 30
+  - level: 27
+    hp: 3020
+    bt: 3000
+    atk: 580
+    def: 65
+    dex: 30
+  - level: 28
+    hp: 3170
+    bt: 3000
+    atk: 600
+    def: 65
+    dex: 30
+  - level: 29
+    hp: 3320
+    bt: 3000
+    atk: 620
+    def: 65
+    dex: 30
+  - level: 30
+    hp: 3470
+    bt: 3000
+    atk: 640
+    def: 70
+    dex: 30

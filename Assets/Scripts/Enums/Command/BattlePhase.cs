@@ -14,6 +14,7 @@
         SelectItem, //アイテム選択
         SelectSkill, //スキル選択
         InputCommand_confirm, //確認コマンド入力
+        ShowStatusDetail, //詳細ステータス表示
         Action, //行動
         Result, //戦闘結果
     }

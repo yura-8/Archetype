@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 namespace SimpleRpg
 {
@@ -17,11 +18,29 @@ namespace SimpleRpg
         [SerializeField]
         GameObject _targetObj;
 
+        [Header("カーソル色設定")]
+        private Image _cursorImageComponent;
+
+        [Header("属性別のカーソル色")]
+        [SerializeField] private Color _noneAttributeColor = Color.white;
+        [SerializeField] private Color _plasmaColor = new Color(0.5f, 1f, 1f, 0.5f);
+        [SerializeField] private Color _cryoColor = new Color(0.5f, 0.8f, 1f, 0.5f);
+        [SerializeField] private Color _pulseColor = new Color(1f, 0.5f, 1f, 0.5f);
+
         /// <summary>
         /// 敵キャラクターの名前を表示するテキストです。
         /// </summary>
         [SerializeField]
         TextMeshProUGUI _enemyNameText;
+
+        private void Awake()
+        {
+            // _cursorObjにアタッチされているImageコンポーネントを取得して、変数に保存しておく
+            if (_cursorObj != null)
+            {
+                _cursorImageComponent = _cursorObj.GetComponent<Image>();
+            }
+        }
 
         /// <summary>
         /// 敵キャラクターの名前をセットします。
@@ -49,6 +68,22 @@ namespace SimpleRpg
             if (_enemyNameText != null)
             {
                 _enemyNameText.color = color;
+            }
+        }
+
+        /// <summary>
+        /// 属性に応じてカーソルの色を設定します。
+        /// </summary>
+        public void SetCursorColor(ElementAttribute attribute)
+        {
+            if (_cursorImageComponent == null) return;
+
+            switch (attribute)
+            {
+                case ElementAttribute.Plasma: _cursorImageComponent.color = _plasmaColor; break;
+                case ElementAttribute.Cryo: _cursorImageComponent.color = _cryoColor; break;
+                case ElementAttribute.Pulse: _cursorImageComponent.color = _pulseColor; break;
+                default: _cursorImageComponent.color = _noneAttributeColor; break;
             }
         }
 

@@ -70,6 +70,9 @@ namespace SimpleRpg
         /// </summary>
         List<IBattleWindowController> _battleWindowControllers = new();
 
+        [SerializeField]
+        CharacterDetailStatusWindowController _characterDetailStatusWindowController;
+
         void Awake()
         {
             SetControllerList();
@@ -96,6 +99,7 @@ namespace SimpleRpg
             _battleWindowControllers.Add(_confirmationWindowController);
             _battleWindowControllers.Add(_messageWindowController);
             _battleWindowControllers.Add(_temperatureGaugeController);
+            _battleWindowControllers.Add(_characterDetailStatusWindowController);
         }
 
         /// <summary>
@@ -204,6 +208,11 @@ namespace SimpleRpg
         public TemperatureGaugeController GetTemperatureGaugeController()
         {
             return _temperatureGaugeController;
+        }
+
+        public CharacterDetailStatusWindowController GetCharacterDetailStatusWindowController()
+        {
+            return _characterDetailStatusWindowController;
         }
     }
 

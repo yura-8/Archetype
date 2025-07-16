@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Linq; // ★Linqを使用するため追加
+using System.Linq; 
 
 namespace SimpleRpg
 {
@@ -14,7 +14,7 @@ namespace SimpleRpg
         SelectionEnemyUIController _uiController;
         BattleManager _battleManager;
 
-        // ★★★ 変更点: EnemyDataからEnemyStatusのリストに変更
+        // EnemyDataからEnemyStatusのリストに変更
         private List<EnemyStatus> _displayEnemies; // UIに表示されている順の敵リスト
         private List<EnemyStatus> _selectableEnemies; // 操作対象となる「生きている」敵のリスト
 
@@ -64,7 +64,7 @@ namespace SimpleRpg
             {
                 if (_displayEnemies != null && _displayEnemies.Count > _currentUIIndex)
                 {
-                    // ★★★ 変更点: OnTargetSelectedにEnemyStatusを渡す
+                    // OnTargetSelectedにEnemyStatusを渡す
                     _battleManager.OnTargetSelected(_displayEnemies[_currentUIIndex]);
                 }
             }
@@ -74,7 +74,7 @@ namespace SimpleRpg
             }
         }
 
-        /// ★★★ 新規追加: カーソル移動と defeated スキップ処理
+        /// カーソル移動と defeated スキップ処理
         private void MoveCursor(int direction)
         {
             if (_selectableEnemies == null || _selectableEnemies.Count == 0) return;
@@ -92,7 +92,7 @@ namespace SimpleRpg
             // UI全体リストの中で、その敵が何番目かを探してカーソルを合わせる
             _currentUIIndex = _displayEnemies.IndexOf(nextEnemyToSelect);
 
-            _uiController.ShowSelectedCursor(_currentUIIndex);
+            UpdateCursorDisplay();
         }
 
         public void InitializeSelect()
@@ -103,7 +103,7 @@ namespace SimpleRpg
                 return;
             }
 
-            // ★★★ 変更点: 内部ロジックを全面的に修正
+            // 内部ロジックを全面的に修正
             // 戦闘中の全ての敵ステータスリストを取得
             _displayEnemies = _battleManager.GetEnemyStatusManager().GetEnemyStatusList();
 
@@ -124,9 +124,21 @@ namespace SimpleRpg
 
             // UIの表示を更新
             _uiController.UpdateEnemyList(_displayEnemies);
-            _uiController.ShowSelectedCursor(_currentUIIndex);
+            UpdateCursorDisplay();
             ShowWindow();
             _canSelect = false;
+        }
+
+        /// <summary>
+        /// 現在の選択に基づいてカーソルの表示と色を更新します。
+        /// </summary>
+        private void UpdateCursorDisplay()
+        {
+            if (_displayEnemies.Count > _currentUIIndex)
+            {
+                var selectedEnemy = _displayEnemies[_currentUIIndex];
+                _uiController.ShowSelectedCursor(_currentUIIndex, selectedEnemy.attribute);
+            }
         }
 
         public void SetCanSelectState(bool state)

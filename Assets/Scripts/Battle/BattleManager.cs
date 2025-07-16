@@ -389,6 +389,10 @@ namespace SimpleRpg
                     GetWindowManager().GetDescriptionWindowController().ShowWindow();
                     ShowSelectionWindow();
                     break;
+                case BattleCommand.Status:
+                    SetBattlePhase(BattlePhase.SelectParty);
+                    StartCoroutine(ShowPartySelectProcess());
+                    break;
                 case BattleCommand.Guard:
                 case BattleCommand.Escape:
                     SetBattlePhase(BattlePhase.InputCommand_confirm);
@@ -587,10 +591,19 @@ namespace SimpleRpg
             GetWindowManager().GetDescriptionWindowController().HideWindow();
             GetWindowManager().GetSelectionPartyWindowController().HideWindow();
 
-            // ターゲット情報を保存してアクションを登録
-            _selectedTargetId = target.characterId;
-            _isTargetFriend = true;
-            RegisterCurrentAction();
+            if (SelectedCommand == BattleCommand.Status)
+            {
+                SetBattlePhase(BattlePhase.ShowStatusDetail);
+                var detailWindow = GetWindowManager().GetCharacterDetailStatusWindowController();
+                detailWindow.DisplayCharacter(target.characterId);
+                detailWindow.ShowWindow();
+            }
+            else // アイテムや味方対象のスキルを使った場合
+            {
+                _selectedTargetId = target.characterId;
+                _isTargetFriend = true;
+                RegisterCurrentAction();
+            }
         }
 
         /// <summary>
@@ -648,8 +661,8 @@ namespace SimpleRpg
             {
                 // 敵選択中にキャンセル
                 case BattlePhase.SelectEnemy:
-                     windowManager.GetSelectionEnemyWindowController().HideWindow();
-                    windowManager.GetAttackCommandWindowController().ShowWindow();
+                    windowManager.GetSelectionEnemyWindowController().HideWindow();
+                    //windowManager.GetAttackCommandWindowController().ShowWindow();
 
                     Debug.Log("敵選択のキャンセル処理が実行されました！");
                     // どこから来たかに応じて戻り先を変更
@@ -678,22 +691,20 @@ namespace SimpleRpg
                 case BattlePhase.SelectParty:
                     // 味方選択カーソルを非表示にする処理
                     windowManager.GetSelectionPartyWindowController().HideWindow();
-                    windowManager.GetAttackCommandWindowController().ShowWindow();
+                    
                     Debug.Log("パーティー選択のキャンセル処理が実行されました！");
 
-                    if (SelectedAttackCommand == AttackCommand.Skill)
+                    if (SelectedCommand == BattleCommand.Status)
                     {
-                        // スキルのリスト選択に戻る
-                        GetWindowManager().GetDescriptionWindowController().ShowWindow();
-                        SetBattlePhase(BattlePhase.SelectSkill);
-                        ShowSelectionWindow();
+                        // STATUSから来た場合は、メインコマンドに戻る
+                        windowManager.GetCommandWindowController().ShowWindow();
+                        SetBattlePhase(BattlePhase.InputCommand_Main);
                     }
-                    else if(SelectedCommand == BattleCommand.Item)
+                    else
                     {
-                        // アイテムのリスト選択に戻る
-                        GetWindowManager().GetDescriptionWindowController().ShowWindow();
-                        SetBattlePhase(BattlePhase.SelectItem);
+                        // それ以外（アイテムやスキル）の場合は、リスト選択に戻る
                         ShowSelectionWindow();
+                        SetBattlePhase(SelectedCommand == BattleCommand.Item ? BattlePhase.SelectItem : BattlePhase.SelectSkill);
                     }
                     break;
 
@@ -852,7 +863,7 @@ namespace SimpleRpg
         public void OnUpdateStatus()
         {
             var statusWindows = _battleWindowManager.GetStatusWindowController();
-            // ★修正点：GameDataManagerからパーティIDリストを取得
+            // GameDataManagerからパーティIDリストを取得
             var partyCharacterIds = GameDataManager.Instance.PartyCharacterIds;
             int partyCount = partyCharacterIds.Count;
             if (statusWindows.Count < partyCount)
@@ -1356,6 +1367,19 @@ namespace SimpleRpg
                 UpdateEnemyStatusUI(); // 敵UI更新
             }
             // 注意：要件通り、HOTやNORMALに戻ってもペナルティは解除しません。
+        }
+
+        /// <summary>
+        /// 詳細ステータスウィンドウでキャンセルが押された時の処理です。
+        /// </summary>
+        public void OnStatusDetailCanceled()
+        {
+            var windowManager = GetWindowManager();
+            windowManager.GetCharacterDetailStatusWindowController().HideWindow();
+
+            // パーティ選択画面に戻る
+            SetBattlePhase(BattlePhase.SelectParty);
+            StartCoroutine(ShowPartySelectProcess());
         }
     }
 }

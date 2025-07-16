@@ -3,6 +3,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
+using System;
 
 namespace SimpleRpg
 {
@@ -68,7 +69,7 @@ namespace SimpleRpg
         /// <summary>
         /// 選択中のコマンドのカーソルを表示します。
         /// </summary>
-        public void ShowSelectedCursor(int selectedPosition)
+        public void ShowSelectedCursor(int selectedPosition, ElementAttribute attribute)
         {
             HideAllCursor();
 
@@ -76,9 +77,10 @@ namespace SimpleRpg
             if (selectedController != null)
             {
                 selectedController.ShowCursor();
+                selectedController.SetCursorColor(attribute); 
             }
         }
-       
+
 
         /// <summary>
         /// 敵キャラクターの名前をセットします。
