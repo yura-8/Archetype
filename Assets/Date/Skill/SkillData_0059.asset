@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c3d751b5d8dcf646881b777d79b530b, type: 3}
+  m_Name: SkillData_0059
+  m_EditorClassIdentifier: 
+  skillId: 59
+  skillName: Volts_recover
+  skillDesc: "\u5473\u65B9\u5358\u4F53\u306EBT\u309230\uFF05\u56DE\u5FA9"
+  cost: 120
+  maxCount: 5
+  currentCount: 5
+  skillEffect:
+  - skillCategory: 1
+    effectTarget: 1
+    value: 0.3
+    skillParameter: 2
+    duration: 0

@@ -20,4 +20,10 @@ MonoBehaviour:
   actionSprite: {fileID: -97070717747410966, guid: c423e5b1314b5a24bad0fec302cc2050, type: 3}
   characterSkillRecords:
   - level: 1
-    skillId: 1
+    skillId: 61
+  - level: 1
+    skillId: 62
+  - level: 5
+    skillId: 63
+  - level: 15
+    skillId: 64
