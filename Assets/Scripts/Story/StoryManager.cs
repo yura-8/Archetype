@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI;
 
 public class StoryManager : MonoBehaviour
 {
@@ -11,148 +12,273 @@ public class StoryManager : MonoBehaviour
     [SerializeField] private Sprite protagonistNormal, protagonistSerious, protagonistSurprised, protagonistSmile;
     [SerializeField] private Sprite femaleStudentNormal, femaleStudentSad, femaleStudentAngry, femaleStudentRelieved;
     [SerializeField] private Sprite whiteCoatManNormal, whiteCoatManSmug, whiteCoatManAngry;
-    private bool isPlayerControlEnabled = false;
-    private bool isGateTriggerDisabled = false;
+    [SerializeField] private Collider2D mainTrigger;
+    [SerializeField] private GameObject fadePanel; // ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼ã§è¨­å®š
+
     private string[] introLines = {
-        "“]Z‚µ‚Ä‚«‚½˜@‚ÍŠwZ‚ÉŒü‚©‚Á‚Ä‚¢‚½B",
-        "‚»‚±‚Íu‹@¯‚“™ŠwZv‚Å‚ ‚éB",
-        "˜@‚Í“Á’i‚±‚ÌŠwZ‚És‚«‚½‚¢‚í‚¯‚Å‚à‚È‚©‚Á‚½‚ªAƒTƒCƒ{[ƒO‚Å‚ ‚é©g‚É‚à’Ê‚¢‚â‚·‚¢§“x‚ª®‚Á‚Ä‚¢‚ÄA‰½‚æ‚è‹ß‚¢‚Æ‚¢‚¤——R‚Å‚±‚±‚É‚¢‚­‚±‚Æ‚ğŒˆ‚ß‚½B",
-        "‚¢‚¢“V‹C‚¾‚Æ“Û‹C‚È–‚ğl‚¦‚È‚ª‚ç•à‚¢‚Ä‚¢‚é‚Æ‰½‚â‚ç‘›‚ª‚µ‚¢º‚ª•·‚±‚¦‚Ä‚­‚éB",
-        "u‚È‚ñ‚¾‚©Z–å‚Ì•û‚ª‘›‚ª‚µ‚¢‚ÈBs‚Á‚Ä‚İ‚æ‚¤Bv"
+        "è»¢æ ¡ã—ã¦ããŸè“®ã¯å­¦æ ¡ã«å‘ã‹ã£ã¦ã„ãŸã€‚",
+        "ãã“ã¯ã€Œæ©Ÿæ˜Ÿé«˜ç­‰å­¦æ ¡ã€ã§ã‚ã‚‹ã€‚",
+        "è“®ã¯ç‰¹æ®µã“ã®å­¦æ ¡ã«è¡ŒããŸã„ã‚ã‘ã§ã‚‚ãªã‹ã£ãŸãŒã€ã‚µã‚¤ãƒœãƒ¼ã‚°ã§ã‚ã‚‹è‡ªèº«ã«ã‚‚é€šã„ã‚„ã™ã„åˆ¶åº¦ãŒæ•´ã£ã¦ã„ã¦ã€ä½•ã‚ˆã‚Šè¿‘ã„ã¨ã„ã†ç†ç”±ã§ã“ã“ã«ã„ãã“ã¨ã‚’æ±ºã‚ãŸã€‚",
+        "ã„ã„å¤©æ°—ã ã¨å‘‘æ°—ãªäº‹ã‚’è€ƒãˆãªãŒã‚‰æ­©ã„ã¦ã„ã‚‹ã¨ä½•ã‚„ã‚‰é¨’ãŒã—ã„å£°ãŒèã“ãˆã¦ãã‚‹ã€‚",
+        "ã€Œãªã‚“ã ã‹æ ¡é–€ã®æ–¹ãŒé¨’ãŒã—ã„ãªã€‚è¡Œã£ã¦ã¿ã‚ˆã†ã€‚ã€"
     };
+
     private string[] gateLines = {
-        "º‚Ì‚·‚é•ûŒü‚Ös‚Á‚Ä‚İ‚é‚Æ—‚½‚æ‚¤‚È§•‚ğ’…‚½—q¶“k‚Æ”’ˆß‚ğ’…‚½Œ©’m‚ç‚Ê’j‚ªŒ¾‚¢‘ˆ‚Á‚Ä‚¢‚éB",
-        "uƒƒ{ƒbƒg‚Í“¹‹ï‚Å‚Í‚ ‚è‚Ü‚¹‚ñI¡‚·‚®‚»‚Ìƒƒ{ƒbƒg‚ğ•Ô‚µ‚Ä‚­‚¾‚³‚¢Iv",
-        "—q¶“k‚Í’j‚ğáÉ‚İ•t‚¯‚éB",
-        "u‚à‚¤Šù‚É‰ó‚ê‚©‚¯‚Ä‚¢‚é—ÊYŒ^ƒƒ{ƒbƒg‚¶‚á‚È‚¢‚©B‚±‚Ì‰´‚ª—LŒøŠˆ—p‚µ‚Ä‚â‚é‚ÆŒ¾‚Á‚Ä‚¢‚é‚Ì‚¾‚©‚çA”J‚ëŠ´Ó‚ÌŒ¾—t‚ğq‚×‚é‚×‚«‚¾‚ë‚¤Hv",
-        "u—ÊYŒ^‚Æ‚©ŠÖŒW‚ ‚è‚Ü‚¹‚ñI’¼‚¹‚éƒƒ{ƒbƒg‚ğ‚í‚´‚í‚´‰ó‚·•K—v‚È‚ñ‚Ä–³‚¢‚¶‚á‚È‚¢‚Å‚·‚©Iv",
-        "u‚±‚ê‚Ù‚Ç‚ÌƒoƒbƒeƒŠ[‚È‚ç‚Îƒ„ƒc‚Ì“®—Í‚Ég‚¦‚»‚¤‚¾B‚»‚±‚Ü‚Å‰]‚¤‚Ì‚È‚ç‚ÎŠO‘•‚ÍŒN‚É‚ ‚°‚Ä‚à—Ç‚¢Bv",
-        "‚»‚¤Œ¾‚¤‚Æ’j‚Íƒ|ƒPƒbƒg‚©‚çƒhƒ‰ƒCƒo[‚ğæ‚èo‚µ‚½B",
-        "u‚â‚ß‚ÄIv",
-        "u‚»‚Ìƒƒ{ƒbƒg‚ğ‰ó‚»‚¤‚Á‚Ä‚¢‚¤‚È‚çA‰´‚ª‘Šè‚É‚È‚Á‚Ä‚â‚éIv",
-        "u‚È‚ñ‚¾‚¨‘O‚ÍH‚»‚ê‚ğ‚±‚Á‚¿‚É“n‚¹Bv",
-        "u’f‚éBv",
-        "u–Ê“|‚¾‚Ècv",
-        "’j‚ÍƒXƒ}ƒz‚ğæ‚èo‚µ‚½B",
-        "‰½‚â‚ç“ü—Í‚·‚é‚Æ‰½ˆ‚©‚ç‚Æ‚à‚È‚­•¡”‚Ìƒƒ{ƒbƒg‚ª­—‚Æ˜@‚ğæ‚èˆÍ‚ŞB",
-        "u‚â‚é‚µ‚©‚È‚¢Iv",
-        "˜@‚ÍƒJƒoƒ“‚©‚ç¬‚³‚È” ‚ğæ‚èo‚µ‚½."
+        "å£°ã®ã™ã‚‹æ–¹å‘ã¸è¡Œã£ã¦ã¿ã‚‹ã¨ä¼¼ãŸã‚ˆã†ãªåˆ¶æœã‚’ç€ãŸå¥³å­ç”Ÿå¾’ã¨ç™½è¡£ã‚’ç€ãŸè¦‹çŸ¥ã‚‰ã¬ç”·ãŒè¨€ã„äº‰ã£ã¦ã„ã‚‹ã€‚",
+        "ã€Œãƒ­ãƒœãƒƒãƒˆã¯é“å…·ã§ã¯ã‚ã‚Šã¾ã›ã‚“ï¼ä»Šã™ããã®ãƒ­ãƒœãƒƒãƒˆã‚’è¿”ã—ã¦ãã ã•ã„ï¼ã€",
+        "å¥³å­ç”Ÿå¾’ã¯ç”·ã‚’ã«ã‚‰ã¿ä»˜ã‘ã‚‹ã€‚",
+        "ã€Œã‚‚ã†æ—¢ã«å£Šã‚Œã‹ã‘ã¦ã„ã‚‹é‡ç”£å‹ãƒ­ãƒœãƒƒãƒˆã˜ã‚ƒãªã„ã‹ã€‚ã“ã®ä¿ºãŒæœ‰åŠ¹æ´»ç”¨ã—ã¦ã‚„ã‚‹ã¨è¨€ã£ã¦ã„ã‚‹ã®ã ã‹ã‚‰ã€å¯§ã‚æ„Ÿè¬ã®è¨€è‘‰ã‚’è¿°ã¹ã‚‹ã¹ãã ã‚ã†ï¼Ÿã€",
+        "ã€Œé‡ç”£å‹ã¨ã‹é–¢ä¿‚ã‚ã‚Šã¾ã›ã‚“ï¼ç›´ã›ã‚‹ãƒ­ãƒœãƒƒãƒˆã‚’ã‚ã–ã‚ã–å£Šã™å¿…è¦ãªã‚“ã¦ç„¡ã„ã˜ã‚ƒãªã„ã§ã™ã‹ï¼ã€",
+        "ã€Œã“ã‚Œã»ã©ã®ãƒãƒƒãƒ†ãƒªãƒ¼ãªã‚‰ã°ãƒ¤ãƒ„ã®å‹•åŠ›ã«ä½¿ãˆãã†ã ã€‚ãã“ã¾ã§äº‘ã†ã®ãªã‚‰ã°å¤–è£…ã¯å›ã«ã‚ã’ã¦ã‚‚è‰¯ã„ã€‚ã€",
+        "ãã†è¨€ã†ã¨ç”·ã¯ãƒã‚±ãƒƒãƒˆã‹ã‚‰ãƒ‰ãƒ©ã‚¤ãƒãƒ¼ã‚’å–ã‚Šå‡ºã—ãŸã€‚",
+        "ã€Œã‚„ã‚ã¦ï¼ã€",
+        "ã€Œãã®ãƒ­ãƒœãƒƒãƒˆã‚’å£Šãã†ã£ã¦ã„ã†ãªã‚‰ã€ä¿ºãŒç›¸æ‰‹ã«ãªã£ã¦ã‚„ã‚‹ï¼ã€",
+        "ã€Œãªã‚“ã ãŠå‰ã¯ï¼Ÿãã‚Œã‚’ã“ã£ã¡ã«æ¸¡ã›ã€‚ã€",
+        "ã€Œæ–­ã‚‹ã€‚ã€",
+        "ã€Œé¢å€’ã ãªâ€¦ã€",
+        "ç”·ã¯ã‚¹ãƒãƒ›ã‚’å–ã‚Šå‡ºã—ãŸã€‚",
+        "ä½•ã‚„ã‚‰å…¥åŠ›ã™ã‚‹ã¨ä½•å‡¦ã‹ã‚‰ã¨ã‚‚ãªãè¤‡æ•°ã®ãƒ­ãƒœãƒƒãƒˆãŒå°‘å¥³ã¨è“®ã‚’å–ã‚Šå›²ã‚€ã€‚",
+        "ã€Œã‚„ã‚‹ã—ã‹ãªã„ï¼ã€",
+        "è“®ã¯ã‚«ãƒãƒ³ã‹ã‚‰å°ã•ãªç®±ã‚’å–ã‚Šå‡ºã—ãŸ.",
+        "ã€Œãã‚‰ãˆï¼ã€",
+        "è“®ã¯ãƒ­ãƒœãƒƒãƒˆã‚’ã‚ã£ã¨ã„ã†é–“ã«å€’ã—ã¦ã—ã¾ã£ãŸã€‚",
+        "ã€Œã‚ã®æ•°ã®ãƒ­ãƒœãƒƒãƒˆã‚’å€’ã™ãªã‚“ã¦â€¦ã€",
+        "ã€Œã‚¯ãƒƒãƒãƒãƒãƒãƒãƒãƒãƒãƒãƒï¼ã€",
+        "ã€Œãã®åŠ›â€¦ãã®æ­¦å™¨ã¯â€¦â€¦ã„ã‚„ã€è¾ã‚ã¦ãŠã“ã†ã€‚ä»Šå›ã¯ãŠå‰ã®å‹ã¡ã ã€‚ã€",
+        "ãã†è¨€ã†ã¨ç”·ã¯ã‚ã£ã¨ã„ã†é–“ã«ã©ã“ã‹ã«æ¶ˆãˆãŸã€‚",
+        "ç”·ãŒè¦‹ãˆãªããªã‚‹ã¨è“®ã¯å¥³å­ç”Ÿå¾’ã®æ–¹ã‚’å‘ã„ã¦ãƒ­ãƒœãƒƒãƒˆã‚’æ‰‹æ¸¡ã—ãŸã€‚",
+        "ã€Œã‚³ãƒ¬ã€å–ã‚Šè¿”ã—ãŸã‚ˆã€‚ã€",
+        "ã€Œã‚ã‚ŠãŒã¨ã†ã”ã–ã„ã¾ã™â€¦ï¼ã€",
+        "å¥³å­ç”Ÿå¾’ã¯å·¥å…·ç®±ã‚’å–ã‚Šå‡ºã—ã€ã‚ã£ã¨ã„ã†é–“ã«ãƒ­ãƒœãƒƒãƒˆã‚’ç›´ã—ã¦ã—ã¾ã£ãŸã€‚",
+        "ã€Œè‡ªå·±ç´¹ä»‹ãŒã¾ã ã§ã—ãŸã­ã€‚ç§ã¯2å¹´Bçµ„ã®ç™½ç¾½æ¤¿ã§ã™ã€‚ã€",
+        "ã€Œè²´æ–¹ã€ç§ãŸã¡ã®éƒ¨æ´»ã«å…¥ã‚Šã¾ã›ã‚“ã‹ï¼Ÿã€",
+        "ã€Œéƒ¨æ´»ï¼Ÿã€"
     };
+
     private string[] mainLines = {
-        "[ˆÃ“][",
-        "Å‰‚Ìö‹Æ‚ªI‚í‚èAŒ¾‚í‚ê‚½’Ê‚è‚Ì‹³º‚És‚­‚ÆA‚»‚±‚É’Ö‚Í‚¢‚½B",
-        "u‚æ‚¤‚±‚»I‚±‚ê‚ª„‚ÌŠ‘®‚·‚é•”ŠˆAG.E.A.R.‚Å‚·Iv",
-        "‚»‚µ‚Ä•”ˆõ‚Ì2l‚ğĞ‰î‚³‚ê‚½B",
-        "Œ³‹C‚È“¯‹‰¶A‹­‹C‚ÈŒã”y‚¾B",
-        "u‚±‚Ì•”Šˆ‚Í–\‘–‚µ‚½ƒƒ{ƒbƒg‚ğ~‚ß‚é–‚ªå‚È‹Æ–±‚Å‚·Bv",
-        "u‘‘¬‚Å‚·‚ª‚±‚Ì•Ó‚è‚Ì–\‘–‚µ‚½ƒƒ{ƒbƒg‚ğ§ˆ³‚µ‚És‚«‚Ü‚µ‚å‚¤Iv"
+        "æœ€åˆã®æˆæ¥­ãŒçµ‚ã‚ã‚Šã€è¨€ã‚ã‚ŒãŸé€šã‚Šã®æ•™å®¤ã«è¡Œãã¨ã€ãã“ã«æ¤¿ã¯ã„ãŸã€‚",
+        "ã€Œã‚ˆã†ã“ãï¼ã“ã‚ŒãŒç§ã®æ‰€å±ã™ã‚‹éƒ¨æ´»ã€G.E.A.R.ã§ã™ï¼ã€",
+        "ãã—ã¦éƒ¨å“¡ã®2äººã‚’ç´¹ä»‹ã•ã‚ŒãŸã€‚",
+        "å…ƒæ°—ãªåŒç´šç”Ÿã€å¼·æ°—ãªå¾Œè¼©ã ã€‚",
+        "ã€Œã“ã®éƒ¨æ´»ã¯æš´èµ°ã—ãŸãƒ­ãƒœãƒƒãƒˆã‚’æ­¢ã‚ã‚‹äº‹ãŒä¸»ãªæ¥­å‹™ã§ã™ã€‚ã€",
+        "ã€Œæ—©é€Ÿã§ã™ãŒã“ã®è¾ºã‚Šã®æš´èµ°ã—ãŸãƒ­ãƒœãƒƒãƒˆã‚’åˆ¶åœ§ã—ã«è¡Œãã¾ã—ã‚‡ã†ï¼ã€"
     };
+
+    // ã‚·ãƒ¼ãƒ³é·ç§»æ™‚ã®çŠ¶æ…‹ã‚’ä¿æŒ
+    private static bool isFromGateStory = false;
+    private static bool hasPlayedMainStory = false; // ãƒ¡ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒªãƒ¼åˆå›å®Ÿè¡Œãƒ•ãƒ©ã‚°
 
     void Start()
     {
         characterImage.SetActive(false);
         dialogBox.SetActive(false);
-        isGateTriggerDisabled = false;
-        StartCoroutine(PlayIntroStory());
+        UpdateCharacterImage(null); // åˆæœŸçŠ¶æ…‹ã‚’é€æ˜ã«
+        string currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene == "MainScene" && !isFromGateStory && !hasPlayedMainStory)
+        {
+            StartCoroutine(PlayMainStory());
+            hasPlayedMainStory = true; // åˆå›å®Ÿè¡Œã‚’è¨˜éŒ²
+        }
+        else if (currentScene != "MainScene")
+        {
+            StartCoroutine(PlayIntroStory());
+        }
+        // isFromGateStoryã‚’ãƒªã‚»ãƒƒãƒˆ
+        //if (currentScene == "MainScene")
+        //{
+            //isFromGateStory = false;
+        //}
+        // FadePanelã‚’ã‚·ãƒ¼ãƒ³é–“ã§ä¿æŒ
+        if (fadePanel != null && !fadePanel.activeSelf)
+        {
+        DontDestroyOnLoad(fadePanel);
+        fadePanel.SetActive(false); // åˆæœŸéã‚¢ã‚¯ãƒ†ã‚£ãƒ–
+        }
     }
 
     System.Collections.IEnumerator PlayIntroStory()
     {
-        isPlayerControlEnabled = false;
-        Debug.Log("PlayIntroStory Started, Control: " + isPlayerControlEnabled);
         for (int i = 0; i < introLines.Length; i++)
         {
             dialogBox.SetActive(true);
             dialogText.text = introLines[i];
-            yield return new WaitForSeconds(2f);
+            UpdateCharacterImage(null);
+            yield return new WaitForSeconds(3f);
         }
         dialogBox.SetActive(false);
-        isPlayerControlEnabled = true;
-        Debug.Log("PlayIntroStory Ended, Control: " + isPlayerControlEnabled);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Trigger Entered: " + other.name + ", Tag: " + other.tag + ", Enabled: " + isPlayerControlEnabled + ", Disabled: " + isGateTriggerDisabled);
-        if (other.CompareTag("Player") && isPlayerControlEnabled && !isGateTriggerDisabled)
+        Debug.Log("Trigger Entered: " + gameObject.name + ", Contact with: " + other.name + ", Tag: " + other.tag + ", Player Tag Check: " + other.CompareTag("Player"));
+        if (other.CompareTag("Gate"))
         {
+            Debug.Log("Starting PlayGateStory");
             StartCoroutine(PlayGateStory());
+        }
+        else if (other.CompareTag("MainTrigger") && !hasPlayedMainStory && SceneManager.GetActiveScene().name == "MainScene")
+        {
+            Debug.Log("Starting PlayMainStory from MainTrigger");
+            StartCoroutine(PlayMainStory());
+            hasPlayedMainStory = true; // åˆå›å®Ÿè¡Œã‚’è¨˜éŒ²
         }
     }
 
     System.Collections.IEnumerator PlayGateStory()
     {
-        isPlayerControlEnabled = false;
-        Debug.Log("PlayGateStory Started, Control: " + isPlayerControlEnabled);
         characterImage.SetActive(true);
         for (int i = 0; i < gateLines.Length; i++)
         {
             dialogBox.SetActive(true);
             dialogText.text = gateLines[i];
-            if (i == 1 || i == 4 || i == 7) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = femaleStudentAngry;
-            else if (i == 3 || i == 5) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = whiteCoatManSmug;
-            else if (i == 9 || i == 10) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = whiteCoatManAngry;
-            else if (i == 8) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = protagonistSerious;
-            else if (i == 14) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = protagonistSurprised;
-            else characterImage.GetComponent<UnityEngine.UI.Image>().sprite = null;
-            yield return new WaitForSeconds(2f);
-            if (i == 15)
-            {
-                yield return new WaitForSeconds(1f);
-                SceneManager.LoadScene("BattleScene");
-            }
+            if (i == 1 || i == 4 || i == 7) UpdateCharacterImage(femaleStudentAngry);
+            else if (i == 3 || i == 5) UpdateCharacterImage(whiteCoatManSmug);
+            else if (i == 9 || i == 11) UpdateCharacterImage(whiteCoatManAngry);
+            else if (i == 8 || i == 10 || i == 14 || i == 16) UpdateCharacterImage(protagonistSerious);
+            else if (i == 13) UpdateCharacterImage(protagonistSurprised);
+            else UpdateCharacterImage(null);
+            yield return new WaitForSeconds(3f);
         }
         dialogBox.SetActive(false);
         characterImage.SetActive(false);
-        isPlayerControlEnabled = true;
-        Debug.Log("PlayGateStory Ended, Control: " + isPlayerControlEnabled);
-        isGateTriggerDisabled = true;
+        yield return StartCoroutine(ShowBlackScreen());
+        isFromGateStory = true; // ã‚²ãƒ¼ãƒˆã‚¹ãƒˆãƒ¼ãƒªãƒ¼ã‹ã‚‰é·ç§»ã—ãŸã“ã¨ã‚’è¨˜éŒ²
+        StartCoroutine(FadeToMainStory());
     }
 
-    public void OnBattleEnd()
+    // é»’ã„ç”»é¢ã‚’3.5ç§’è¡¨ç¤ºã™ã‚‹ã‚³ãƒ«ãƒ¼ãƒãƒ³
+    private System.Collections.IEnumerator ShowBlackScreen()
+{
+    Debug.Log("ShowBlackScreen - FadePanel assigned: " + (fadePanel != null));
+    if (fadePanel != null)
+    {
+        fadePanel.SetActive(true); // å¼·åˆ¶çš„ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–
+        Image fadeImage = fadePanel.GetComponent<Image>();
+        Debug.Log("ShowBlackScreen - FadeImage found: " + (fadeImage != null));
+        if (fadeImage != null)
+        {
+            fadeImage.color = new Color(0, 0, 0, 0); // åˆæœŸé€æ˜
+            // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³
+            for (float alpha = 0f; alpha <= 1f; alpha += Time.deltaTime * 0.5f)
+            {
+                fadeImage.color = new Color(0, 0, 0, alpha);
+                yield return null;
+            }
+            fadeImage.color = new Color(0, 0, 0, 1f); // å®Œå…¨ãªé»’
+            yield return new WaitForSeconds(3.5f); // 3.5ç§’å¾…æ©Ÿ
+            // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
+            for (float alpha = 1f; alpha >= 0f; alpha -= Time.deltaTime * 0.5f)
+            {
+                fadeImage.color = new Color(0, 0, 0, alpha);
+                yield return null;
+            }
+            fadeImage.color = new Color(0, 0, 0, 0); // å®Œå…¨ãªé€æ˜
+            fadePanel.SetActive(false); // è¡¨ç¤ºçµ‚äº†å¾Œã«éã‚¢ã‚¯ãƒ†ã‚£ãƒ–
+        }
+        else
+        {
+            Debug.LogError("ShowBlackScreen - FadeImage component not found on FadePanel");
+        }
+    }
+    else
+    {
+        Debug.LogError("ShowBlackScreen - FadePanel not assigned");
+    }
+}
+
+    System.Collections.IEnumerator FadeToMainStory()
+{
+    UpdateCharacterImage(null); // é·ç§»å‰ã«é€æ˜åŒ–
+    Debug.Log("FadeToMainStory - FadePanel assigned: " + (fadePanel != null));
+    if (fadePanel != null)
+    {
+        fadePanel.SetActive(true); // å¼·åˆ¶çš„ã«ã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–
+        Image fadeImage = fadePanel.GetComponent<Image>();
+        Debug.Log("FadeToMainStory - FadeImage found: " + (fadeImage != null));
+        if (fadeImage != null)
+        {
+            fadeImage.color = new Color(0, 0, 0, 0); // åˆæœŸé€æ˜
+            // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³
+            for (float alpha = 0f; alpha <= 1f; alpha += Time.deltaTime)
+            {
+                fadeImage.color = new Color(0, 0, 0, alpha);
+                Debug.Log("FadeToMainStory - Fading in, alpha: " + alpha); // é€²è¡ŒçŠ¶æ³ãƒ­ã‚°
+                yield return null;
+            }
+            fadeImage.color = new Color(0, 0, 0, 1f); // å®Œå…¨ãªé»’
+            Debug.Log("FadeToMainStory - Fade in complete");
+            yield return new WaitForSeconds(0.1f); // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³å¾Œã®å¾…æ©Ÿï¼ˆèª¿æ•´å¯èƒ½ï¼‰
+        }
+        else
+        {
+            Debug.LogError("FadeToMainStory - FadeImage component not found on FadePanel");
+        }
+    }
+    else
+    {
+        Debug.LogError("FadeToMainStory - FadePanel not assigned");
+    }
+
+    // ã‚·ãƒ¼ãƒ³é·ç§»ï¼ˆãƒ•ã‚§ãƒ¼ãƒ‰å¾Œã«å®Ÿè¡Œï¼‰
+    SceneManager.LoadScene("MainScene");
+
+    if (fadePanel != null)
+    {
+        Image fadeImage = fadePanel.GetComponent<Image>();
+        if (fadeImage != null)
+        {
+            // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
+            for (float alpha = 1f; alpha >= 0f; alpha -= Time.deltaTime)
+            {
+                fadeImage.color = new Color(0, 0, 0, alpha);
+                Debug.Log("FadeToMainStory - Fading out, alpha: " + alpha); // é€²è¡ŒçŠ¶æ³ãƒ­ã‚°
+                yield return null;
+            }
+            fadeImage.color = new Color(0, 0, 0, 0f); // å®Œå…¨ãªé€æ˜
+            fadePanel.SetActive(false); // ãƒ•ã‚§ãƒ¼ãƒ‰çµ‚äº†å¾Œã«éã‚¢ã‚¯ãƒ†ã‚£ãƒ–
+            Debug.Log("FadeToMainStory - Fade out complete");
+        }
+    }
+
+    yield return new WaitForEndOfFrame();
+    if (isFromGateStory)
     {
         StartCoroutine(PlayMainStory());
+        hasPlayedMainStory = true; // ãƒ¡ã‚¤ãƒ³ã‚·ãƒ¼ãƒ³åˆ°é”æ™‚ã«ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     }
+}
 
     System.Collections.IEnumerator PlayMainStory()
     {
-        isPlayerControlEnabled = false;
-        Debug.Log("PlayMainStory Started, Control: " + isPlayerControlEnabled);
-        SceneManager.LoadScene("MainScene");
-        yield return new WaitForSeconds(1f);
         characterImage.SetActive(true);
         for (int i = 0; i < mainLines.Length; i++)
         {
             dialogBox.SetActive(true);
             dialogText.text = mainLines[i];
-            if (i == 2) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = femaleStudentRelieved;
-            else if (i == 5) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = femaleStudentAngry;
-            else if (i == 6) characterImage.GetComponent<UnityEngine.UI.Image>().sprite = femaleStudentRelieved;
-            else characterImage.GetComponent<UnityEngine.UI.Image>().sprite = null;
-            yield return new WaitForSeconds(2f);
+            if (i == 2) UpdateCharacterImage(femaleStudentRelieved);
+            else if (i == 5) UpdateCharacterImage(femaleStudentAngry);
+            else if (i == 6) UpdateCharacterImage(femaleStudentRelieved);
+            else UpdateCharacterImage(null);
+            yield return new WaitForSeconds(3f);
         }
         dialogBox.SetActive(false);
         characterImage.SetActive(false);
-        isPlayerControlEnabled = true;
-        Debug.Log("PlayMainStory Ended, Control: " + isPlayerControlEnabled);
+        if (mainTrigger != null) // MainTriggerã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’ç„¡åŠ¹åŒ–
+        {
+            mainTrigger.enabled = false;
+            Debug.Log("MainTrigger disabled after PlayMainStory");
+        }
+    hasPlayedMainStory = true; // ã“ã“ã§ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     }
 
-    void Update()
+    // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ç”»åƒã®æ›´æ–°ã¨é€æ˜åŒ–ã‚’ç®¡ç†
+    private void UpdateCharacterImage(Sprite sprite)
     {
-        if (isPlayerControlEnabled)
+        Image imageComponent = characterImage.GetComponent<Image>();
+        if (imageComponent != null)
         {
-            Animator animator = GetComponent<Animator>();
-            if (animator != null)
-            {
-                if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-                    animator.SetInteger("Direction", 1);
-                else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-                    animator.SetInteger("Direction", 0);
-                else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-                    animator.SetInteger("Direction", 2);
-                else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-                    animator.SetInteger("Direction", 3);
-            }
+            imageComponent.sprite = sprite;
+            imageComponent.color = sprite != null ? Color.white : new Color(1, 1, 1, 0);
         }
     }
 }

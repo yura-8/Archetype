@@ -947,7 +947,7 @@ namespace SimpleRpg
             BattlePhase = BattlePhase.NotInBattle;
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
 
-            SceneManager.LoadScene("SampleScene");
+            SceneManager.LoadScene("MainScene");
         }
 
         /// <summary>
@@ -971,7 +971,7 @@ namespace SimpleRpg
 
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
 
-            SceneManager.LoadScene("SampleScene");
+            SceneManager.LoadScene("MainScene");
         }
 
         /// <summary>
