@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 820e199ecf9ce94418f43bb9979c1cb0
+guid: 2f6cb05ad94130d41a701e224f2d737d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7727865131416500628
-    second: UntitledArtwork3_0
-  - first:
-      213: 2989079082655941586
-    second: UntitledArtwork3_1
+      213: -1052799324459590905
+    second: UntitledArtwork10_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -116,12 +113,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UntitledArtwork3_0
+      name: UntitledArtwork10_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1565
+        width: 1690
         height: 1200
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -131,30 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 499353e9464ee3b60800000000000000
-      internalID: 7727865131416500628
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UntitledArtwork3_1
-      rect:
-        serializedVersion: 2
-        x: 579
-        y: 894
-        width: 147
-        height: 242
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2d3024fb6975b7920800000000000000
-      internalID: 2989079082655941586
+      spriteID: 70b90d5a794b361f0800000000000000
+      internalID: -1052799324459590905
       vertices: []
       indices: 
       edges: []
@@ -163,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 19248c660d48be24fb1fc2f63b639969
+    spriteID: 2bb000b4e4876dd4e9c388bf0a858e2a
     internalID: 0
     vertices: []
     indices: 
@@ -173,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      UntitledArtwork3_0: 7727865131416500628
-      UntitledArtwork3_1: 2989079082655941586
+      UntitledArtwork10_0: -1052799324459590905
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
