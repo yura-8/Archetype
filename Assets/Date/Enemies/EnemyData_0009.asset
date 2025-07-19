@@ -23,4 +23,54 @@ MonoBehaviour:
   exp: 9
   gold: 1000
   attribute: 1
-  enemyActionRecords: []
+  enemyActionRecords:
+  - enemyActionCategory: 0
+    enemyConditionRecords: []
+    skillData: {fileID: 0}
+    priority: 50
+  - enemyActionCategory: 1
+    enemyConditionRecords:
+    - conditionCategory: 1
+      comparisonOperator: 5
+      turnCriteria: 0
+      hpRateCriteria: 30
+      btRateCriteria: 0
+    skillData: {fileID: 0}
+    priority: 60
+  - enemyActionCategory: 2
+    enemyConditionRecords:
+    - conditionCategory: 2
+      comparisonOperator: 3
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 50
+    skillData: {fileID: 11400000, guid: 0267057781490cf4596ecdf49fde44f5, type: 2}
+    priority: 80
+  - enemyActionCategory: 2
+    enemyConditionRecords:
+    - conditionCategory: 1
+      comparisonOperator: 5
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 50
+    - conditionCategory: 2
+      comparisonOperator: 3
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 30
+    skillData: {fileID: 11400000, guid: 4ada2cc0964add34d9a43a5dbfbd8cbf, type: 2}
+    priority: 70
+  - enemyActionCategory: 2
+    enemyConditionRecords:
+    - conditionCategory: 0
+      comparisonOperator: 2
+      turnCriteria: 5
+      hpRateCriteria: 0
+      btRateCriteria: 0
+    - conditionCategory: 2
+      comparisonOperator: 3
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 40
+    skillData: {fileID: 11400000, guid: 7026582651bf2974aa169009476c3df0, type: 2}
+    priority: 90

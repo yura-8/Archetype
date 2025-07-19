@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyId: 13
   enemyName: "\u30AF\u30A2\u30C9\u30A6\u30A9\u30FC\u30AB\u30FC"
-  sprite: {fileID: -4723188824610832630, guid: a37f6f7ce90bd1042a286faaf1a92977, type: 3}
+  sprite: {fileID: 3320583921319488182, guid: 4637cbdf16f383d4093da24e1cdd14a4, type: 3}
   hp: 1020
   bt: 2000
   atk: 280
@@ -23,4 +23,54 @@ MonoBehaviour:
   exp: 17
   gold: 1800
   attribute: 1
-  enemyActionRecords: []
+  enemyActionRecords:
+  - enemyActionCategory: 0
+    enemyConditionRecords: []
+    skillData: {fileID: 0}
+    priority: 50
+  - enemyActionCategory: 1
+    enemyConditionRecords:
+    - conditionCategory: 1
+      comparisonOperator: 5
+      turnCriteria: 0
+      hpRateCriteria: 30
+      btRateCriteria: 0
+    skillData: {fileID: 0}
+    priority: 60
+  - enemyActionCategory: 2
+    enemyConditionRecords:
+    - conditionCategory: 2
+      comparisonOperator: 3
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 50
+    skillData: {fileID: 11400000, guid: 4db15cd4db693ec40945c167a10c640e, type: 2}
+    priority: 80
+  - enemyActionCategory: 2
+    enemyConditionRecords:
+    - conditionCategory: 1
+      comparisonOperator: 5
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 50
+    - conditionCategory: 2
+      comparisonOperator: 3
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 30
+    skillData: {fileID: 11400000, guid: 5def6591d759bb14ebb7114b4126570e, type: 2}
+    priority: 70
+  - enemyActionCategory: 2
+    enemyConditionRecords:
+    - conditionCategory: 0
+      comparisonOperator: 2
+      turnCriteria: 5
+      hpRateCriteria: 0
+      btRateCriteria: 0
+    - conditionCategory: 2
+      comparisonOperator: 3
+      turnCriteria: 0
+      hpRateCriteria: 0
+      btRateCriteria: 40
+    skillData: {fileID: 11400000, guid: eea38b9ab3f9f084ca974ee4b4a36359, type: 2}
+    priority: 90
