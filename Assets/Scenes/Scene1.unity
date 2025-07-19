@@ -146,15 +146,15 @@ RectTransform:
   m_GameObject: {fileID: 54630155}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 426872283}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 3200, y: -1100}
-  m_SizeDelta: {x: 600, y: 600}
+  m_AnchoredPosition: {x: 3000, y: -970}
+  m_SizeDelta: {x: 1565, y: 1200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &54630157
 MonoBehaviour:
@@ -45551,7 +45551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d9ba9be42142a48907ba07ad432ac7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
+  speed: 10
 --- !u!58 &772493742
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -45677,21 +45677,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a502541100419d348ac291f41bdec2f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterImage: {fileID: 54630155}
-  leftCharacterImage: {fileID: 1855706677}
+  characterImageRight: {fileID: 54630155}
+  characterImageLeft: {fileID: 1855706677}
   dialogBox: {fileID: 1935848460}
   dialogText: {fileID: 562131425}
   protagonistNormal: {fileID: 8225728356676695347, guid: 352d74101b9faf34bba13755b3e087c1, type: 3}
   protagonistSerious: {fileID: 2600418723446463888, guid: 1f0df658c161ad84ba6a90fb6097a28a, type: 3}
   protagonistSurprised: {fileID: 7727865131416500628, guid: 820e199ecf9ce94418f43bb9979c1cb0, type: 3}
   protagonistSmile: {fileID: 2031106478244257626, guid: 59951aebe8ec6404595b7c9d97bef85b, type: 3}
-  femaleStudentNormal: {fileID: 0}
-  femaleStudentSad: {fileID: 0}
-  femaleStudentAngry: {fileID: 0}
-  femaleStudentRelieved: {fileID: 0}
-  whiteCoatManNormal: {fileID: 0}
-  whiteCoatManSmug: {fileID: 0}
-  whiteCoatManAngry: {fileID: 0}
+  femaleStudentNormal: {fileID: -3807906969449810834, guid: 96e8d51883d590c40aac9c0922ec8838, type: 3}
+  femaleStudentSad: {fileID: -1052799324459590905, guid: 2f6cb05ad94130d41a701e224f2d737d, type: 3}
+  femaleStudentAngry: {fileID: 5222794254635511629, guid: afe9842c080753c41a09719d63564885, type: 3}
+  femaleStudentRelieved: {fileID: 6306480804453857195, guid: a4034c4e511718846b52efb20f602942, type: 3}
+  whiteCoatManNormal: {fileID: -4962647773852856466, guid: cb7ecf64c24b8834eaf41c0c04a2b9ee, type: 3}
+  whiteCoatManSmug: {fileID: -7631540312547954440, guid: d97d17a62b3825c45bb1e5e70abd3175, type: 3}
+  whiteCoatManAngry: {fileID: -8273155279494503483, guid: 58bd2cf61ee096f4e8c2717bb4efd06c, type: 3}
   mainTrigger: {fileID: 0}
   fadePanel: {fileID: 1512940682}
 --- !u!1 &984209326
@@ -58929,15 +58929,15 @@ RectTransform:
   m_GameObject: {fileID: 1855706677}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 426872283}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -20}
-  m_SizeDelta: {x: 600, y: 600}
+  m_AnchoredPosition: {x: -1100, y: 110}
+  m_SizeDelta: {x: 1690, y: 1200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1855706679
 MonoBehaviour:
