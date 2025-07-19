@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c3d751b5d8dcf646881b777d79b530b, type: 3}
-  m_Name: SkillData_0001
+  m_Name: SkillData_0010
   m_EditorClassIdentifier: 
-  skillId: 1
-  skillName: Elec_beam
-  skillDesc: "\u6575\u5358\u4F53\u306B\u653B\u6483\u3059\u308B\u3002"
-  cost: 200
+  skillId: 10
+  skillName: HealWind
+  skillDesc: "\u5473\u65B9\u5358\u4F53\u306EHP\u3092\u56DE\u5FA9\u3055\u305B\u308B\u3002"
+  cost: 280
   maxCount: -1
   currentCount: 0
   skillEffect:
-  - skillCategory: 2
-    effectTarget: 3
-    value: 0.2
-    skillParameter: 3
+  - skillCategory: 1
+    effectTarget: 1
+    value: 0.3
+    skillParameter: 1
     duration: 0

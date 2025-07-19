@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c3d751b5d8dcf646881b777d79b530b, type: 3}
-  m_Name: SkillData_0001
+  m_Name: SkillData_0025
   m_EditorClassIdentifier: 
-  skillId: 1
+  skillId: 25
   skillName: Elec_beam
   skillDesc: "\u6575\u5358\u4F53\u306B\u653B\u6483\u3059\u308B\u3002"
-  cost: 200
+  cost: 300
   maxCount: -1
   currentCount: 0
   skillEffect:

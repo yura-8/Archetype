@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: SkillData_0002
   m_EditorClassIdentifier: 
   skillId: 2
-  skillName: "\u30B9\u30AD\u30EB\u653B\u6483"
-  skillDesc: "\u3070\u304B\u3081"
-  cost: 10
+  skillName: Elec_burst
+  skillDesc: "\u6575\u5168\u4F53\u306B\u653B\u6483\u3059\u308B."
+  cost: 300
   maxCount: -1
   currentCount: 0
   skillEffect:
   - skillCategory: 2
-    effectTarget: 3
-    value: 20
-    skillParameter: 0
+    effectTarget: 4
+    value: 0.1
+    skillParameter: 3
+    duration: 0
