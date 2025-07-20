@@ -18,7 +18,6 @@ namespace SimpleRpg
             AsyncOperationHandle<IList<ItemData>> handle = Addressables.LoadAssetsAsync<ItemData>(AddressablesLabels.Item, null);
             await handle.Task;
             _itemDataList = new List<ItemData>(handle.Result);
-            handle.Release();
         }
 
         public static ItemData GetItemDataById(int itemId)

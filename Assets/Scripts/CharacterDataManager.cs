@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -34,7 +35,6 @@ namespace SimpleRpg
             AsyncOperationHandle<IList<ExpTable>> handle = Addressables.LoadAssetsAsync<ExpTable>(AddressablesLabels.ExpTable, null);
             await handle.Task;
             _expTables = new List<ExpTable>(handle.Result);
-            handle.Release();
         }
 
         /// <summary>
@@ -58,7 +58,6 @@ namespace SimpleRpg
             AsyncOperationHandle<IList<ParameterTable>> handle = Addressables.LoadAssetsAsync<ParameterTable>(AddressablesLabels.ParameterTable, null);
             await handle.Task;
             _parameterTables = new List<ParameterTable>(handle.Result);
-            handle.Release();
         }
 
         /// <summary>
@@ -77,9 +76,23 @@ namespace SimpleRpg
         {
             AsyncOperationHandle<IList<CharacterData>> handle = Addressables.LoadAssetsAsync<CharacterData>(AddressablesLabels.Character, null);
             await handle.Task;
-            _characterDataList = new List<CharacterData>(handle.Result);
-            handle.Release();
+
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                _characterDataList = new List<CharacterData>(handle.Result);
+                Debug.LogError($"CharacterData loaded count: {_characterDataList.Count}");
+
+                foreach (var cd in _characterDataList)
+                {
+                    Debug.LogError($"Loaded CharacterData id:{cd.characterId} name:{cd.characterName}");
+                }
+            }
+            else
+            {
+                Debug.LogError("Failed to load CharacterData.");
+            }
         }
+
 
         /// <summary>
         /// キャラクターのIDからキャラクターの定義データを取得します。
@@ -87,7 +100,19 @@ namespace SimpleRpg
         /// <param name="characterId">キャラクターID</param>
         public static CharacterData GetCharacterData(int characterId)
         {
-            return _characterDataList.Find(character => character.characterId == characterId);
+            CharacterData found = null;
+            foreach (var c in _characterDataList)
+            {
+                Debug.Log($"Check characterId={c.characterId} against {characterId}");
+                if (c.characterId == characterId)
+                {
+                    found = c;
+                    Debug.Log($"Matched character: {found.characterName} (found hash: {found.GetHashCode()})");
+                    break;
+                }
+            }
+            Debug.Log($"Result found = {(found != null ? found.characterName : "null")} (found hash: {(found != null ? found.GetHashCode().ToString() : "null")})");
+            return found;
         }
 
         /// <summary>
@@ -136,6 +161,15 @@ namespace SimpleRpg
                 skillDataList.Add(skillData);
             }
             return skillDataList;
+        }
+        public static List<CharacterData> GetAllCharacterData()
+        {
+            return _characterDataList;
+        }
+
+        public static List<ParameterTable> GetAllParameterTables()
+        {
+            return _parameterTables;
         }
     }
 }

@@ -68,7 +68,22 @@ namespace SimpleRpg
         /// </summary>
         private void InitializeNewGameData()
         {
-            // このメソッドの中身は変更なし
+            Debug.Log("InitializeNewGameData開始");
+            var allCharacters = CharacterDataManager.GetAllCharacterData();
+            Debug.Log($"[DEBUG] Loaded Characters Count: {allCharacters.Count}");
+            foreach (var c in allCharacters)
+            {
+                Debug.Log($"[DEBUG] Character ID: {c.characterId}, Name: {c.characterName}");
+            }
+
+            var allParams = CharacterDataManager.GetAllParameterTables();
+            Debug.Log($"[DEBUG] Loaded ParameterTables Count: {allParams.Count}");
+            foreach (var p in allParams)
+            {
+                Debug.Log($"[DEBUG] ParameterTable CharacterId: {p.characterId}");
+            }
+
+
             CharacterStatuses = new List<CharacterStatus>();
             PartyCharacterIds = new List<int> { 1, 2, 3, 4 };
             PartyItems = new List<PartyItemInfo>
@@ -82,15 +97,42 @@ namespace SimpleRpg
             foreach (var id in allCharacterIds)
             {
                 var characterData = CharacterDataManager.GetCharacterData(id);
+                if (characterData == null)
+                {
+                    Debug.LogError($"[ERROR] characterData is null for id: {id}");
+                }
+
                 var parameterTable = CharacterDataManager.GetParameterTable(id);
-                if (characterData == null || parameterTable == null) continue;
+                if (parameterTable == null)
+                {
+                    Debug.LogError($"[ERROR] parameterTable is null for id: {id}");
+                }
+
+                if (characterData == null || parameterTable == null)
+                {
+                    continue;
+                }
 
                 int initialLevel = 1;
                 var paramRecord = parameterTable.parameterRecords.Find(r => r.level == initialLevel);
-                if (paramRecord == null) continue;
+                if (paramRecord == null)
+                {
+                    Debug.LogError($"[ERROR] paramRecord is null for id: {id}, level: {initialLevel}");
+                    continue;
+                }
 
                 var expTable = CharacterDataManager.GetExpTable();
                 var expRecord = expTable.expRecords.Find(r => r.level == initialLevel);
+                if (expRecord == null)
+                {
+                    Debug.LogError($"[ERROR] expRecord is null for level: {initialLevel}");
+                }
+
+                var skillList = CharacterDataManager.GetLearnableSkill(id, initialLevel);
+                if (skillList == null || skillList.Count == 0)
+                {
+                    Debug.LogError($"[WARN] No skills found for id: {id} at level: {initialLevel}");
+                }
 
                 CharacterStatus status = new()
                 {
@@ -105,7 +147,11 @@ namespace SimpleRpg
                     attribute = characterData.attribute
                 };
                 CharacterStatuses.Add(status);
+
+                Debug.LogError($"[OK] CharacterStatus added: id={id}, level={initialLevel}");
             }
+
+            Debug.LogError($"[完了] InitializeNewGameData完了 CharacterStatuses count: {CharacterStatuses.Count}");
         }
     }
 }
