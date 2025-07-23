@@ -19,6 +19,11 @@ namespace SimpleRpg
         List<SkillData> _characterSkillList = new();
 
         /// <summary>
+        /// 現在行動中のキャラクターのIDです。
+        /// </summary>
+        private int _currentActorId;
+
+        /// <summary>
         /// インデックスが有効な範囲か確認します。
         /// </summary>
         /// <param name="index">確認するインデックス</param>
@@ -65,6 +70,7 @@ namespace SimpleRpg
         /// <param name="currentActorId">スキルを読み込む対象のキャラクターID</param>
         public void SetCharacterSkill(int currentActorId)
         {
+            _currentActorId = currentActorId; 
             _characterSkillList.Clear();
 
             // 引数で受け取ったキャラクターIDのステータスを取得します。
@@ -130,16 +136,24 @@ namespace SimpleRpg
         /// <summary>
         /// スキルを使えるか確認します。
         /// </summary>
-        /// <param name="skilllData">スキルデータ</param>
+        /// <param name="skillData">スキルデータ</param>
         bool CanSelectSkill(SkillData skillData)
         {
             if (skillData == null)
             {
                 return false;
             }
+            
+            // ハードコードされていたID参照を、保存しておいた行動中キャラクターID(_currentActorId)に変更
+            var characterStatus = CharacterStatusManager.GetCharacterStatusById(_currentActorId);
 
-            var currentSelectingCharacter = GameDataManager.Instance.PartyCharacterIds[0];
-            var characterStatus = CharacterStatusManager.GetCharacterStatusById(currentSelectingCharacter);
+            // キャラクターが見つからなかった場合のガード処理を追加
+            if (characterStatus == null)
+            {
+                Debug.LogError($"ID: {_currentActorId} のキャラクターステータスが見つかりません。");
+                return false;
+            }
+
             // BTが足りているか？
             bool hasEnoughBt = characterStatus.currentBt >= skillData.cost;
 

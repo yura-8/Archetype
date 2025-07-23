@@ -1,0 +1,18 @@
+<linker>
+    <assembly fullname="Assembly-CSharp">
+        <type fullname="SimpleRpg.CharacterData" preserve="all"/>
+        <type fullname="SimpleRpg.ExpTable" preserve="all"/>
+        <type fullname="SimpleRpg.ParameterTable" preserve="all"/>
+        <type fullname="SimpleRpg.CharacterSkillRecord" preserve="all"/>
+        <type fullname="SimpleRpg.ParameterRecord" preserve="all"/> <type fullname="SimpleRpg.ExpRecord" preserve="all"/> <type fullname="SimpleRpg.SkillData" preserve="all"/> </assembly>
+    <assembly fullname="UnityEngine.CoreModule">
+        <type fullname="UnityEngine.ScriptableObject" preserve="all"/>
+    </assembly>
+    <assembly fullname="Unity.Addressables">
+        <type fullname="UnityEngine.AddressableAssets.Addressables" preserve="all"/>
+        <type fullname="UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle" preserve="all"/>
+    </assembly>
+    <assembly fullname="Unity.ResourceManager">
+        <type fullname="UnityEngine.ResourceManagement.ResourceManager" preserve="all"/>
+    </assembly>
+</linker>

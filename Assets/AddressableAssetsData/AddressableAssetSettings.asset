@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: f277174c21fd0284f85de884e3651667
   m_currentHash:
     serializedVersion: 2
-    Hash: 010b2ed3d9454e18db81e8488bc60057
+    Hash: 5bd24c3b27dbc5765bacd4a1e917d43c
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -53,7 +53,7 @@ MonoBehaviour:
     m_Id: 
   m_RemoteCatalogLoadPath:
     m_Id: 
-  m_ContentStateBuildPathProfileVariableName: 
+  m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0

@@ -374,10 +374,10 @@ namespace SimpleRpg
             {
                 case BattleCommand.Attack:
                     SetBattlePhase(BattlePhase.InputCommand_Attack);
-
                     var attackCommandWindow = GetWindowManager().GetAttackCommandWindowController();
                     attackCommandWindow.InitializeCommand();
                     attackCommandWindow.ShowWindow();
+                    
                     break;
                 case BattleCommand.Item:
                     SetBattlePhase(BattlePhase.SelectItem);
@@ -937,6 +937,20 @@ namespace SimpleRpg
 
             SimpleLogger.Instance.Log("戦闘に勝利して終了します。");
 
+            Debug.Log("戦闘終了後のHP回復処理を開始します。");
+            var partyCharacterIds = GameDataManager.Instance.PartyCharacterIds;
+            foreach (var id in partyCharacterIds)
+            {
+                var status = CharacterStatusManager.GetCharacterStatusById(id);
+                // キャラクターが存在し、HPが0以下の場合
+                if (status != null && status.currentHp <= 0)
+                {
+                    // HPを100回復させる (ChangeCharacterStatusの第2引数がHP回復量)
+                    CharacterStatusManager.ChangeCharacterStatus(id, 100, 0);
+                    Debug.Log($"{CharacterDataManager.GetCharacterName(id)} は意識を取り戻し、HPが100回復しました。");
+                }
+            }
+
             ClearAllCharacterStatuses();
 
             _enemyStatusManager.InitializeEnemyStatusList();
@@ -971,7 +985,7 @@ namespace SimpleRpg
 
             if (_bgmAudioSource != null) _bgmAudioSource.Stop();
 
-            SceneManager.LoadScene("MainScene");
+            SceneManager.LoadScene("TitleScene");
         }
 
         /// <summary>

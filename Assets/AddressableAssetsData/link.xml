@@ -1,0 +1,32 @@
+<linker>
+  <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="SimpleRpg.CharacterData" preserve="all" />
+    <type fullname="SimpleRpg.EnemyData" preserve="all" />
+    <type fullname="SimpleRpg.ExpTable" preserve="all" />
+    <type fullname="SimpleRpg.ItemData" preserve="all" />
+    <type fullname="SimpleRpg.ParameterTable" preserve="all" />
+    <type fullname="SimpleRpg.SkillData" preserve="all" />
+    <type fullname="SimpleRpg.EnemyActionRecord" preserve="nothing" serialized="true" />
+    <type fullname="SimpleRpg.EnemyConditionRecord" preserve="nothing" serialized="true" />
+    <type fullname="SimpleRpg.CharacterSkillRecord" preserve="nothing" serialized="true" />
+    <type fullname="SimpleRpg.ExpRecord" preserve="nothing" serialized="true" />
+    <type fullname="SimpleRpg.ParameterRecord" preserve="nothing" serialized="true" />
+    <type fullname="SimpleRpg.ItemEffect" preserve="nothing" serialized="true" />
+    <type fullname="SimpleRpg.SkillParameter" preserve="nothing" serialized="true" />
+    <type fullname="SimpleRpg.SkillEffect" preserve="nothing" serialized="true" />
+  </assembly>
+  <assembly fullname="Unity.Addressables, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
+    <type fullname="UnityEngine.AddressableAssets.Addressables" preserve="all" />
+  </assembly>
+  <assembly fullname="Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider" preserve="all" />
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider" preserve="all" />
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.InstanceProvider" preserve="all" />
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.SceneProvider" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.Object" preserve="all" />
+    <type fullname="UnityEngine.Sprite" preserve="all" />
+    <type fullname="UnityEngine.Texture2D" preserve="all" />
+  </assembly>
+</linker>

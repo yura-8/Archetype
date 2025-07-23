@@ -11,15 +11,32 @@ namespace SimpleRpg
         /// <summary>
         /// 決定ボタンが押されたかどうかを取得します。
         /// </summary>
+
+        private static bool _confirmKeyReleased = true;
+
         public static bool ConfirmButton()
         {
             if (Keyboard.current == null)
+                return false;
+
+            var space = Keyboard.current.spaceKey;
+            var z = Keyboard.current.zKey;
+
+            bool isPressed = space.isPressed || z.isPressed;
+
+            if (!isPressed)
             {
+                _confirmKeyReleased = true;
                 return false;
             }
 
-            return Keyboard.current.spaceKey.wasPressedThisFrame
-                || Keyboard.current.zKey.wasPressedThisFrame;
+            if (_confirmKeyReleased && isPressed)
+            {
+                _confirmKeyReleased = false;
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
